@@ -1,15 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:restowrent_v_two/app_constans/app_colors.dart';
 import 'package:restowrent_v_two/screens/dashbord_screen.dart';
-import 'package:restowrent_v_two/screens/sliver_check.dart';
-import 'package:restowrent_v_two/screens/take_away_billing%20screen.dart';
 import 'package:restowrent_v_two/screens/today_food_screen/controller/today_food_controller.dart';
 import 'package:restowrent_v_two/screens/today_food_screen/today_food_screen.dart';
 
-import '../../repository/foods_repo.dart';
+import '../../widget/app_alerts.dart';
+import '../../widget/snack_bar.dart';
 
 
 
@@ -34,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     // TODO: implement initState
-
+    Get.find<TodayFoodController>().getTodayFoods();
     super.initState();
   }
 
@@ -51,7 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
         floatingActionButton: FloatingActionButton(
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             onPressed: () {
-              selectedTab(4);
+              AppSnackBar.errorSnackBar('Success', 'Data loaded');
+              // selectedTab(4);
             },
             child:  Icon(
               Icons.add,

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:restowrent_v_two/app_constans/app_colors.dart';
-import 'package:restowrent_v_two/widget/round_border_button.dart';
 import 'package:get/get.dart';
+import 'package:restowrent_v_two/widget/round_border_button.dart';
 
 class TwoBtnBottomSheet {
   static void bottomSheet(
@@ -36,7 +35,9 @@ class TwoBtnBottomSheet {
                 text: b2Name,
                 textColor: Colors.white,
                 onTap: b2Function,
-              )
+              ),
+
+
             ],
           )),
       enterBottomSheetDuration: const Duration(milliseconds: 500),

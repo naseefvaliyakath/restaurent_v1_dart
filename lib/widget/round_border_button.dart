@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:restowrent_v_two/app_constans/app_colors.dart';
 
 
 class RoundBorderButton extends StatelessWidget {

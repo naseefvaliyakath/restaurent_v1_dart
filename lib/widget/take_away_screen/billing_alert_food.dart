@@ -1,7 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:restowrent_v_two/app_constans/app_colors.dart';
+import 'package:lottie/lottie.dart';
 
 class BillingAlertFood extends StatelessWidget {
   final String img;
@@ -16,14 +16,28 @@ class BillingAlertFood extends StatelessWidget {
       width: 250.sp,
       height: 250.sp,
       margin: EdgeInsets.all(5.sp),
-      decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(img),
-            fit: BoxFit.cover,
-          ),
-          borderRadius: BorderRadius.circular(100.r),
 
-      ),
+
+child: ClipRRect(
+  borderRadius: BorderRadius.circular(100.r),
+  child:   CachedNetworkImage(
+    imageUrl: img,
+    placeholder: (context, url) => Lottie.asset(
+      'assets/lottie/img_holder.json',
+      width: 50.sp,
+      height: 50.sp,
+      fit: BoxFit.fill,
+    ),
+    errorWidget: (context, url, error) => Lottie.asset(
+      'assets/lottie/img_holder.json',
+      width: 10.sp,
+      height: 10.sp,
+      fit: BoxFit.fill,
+
+    ),
+    fit: BoxFit.cover,
+  ),
+),
     );
   }
 }

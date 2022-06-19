@@ -1,40 +1,102 @@
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:restowrent_v_two/app_constans/api_link.dart';
+import 'package:restowrent_v_two/model/my_response.dart';
 import 'package:restowrent_v_two/repository/foods_repo.dart';
 
-class TodayFoodController extends GetxController{
+import '../../../commoen/dio_error.dart';
+import '../../../model/foods_respons/food_response.dart';
+import '../../../model/foods_respons/foods.dart';
+import '../../../services/service.dart';
+import '../../../widget/snack_bar.dart';
 
- FoodsRepo _foodsRepo = FoodsRepo();
+class TodayFoodController extends GetxController {
 
-  NewsHeadlineController(){
-    _foodsRepo = Get.find<FoodsRepo>();
-    getTodayFoods();
+  final FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
+  final HttpService _httpService = Get.find<HttpService>();
+
+  TodayFoodController() {
+//  _foodsRepo.getTodayFoods();
   }
 
-  var isLoading = false.obs;
+  bool isLoading = false;
+  bool isloading2 =false; //for hide screen on update remove because isloading only change cards in today food
+  List<Foods>? _foods;
+  List<Foods>? get foods => _foods;
 
+  getTodayFoods() async {
+    try {
+      showLoading();
+      update();
+      MyResponse response = await _foodsRepo.getTodayFoods();
 
+      hideLoading();
+      update();
 
- getTodayFoods() async{
+      if (response.statusCode == 1) {
 
-    showLoading();
+            FoodResponse parsedResponse = response.data;
+            if(parsedResponse.data == null){
+              _foods = [];
 
-    final  result = await _foodsRepo.getTodayFoods();
+            }
+            else{
+              _foods = parsedResponse.data;
 
-    hideLoading();
+            }
 
-    if(result!= null){
+            //toast
 
-    }else{
-      print("No data recieved");
+          } else {
+            print('${response.message}');
+            AppSnackBar.errorSnackBar(response.status, response.message);
+            return;
+          }
+    } catch (e) {
+      rethrow;
     }
+    update();
+
+
+
   }
 
-  showLoading(){
-    isLoading.toggle();
+   removeFromToday(int id ,String isToday) async {
+
+    try {
+      showLoading();
+      isloading2 = true;
+      update();
+      Map<String,dynamic>foodData={
+        'id':id,
+        'fdIsToday': isToday
+      };
+      final response = await _httpService.updateData(TODAY_FOOD_UPDATE,foodData);
+      isloading2 = false;
+      hideLoading();
+      update();
+      FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
+      if(parsedResponse.error){
+        AppSnackBar.errorSnackBar('Error', parsedResponse.errorCode);
+      }
+      else{
+        getTodayFoods();
+        AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
+      }
+    } on DioError catch (e) {
+
+       AppSnackBar.errorSnackBar('Error',MyDioError.dioError(e));
+    }
+
+    update();
+
   }
 
-  hideLoading(){
-    isLoading.toggle();
+  showLoading() {
+    isLoading = true;
   }
 
+  hideLoading() {
+    isLoading = false;
+  }
 }

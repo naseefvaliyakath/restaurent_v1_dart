@@ -21,11 +21,18 @@ dependencies:
   intl: any
   dio: any
   json_serializable: any
+  http: ^0.13.4
+  lottie: 1.3.0
+  cached_network_image: 3.2.1
+  hive: ^2.2.2
+  hive_flutter: 1.1.0
+  getwidget: 3.0.1
   flutter: 
     sdk: flutter
 
 dev_dependencies: 
   flutter_lints: ^2.0.0
+  build_runner: 2.1.11
   flutter_test: 
     sdk: flutter
 
@@ -33,5 +40,6 @@ flutter:
   assets: 
     - assets/image/
     - assets/image/food/
+    - assets/lottie/
   uses-material-design: true
 

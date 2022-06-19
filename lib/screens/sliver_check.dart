@@ -1,11 +1,11 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:getwidget/components/search_bar/gf_search_bar.dart';
+import 'package:lottie/lottie.dart';
 
-
-
-
-/*
-class HomePage extends StatefulWidget {
+/*class HomePage extends StatefulWidget {
   const HomePage({
     Key? key,
   }) : super(key: key);
@@ -369,7 +369,6 @@ class _HomePageState extends State<HomePage> {
   }
 }*/
 
-
 /*
 import 'dart:io';
 
@@ -614,3 +613,130 @@ class _HomePageState extends State<HomePage> {
     });
   }
 }*/
+
+/*class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+
+  @override
+  Widget build(BuildContext context) {
+    Get.lazyPut(() => ImageController());
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Image upload'),
+        ),
+        body: GetBuilder<ImageController>(
+          builder: (controller) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(35),
+                child: Column(children: [
+                  Center(
+                    child: GestureDetector(
+                      child: const Text('Select An Image'),
+                      //onTap:()=> Get.find<ImageController>().pickImage(),
+                      onTap: () => controller.pickImage(),
+                    ),
+                  ),
+                  const SizedBox(height: 35),
+                  Container(
+                    alignment: Alignment.center,
+                    width: double.infinity,
+                    height: 200,
+                    color: Colors.grey[300],
+                    child: controller.pickedFile != null
+                        ? Image.file(
+                      File(controller.pickedFile!
+                          .path), width: 100, height: 100, fit: BoxFit.cover,
+                    )
+                        : const Text('Please select an image'),
+                  ),
+                  AppMIniButton(onTap: (){controller.upload();}, bgColor: Colors.red, text: 'ggg',),
+
+                ]),
+              ),
+            );
+          },
+        ));
+  }
+}*/
+
+/*class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Container(child:
+          Lottie.asset('assets/lottie/loading.json',
+            width: 60.sp,
+            height: 60.sp,
+            fit: BoxFit.fill,),),
+        ),
+      ),
+    );
+  }
+}*/
+
+class ImageShowing extends StatefulWidget {
+  const ImageShowing({Key? key}) : super(key: key);
+
+  @override
+  State<ImageShowing> createState() => _ImageShowingState();
+}
+
+class _ImageShowingState extends State<ImageShowing> {
+  @override
+  Widget build(BuildContext context) {
+    List list = [
+      "Flutter",
+      "React",
+      "Ionic",
+      "Xamarin",
+    ];
+    return Scaffold(
+      body: Container(
+        width: 200,
+        child: Center(
+          child: SizedBox(
+            height: 75,
+            child: GFSearchBar(
+              searchBoxInputDecoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Even Densed TextFiled',
+                isDense: true,                      // Added this
+                contentPadding: EdgeInsets.all(4),  // Added this
+              ),
+              searchList: list,
+              searchQueryBuilder: (query, list) {
+                return list.where((element) => element.toString().toLowerCase().contains(query)).toList();
+              },
+              overlaySearchListItemBuilder: (item) {
+                return Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    item.toString(),
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                );
+              },
+              onItemSelected: (item) {
+                setState(() {
+                  print('$item');
+                });
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

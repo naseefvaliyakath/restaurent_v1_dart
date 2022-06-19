@@ -1,15 +1,18 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:restowrent_v_two/app_constans/app_colors.dart';
+import 'package:restowrent_v_two/widget/big_text.dart';
 
 class FoodCard extends StatelessWidget {
   final String img;
   final String name;
-  final String price;
+  final int price;
+  final String today;
 
   const FoodCard(
-      {Key? key, required this.img, required this.name, required this.price})
+      {Key? key, required this.img, required this.name, required this.price,  this.today = 'no'})
       : super(key: key);
 
   @override
@@ -28,11 +31,25 @@ class FoodCard extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(img),
+              borderRadius: BorderRadius.circular(20.r),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.r),
+              child: CachedNetworkImage(
+                imageUrl: img,
+                placeholder: (context, url) => Lottie.asset(
+                  'assets/lottie/img_holder.json',
+                  width: 50.sp,
+                  height: 50.sp,
+                  fit: BoxFit.fill,
+                ),
+                errorWidget: (context, url, error) => Lottie.asset(
+                  'assets/lottie/error.json',
+                  width: 10.sp,
+                  height: 10.sp,
+                ),
                 fit: BoxFit.cover,
               ),
-              borderRadius: BorderRadius.circular(20.r),
             ),
           ),
           Container(
@@ -57,12 +74,12 @@ class FoodCard extends StatelessWidget {
                     softWrap: false,
                     style: TextStyle(
                       fontSize: 1.sh / 55.15,
-                      color:  Colors.white,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.fade,
                   ),
-                  Text(price,
+                  Text(price.toString(),
                       softWrap: false,
                       style: TextStyle(
                         fontSize: 1.sh / 49,
@@ -73,12 +90,22 @@ class FoodCard extends StatelessWidget {
               )),
           Positioned(
               top: 1.sh / 68.3,
-
-              /// 10.0
               right: 1.sw / 41.1,
-
-              /// 10.0
-              child:  Icon(FontAwesomeIcons.fire, color: Colors.white,size: 24.sp,))
+              child: Visibility(
+                visible: today == 'no'? false : true,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
+                  decoration: BoxDecoration(
+                    color: AppColors.mainColor.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(5.r),
+                  ),
+                  child: BigText(
+                    text: 'Today',
+                    color: Colors.white,
+                    size: 12.sp,
+                  ),
+                ),
+              ))
         ],
       ),
     );

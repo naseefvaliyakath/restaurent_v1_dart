@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../app_constans/app_colors.dart';
 
 class TextFieldWidget extends StatelessWidget {
@@ -12,6 +13,7 @@ class TextFieldWidget extends StatelessWidget {
   final bool readonly;
   final bool? isDens;
   final bool autoFocus;
+  final TextInputType keybordType;
 
    const TextFieldWidget(
       {Key? key,
@@ -19,7 +21,8 @@ class TextFieldWidget extends StatelessWidget {
       required this.hintText,
       this.maxLIne = 1,
       this.readonly = false,
-      required this.borderRadius, this.isDens = false, this.width, this.hintSize, this.autoFocus = false})
+      required this.borderRadius, this.isDens = false, this.width, this.hintSize, this.autoFocus = false,
+      this.keybordType = TextInputType.text})
       : super(key: key);
 
   @override
@@ -27,6 +30,7 @@ class TextFieldWidget extends StatelessWidget {
     return SizedBox(
       width: width ?? double.maxFinite,
       child: TextField(
+        keyboardType: keybordType,
         controller: textEditingController,
         maxLines: maxLIne,
         readOnly: readonly,

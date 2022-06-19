@@ -6,20 +6,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:restowrent_v_two/widget/app_min_button.dart';
 import 'package:restowrent_v_two/widget/big_text.dart';
-import 'package:restowrent_v_two/widget/order_view_screen/order_category.dart';
 import 'package:restowrent_v_two/widget/white_button_with_icon.dart';
+
 import '../../app_constans/app_colors.dart';
-import '../../widget/add_food_screen/catogories.dart';
-import '../../widget/app_alerts.dart';
-import '../../widget/table_manage_screen/table_chair_widget.dart';
 import '../../widget/create_table/table_shape_drop_down.dart';
-import '../../widget/date_range_picker.dart';
-import '../../widget/food_card.dart';
+import '../../widget/heading_rich_text.dart';
 import '../../widget/horezondal_divider.dart';
-import '../../widget/order_view_screen/order_status_card.dart';
-import '../../widget/take_away_screen/category_drop_down.dart';
-import '../../widget/two_button-bottom_sheet.dart';
-import '../add_food_screen.dart';
+import '../../widget/notification_icon.dart';
+import '../../widget/table_manage_screen/table_chair_widget.dart';
 import 'create_table_controller.dart';
 
 class CreateTableScreen extends StatelessWidget {
@@ -54,41 +48,9 @@ class CreateTableScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         // heading my restawrent
-                        Flexible(
-                          child: FittedBox(
-                            child: RichText(
-                              softWrap: false,
-                              text: TextSpan(children: [
-                                TextSpan(
-                                    text: "Create your table",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 28.sp,
-                                        color: AppColors.textColor)),
-                              ]),
-                              maxLines: 1,
-                            ),
-                          ),
-                        ),
+                        const HeadingRichText(name: 'Create your table'),
                         //notification
-                        InkWell(
-                          onTap: () {},
-                          child: Container(
-                            padding: EdgeInsets.all(8.sp),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20.r),
-                                border: Border.all(color: Colors.grey)),
-                            child: Center(
-                              child: Badge(
-                                badgeColor: Colors.red,
-                                child: Icon(
-                                  FontAwesomeIcons.bell,
-                                  size: 24.sp,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        const NotificationIcon(),
                       ],
                     ),
                   ),

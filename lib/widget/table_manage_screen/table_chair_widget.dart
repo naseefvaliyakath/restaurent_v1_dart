@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:restowrent_v_two/screens/create_table_screen/create_table_controller.dart';
 import 'package:restowrent_v_two/widget/create_table/table_rectangle.dart';
 
-import '../../app_constans/app_colors.dart';
 import '../create_table/chair_widget.dart';
 
 

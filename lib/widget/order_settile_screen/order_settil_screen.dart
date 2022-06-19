@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:restowrent_v_two/app_constans/app_colors.dart';
 import 'package:restowrent_v_two/widget/big_text.dart';
 import 'package:restowrent_v_two/widget/order_settile_screen/payment_type__drop_down.dart';
-import 'package:restowrent_v_two/widget/take_away_screen/category_drop_down.dart';
 import 'package:restowrent_v_two/widget/text_field_widget.dart';
 
 import '../app_min_button.dart';

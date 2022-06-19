@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CategoryDropDown extends StatefulWidget {
   const CategoryDropDown({Key? key}) : super(key: key);
@@ -28,7 +27,6 @@ class _CategoryDropDownState extends State<CategoryDropDown> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 8.h),
-          height: 0.05.sh,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
