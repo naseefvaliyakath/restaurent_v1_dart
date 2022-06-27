@@ -42,6 +42,20 @@ class HttpService {
     return response;
   }
 
+  //delete with id
+  Future<Response> delete(String url, body) async {
+    // TODO: implement getRequest
+
+    Response response;
+    try {
+      response = await _dio.delete(url,data:json.encode(body) );
+    } on DioError catch (e) {
+      throw Exception(e.message);
+    }
+
+    return response;
+  }
+
   // remove and add today food ..etc
   Future<Response> updateData(String url, dynamic body) async {
     Response response;

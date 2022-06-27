@@ -12,17 +12,16 @@ import '../widget/date_range_picker.dart';
 import '../widget/order_view_screen/order_status_card.dart';
 
 class OrderViewScreen extends StatelessWidget {
-   OrderViewScreen({Key? key}) : super(key: key);
-
+  OrderViewScreen({Key? key}) : super(key: key);
 
   int tappedIndex = 0;
   CrossFadeState state = CrossFadeState.showFirst;
   List categoryCard = [
-    {'text': "PENDING", 'circleColor':Colors.redAccent},
-    {'text': "SETTLED", 'circleColor':Colors.green},
-    {'text': "HOLD", 'circleColor':Colors.blueAccent},
-    {'text': "QUICK PAY",'circleColor':Colors.yellowAccent},
-    {'text': "ALL ORDER", 'circleColor':Colors.pink},
+    {'text': "PENDING", 'circleColor': Colors.redAccent},
+    {'text': "SETTLED", 'circleColor': Colors.green},
+    {'text': "HOLD", 'circleColor': Colors.blueAccent},
+    {'text': "QUICK PAY", 'circleColor': Colors.yellowAccent},
+    {'text': "ALL ORDER", 'circleColor': Colors.pink},
   ];
 
   @override
@@ -35,23 +34,26 @@ class OrderViewScreen extends StatelessWidget {
             SliverAppBar(
               floating: true,
               pinned: true,
-              leading: Icon(Icons.arrow_back,size: 24.sp,),
+              leading: Icon(
+                Icons.arrow_back,
+                size: 24.sp,
+              ),
               snap: true,
               title: Text(
                 'All Orders',
                 overflow: TextOverflow.fade,
                 softWrap: false,
               ),
-              titleTextStyle: TextStyle(
-                  fontSize: 26.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600),
+              titleTextStyle: TextStyle(fontSize: 26.sp, color: Colors.black, fontWeight: FontWeight.w600),
               actions: [
                 Badge(
                   badgeColor: Colors.red,
                   child: Container(
                       margin: EdgeInsets.only(right: 10.w),
-                      child:  Icon(FontAwesomeIcons.bell,size: 24.sp,)),
+                      child: Icon(
+                        FontAwesomeIcons.bell,
+                        size: 24.sp,
+                      )),
                 ),
               ],
               bottom: PreferredSize(
@@ -64,20 +66,22 @@ class OrderViewScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          FittedBox(child: BigText(text: 'Select Date : ',size: 18.sp,)),
+                          FittedBox(
+                              child: BigText(
+                            text: 'Select Date : ',
+                            size: 18.sp,
+                          )),
                           Flexible(
                             child: InkWell(
-                              onTap: (){
+                              onTap: () {
                                 Get.to(DateRangePickerDemo());
                               },
                               child: Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.r)),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
                                 child: SizedBox(
                                   child: Center(
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 8.0.w, vertical: 8.h),
+                                      padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 8.h),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -93,7 +97,7 @@ class OrderViewScreen extends StatelessWidget {
                                                 "22/03/2022 (Today)",
                                                 style: TextStyle(
                                                   fontSize: 15.sp,
-                                                  color:Colors.grey,
+                                                  color: Colors.grey,
                                                 ),
                                               ),
                                             ),
@@ -124,10 +128,10 @@ class OrderViewScreen extends StatelessWidget {
                                 ),
                                 child: Center(
                                     child: Icon(
-                                      Icons.qr_code_scanner,
-                                      size: 24.sp,
-                                      color: Colors.grey,
-                                    ))),
+                                  Icons.qr_code_scanner,
+                                  size: 24.sp,
+                                  color: Colors.grey,
+                                ))),
                           ),
                         ],
                       ),
@@ -138,16 +142,12 @@ class OrderViewScreen extends StatelessWidget {
                           itemCount: categoryCard.length,
                           itemBuilder: (BuildContext ctx, index) {
                             return InkWell(
-                              onTap: () {
-
-                              },
+                              onTap: () {},
                               //category tile
                               child: OrderCategory(
-                                  color: tappedIndex == index
-                                      ? AppColors.mainColor_2
-                                      : Colors.white,
-                                  circleColor: categoryCard[index]['circleColor'],
-                                  text: categoryCard[index]['text'],
+                                color: tappedIndex == index ? AppColors.mainColor_2 : Colors.white,
+                                circleColor: categoryCard[index]['circleColor'],
+                                text: categoryCard[index]['text'],
                               ),
                             );
                           },
@@ -163,71 +163,61 @@ class OrderViewScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               sliver: SliverGrid.count(
                   childAspectRatio: 2 / 3,
-                  crossAxisCount: 3,
+                  crossAxisCount: 2,
                   crossAxisSpacing: 18.sp,
                   mainAxisSpacing: 18.sp,
                   children: [
                     OrderStatusCard(
-                      img: 'assets/image/food/ChickenCurryPasta.jpg',
                       name: 'Chicken CurryPasta',
                       price: 'Rs : 250',
-                      onTap: (){
+                      onTap: () {
                         orderManageAlert(context);
                       },
                     ),
                     OrderStatusCard(
-                      img: 'assets/image/food/ExplosionBurger.jpg',
                       name: 'Explosion Burger',
                       price: 'Rs : 350',
-                      onTap: (){},
+                      onTap: () {},
                     ),
                     OrderStatusCard(
-                      img: 'assets/image/food/GrilledChicken.jpg',
                       name: 'Grilled Chicken',
                       price: 'Rs : 500',
-                      onTap: (){},
+                      onTap: () {},
                     ),
                     OrderStatusCard(
-                      img: 'assets/image/food/GrilledFish.jpg',
                       name: 'Grilled Fish',
                       price: 'Rs : 1200',
-                      onTap: (){},
+                      onTap: () {},
                     ),
                     OrderStatusCard(
-                      img: 'assets/image/food/HeavenlyPizza.jpg',
                       name: 'Heavenly Pizza',
                       price: 'Rs : 950',
-                      onTap: (){},
+                      onTap: () {},
                     ),
                     OrderStatusCard(
-                      img: 'assets/image/food/MandarinPancake.jpg',
                       name: 'Mandarin Pancake',
                       price: 'Rs : 10',
-                      onTap: (){},
+                      onTap: () {},
                     ),
                     OrderStatusCard(
-                      img: 'assets/image/food/OrganicMandarin.jpg',
                       name: 'Organic Mandarin',
                       price: 'Rs : 260',
-                      onTap: (){},
+                      onTap: () {},
                     ),
                     OrderStatusCard(
-                      img: 'assets/image/food/OrganicOrange.jpg',
                       name: 'Organic Orange',
                       price: 'Rs : 3000',
-                      onTap: (){},
+                      onTap: () {},
                     ),
                     OrderStatusCard(
-                      img: 'assets/image/food/RaspberriesCake.jpg',
                       name: 'Raspberries Cake',
                       price: 'Rs : 500',
-                      onTap: (){},
+                      onTap: () {},
                     ),
                     OrderStatusCard(
-                      img: 'assets/image/food/OrganicMandarin.jpg',
                       name: 'Organic Mandarin',
                       price: 'Rs : 250',
-                      onTap: (){},
+                      onTap: () {},
                     ),
                   ]),
             ),

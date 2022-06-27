@@ -36,9 +36,15 @@ class TableManageScreen extends StatelessWidget {
             SliverAppBar(
               floating: true,
               pinned: true,
-              leading: Icon(
-                Icons.arrow_back,
-                size: 24.sp,
+              leading:  IconButton(
+                icon: Icon(
+                  Icons.arrow_back,
+                  size: 24.sp,
+                ),
+                onPressed: () {
+                  Get.back();
+                },
+                splashRadius: 24.sp,
               ),
               snap: true,
               title: Text(
@@ -61,6 +67,7 @@ class TableManageScreen extends StatelessWidget {
                       )),
                 ),
               ],
+
               bottom: PreferredSize(
                 preferredSize: Size.fromHeight(60.h),
                 child: Padding(

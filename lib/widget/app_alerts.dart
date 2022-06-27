@@ -218,4 +218,29 @@ void appCLoseConfirm(context) {
   ).show();
 }
 
+void deleteAlert({context,onTap}){
+  AwesomeDialog(
+    context: context,
+    dialogType: DialogType.QUESTION,
+    headerAnimationLoop: false,
+    animType: AnimType.BOTTOMSLIDE,
+    title: 'Delete this food?',
+    desc: 'Do you Want to delete food ?',
+    buttonsTextStyle:  TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 20.sp,),
+    showCloseIcon: true,
+    btnCancelOnPress: () async {
+      Get.back();
+    },
+    //btnCancelIcon: Icons.cancel,
+    btnCancelText: ' No',
+    btnOkOnPress: () async {
+      onTap();
+    },
+    //btnOkIcon: Icons.delete,
+    btnOkText: ' Yes',
+
+  ).show();
+}
+
+
 

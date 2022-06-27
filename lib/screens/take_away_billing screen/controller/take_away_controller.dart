@@ -6,6 +6,7 @@ import 'package:restowrent_v_two/app_constans/hive_costants.dart';
 import 'package:restowrent_v_two/commoen/local_storage_controller.dart';
 import 'package:restowrent_v_two/model/my_response.dart';
 import 'package:restowrent_v_two/repository/foods_repo.dart';
+import 'package:restowrent_v_two/socket/socket_controller.dart';
 
 import '../../../commoen/dio_error.dart';
 import '../../../model/foods_respons/food_response.dart';
@@ -13,19 +14,25 @@ import '../../../model/foods_respons/foods.dart';
 import '../../../services/service.dart';
 import '../../../widget/snack_bar.dart';
 
+
 class TakeAwayController extends GetxController {
   final FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
+  final SocketController _socket = Get.find<SocketController>();
   final MyLocalStorage _myLocalStorage = Get.find<MyLocalStorage>();
-  //search food controller
+  //for search field text
   late TextEditingController searchTD;
+  //to convert search query to obs for debounce
+  var searchQuery = ''.obs;
 
 
 
   @override
   void onInit() async {
-    searchTD = TextEditingController();
     await getTodayFoods();
     await initialLoadingBillFromHive();
+    searchTD = TextEditingController();
+    //only send search requst after typing 500 millisecond
+    debounce(searchQuery, (callback) => searchTodayFoods(),time: const Duration(milliseconds: 500));
     super.onInit();
   }
 
@@ -54,6 +61,22 @@ class TakeAwayController extends GetxController {
   // totel price in bill
   int _totelPrice = 0;
   int get totelPrice => _totelPrice;
+
+
+
+
+
+  ////socket io////
+
+  Future<void> sendOrder() async {
+    var data =  {"fdOrder":_billingItems, "fdOrderStatus": "pending", "fdOrderType":"takeaway" };
+    await Future.delayed(const Duration(milliseconds: 500));
+    await _socket.sendDataAck(data);
+  }
+
+
+  ///socket io ////
+
 
   //load food to bill page
   getTodayFoods() async {
@@ -88,11 +111,11 @@ class TakeAwayController extends GetxController {
 
 
   //searching foods in bill page
-  searchTodayFoods(query) async {
+  searchTodayFoods() async {
     try {
       showLoading();
       update();
-      MyResponse response = await _foodsRepo.searchFoods(query, 'yes');
+      MyResponse response = await _foodsRepo.searchTodayFoods(searchQuery.value, 'yes');
 
       hideLoading();
       update();
@@ -117,6 +140,11 @@ class TakeAwayController extends GetxController {
     }
     update();
   }
+
+  reciveSearchValue(String query){
+    searchQuery.value = query;
+  }
+
 
   // bill manipulations
 

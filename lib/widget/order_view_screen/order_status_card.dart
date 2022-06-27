@@ -3,13 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:restowrent_v_two/app_constans/app_colors.dart';
 
 class OrderStatusCard extends StatelessWidget {
-  final String img;
   final String name;
   final String price;
   final Function onTap;
 
   const OrderStatusCard(
-      {Key? key, required this.img, required this.name, required this.price, required this.onTap})
+      {Key? key,required this.name, required this.price, required this.onTap})
       : super(key: key);
 
   @override
@@ -40,7 +39,7 @@ class OrderStatusCard extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.all(3.sp),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Column(
@@ -59,6 +58,7 @@ class OrderStatusCard extends StatelessWidget {
                           overflow: TextOverflow.fade,
                         ),
                       ),
+                      5.verticalSpace,
                       FittedBox(
                         child: Text(
                           'ID : 1595',

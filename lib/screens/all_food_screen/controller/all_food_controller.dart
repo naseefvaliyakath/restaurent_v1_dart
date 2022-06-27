@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:restowrent_v_two/model/my_response.dart';
 import 'package:restowrent_v_two/repository/foods_repo.dart';
@@ -13,6 +14,11 @@ import '../../../widget/snack_bar.dart';
 class AllFoodController extends GetxController {
   FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
   final HttpService _httpService = Get.find<HttpService>();
+  //for search field text
+  late TextEditingController searchTD;
+  //to convert search query to obs for debounce
+  var searchQuery = ''.obs;
+
   bool isLoading = false;
   bool isloading2 = false;
   List<Foods>? _foods;
@@ -20,17 +26,18 @@ class AllFoodController extends GetxController {
   List<Foods>? get foods => _foods;
 
   AllFoodController() {
-    // print('object');
+
     _foodsRepo = Get.find<FoodsRepo>();
 
-    // print('object $isLoading');
   }
 
   @override
   void onInit() async {
 
    await getAllFoods();
-    print('object $isLoading');
+   searchTD = TextEditingController();
+   //only send search requst after typing 500 millisecond
+   debounce(searchQuery, (callback) => searchTodayFoods(),time: const Duration(milliseconds: 500));
     super.onInit();
   }
 
@@ -67,6 +74,41 @@ class AllFoodController extends GetxController {
     update();
   }
 
+  //searching today foods
+  searchTodayFoods() async {
+    try {
+      showLoading();
+      update();
+      MyResponse response = await _foodsRepo.searchAllFoods(searchQuery.value, 'any');
+
+      hideLoading();
+      update();
+
+      if (response.statusCode == 1) {
+        FoodResponse parsedResponse = response.data;
+        if (parsedResponse.data == null) {
+          _foods = [];
+        } else {
+          _foods = parsedResponse.data;
+        }
+
+        //toast
+
+      } else {
+        print('${response.message}');
+        // AppSnackBar.errorSnackBar(response.status, response.message);
+        return;
+      }
+    } catch (e) {
+      rethrow;
+    }
+    update();
+  }
+
+  reciveSearchValue(String query){
+    searchQuery.value = query;
+  }
+
   addToToday(int id ,String isToday) async {
 
     try {
@@ -91,7 +133,38 @@ class AllFoodController extends GetxController {
         AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
       }
     } on DioError catch (e) {
+      hideLoading();
+      AppSnackBar.errorSnackBar('Error',MyDioError.dioError(e));
+    }
 
+    update();
+
+  }
+
+  deleteFood(int id) async {
+
+    try {
+      showLoading();
+      isloading2 = true;
+      update();
+
+      Map<String,dynamic>foodData={
+        'id':id,
+      };
+      final response = await _httpService.delete(DELETE_FOOD,foodData);
+      isloading2 = false;
+      hideLoading();
+      update();
+      FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
+      if(parsedResponse.error){
+        AppSnackBar.errorSnackBar('Error', parsedResponse.errorCode);
+      }
+      else{
+        getAllFoods();
+        AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
+      }
+    } on DioError catch (e) {
+      hideLoading();
       AppSnackBar.errorSnackBar('Error',MyDioError.dioError(e));
     }
 

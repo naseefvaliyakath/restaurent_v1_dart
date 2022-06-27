@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:restowrent_v_two/app_constans/api_link.dart';
 import 'package:restowrent_v_two/model/my_response.dart';
@@ -14,10 +15,20 @@ class TodayFoodController extends GetxController {
 
   final FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
   final HttpService _httpService = Get.find<HttpService>();
+  //for search field text
+  late TextEditingController searchTD;
+  //to convert search query to obs for debounce
+  var searchQuery = ''.obs;
 
-  TodayFoodController() {
-//  _foodsRepo.getTodayFoods();
+
+  @override
+  void onInit() async {
+    searchTD = TextEditingController();
+    //only send search requst after typing 500 millisecond
+    debounce(searchQuery, (callback) => searchTodayFoods(),time: const Duration(milliseconds: 500));
+    super.onInit();
   }
+
 
   bool isLoading = false;
   bool isloading2 =false; //for hide screen on update remove because isloading only change cards in today food
@@ -59,6 +70,41 @@ class TodayFoodController extends GetxController {
 
 
 
+  }
+
+  //searching today foods
+  searchTodayFoods() async {
+    try {
+      showLoading();
+      update();
+      MyResponse response = await _foodsRepo.searchTodayFoods(searchQuery.value, 'yes');
+
+      hideLoading();
+      update();
+
+      if (response.statusCode == 1) {
+        FoodResponse parsedResponse = response.data;
+        if (parsedResponse.data == null) {
+          _foods = [];
+        } else {
+          _foods = parsedResponse.data;
+        }
+
+        //toast
+
+      } else {
+        print('${response.message}');
+        // AppSnackBar.errorSnackBar(response.status, response.message);
+        return;
+      }
+    } catch (e) {
+      rethrow;
+    }
+    update();
+  }
+
+  reciveSearchValue(String query){
+    searchQuery.value = query;
   }
 
    removeFromToday(int id ,String isToday) async {

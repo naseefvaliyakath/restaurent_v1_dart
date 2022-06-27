@@ -49,11 +49,29 @@ class FoodsRepo {
   }
 
 
-  Future<MyResponse> searchFoods(String query, String fdIsToday) async {
+  Future<MyResponse> searchTodayFoods(String query, String fdIsToday) async {
     // TODO: implement getNewsHeadline
 
     try {
-      final response = await _httpService.getRequestWithBody(SEARCH_FOOD,{'fdName':query,'fdIsToday': fdIsToday});
+      // fdIsToday has no effect
+      final response = await _httpService.getRequestWithBody(SEARCH_TODAY_FOOD,{'fdName':query,'fdIsToday': fdIsToday});
+      FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
+      return MyResponse(
+          statusCode: 1,
+          status: 'Success',
+          data: parsedResponse,
+          message: response.statusMessage.toString());
+    } on DioError catch (e) {
+      return MyResponse(statusCode: 0, status: 'Error', message: MyDioError.dioError(e));
+    }
+  }
+
+  Future<MyResponse> searchAllFoods(String query, String fdIsToday) async {
+    // TODO: implement getNewsHeadline
+
+    try {
+      // fdIsToday has no effect
+      final response = await _httpService.getRequestWithBody(SEARCH_ALL_FOOD,{'fdName':query,'fdIsToday': fdIsToday});
       FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
       return MyResponse(
           statusCode: 1,

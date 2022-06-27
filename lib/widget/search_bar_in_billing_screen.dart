@@ -4,9 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:restowrent_v_two/app_constans/app_colors.dart';
 
 class SearchBarInBillingScreen extends StatelessWidget {
-  final TextEditingController searchController;
+
   final Function onChanged;
-  const SearchBarInBillingScreen({Key? key, required this.searchController, required this.onChanged}) : super(key: key);
+  const SearchBarInBillingScreen({Key? key, required this.onChanged}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,6 @@ class SearchBarInBillingScreen extends StatelessWidget {
                   onChanged(vale);
                 },
 
-                controller: searchController,
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
                   icon:  Icon(Icons.search,size: 24.sp,color: AppColors.textGrey,),

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:restowrent_v_two/app_constans/api_link.dart';
 import 'package:restowrent_v_two/app_constans/hive_costants.dart';
@@ -15,6 +16,11 @@ import '../../../widget/snack_bar.dart';
 class HomeDeliveryController extends GetxController {
   final FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
   final MyLocalStorage _myLocalStorage = Get.find<MyLocalStorage>();
+  //for search field text
+  late TextEditingController searchTD;
+  //to convert search query to obs for debounce
+  var searchQuery = ''.obs;
+
 
 
 
@@ -22,6 +28,9 @@ class HomeDeliveryController extends GetxController {
   void onInit() async {
     await getTodayFoods();
     await initialLoadingBillFromHive();
+    searchTD = TextEditingController();
+    //only send search requst after typing 500 millisecond
+    debounce(searchQuery, (callback) => searchTodayFoods(),time: const Duration(milliseconds: 500));
     super.onInit();
   }
 
@@ -79,6 +88,41 @@ class HomeDeliveryController extends GetxController {
       rethrow;
     }
     update();
+  }
+
+  //searching foods in bill page
+  searchTodayFoods() async {
+    try {
+      showLoading();
+      update();
+      MyResponse response = await _foodsRepo.searchTodayFoods(searchQuery.value, 'yes');
+
+      hideLoading();
+      update();
+
+      if (response.statusCode == 1) {
+        FoodResponse parsedResponse = response.data;
+        if (parsedResponse.data == null) {
+          _foods = [];
+        } else {
+          _foods = parsedResponse.data;
+        }
+
+        //toast
+
+      } else {
+        print('${response.message}');
+        // AppSnackBar.errorSnackBar(response.status, response.message);
+        return;
+      }
+    } catch (e) {
+      rethrow;
+    }
+    update();
+  }
+
+  reciveSearchValue(String query){
+    searchQuery.value = query;
   }
 
   // bill manipulations

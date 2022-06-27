@@ -19,6 +19,7 @@ import '../../widget/billing_food_err_card.dart';
 import '../../widget/dining_screen/dining_billing_alerts.dart';
 import '../../widget/heading_rich_text.dart';
 import '../../widget/notification_icon.dart';
+import '../../widget/progress_btn_controle.dart';
 import '../../widget/search_bar_in_billing_screen.dart';
 import '../../widget/take_away_screen/billing_item_tile.dart';
 import '../../widget/take_away_screen/billing_table_heading.dart';
@@ -28,7 +29,7 @@ import '../../widget/take_away_screen/take_away_billing_alerts.dart';
 import '../../widget/totel_price_txt.dart';
 import '../../widget/white_button_with_icon.dart';
 
-enum ButtonState { init, loading, done }
+
 
 class DiningBillingScreen extends StatefulWidget {
   const DiningBillingScreen({Key? key}) : super(key: key);
@@ -38,60 +39,11 @@ class DiningBillingScreen extends StatefulWidget {
 }
 
 class _DiningBillingScreenState extends State<DiningBillingScreen> {
-  ButtonState state = ButtonState.init;
-  bool isAnimating = true;
+
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final isStreched = isAnimating || state == ButtonState.init;
-    final isDone = state == ButtonState.done;
 
-    Widget elevatedButton(color, text) {
-      return  GFButton(
-        onPressed: () async {
-          setState(() => state = ButtonState.loading);
-          await Future.delayed(const Duration(milliseconds: 2000));
-          setState(() => state = ButtonState.done);
-          await Future.delayed(const Duration(milliseconds: 2000));
-          setState(() => state = ButtonState.init);
-        },
-        textStyle: TextStyle(fontSize: 14.sp),
-        shape: GFButtonShape.pills,
-        color: color,
-        elevation: 4.sp,
-        child: FittedBox(
-          child: Text(
-            text,
-            softWrap: false,
-            overflow: TextOverflow.clip,
-            maxLines: 1,
-            style: TextStyle(color: Colors.white),
-          ),
-
-        ),
-      );
-    }
-
-    Widget buildSmallButton(bool isDone) {
-      const color = Colors.green;
-      return Container(
-        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-        child: isDone
-            ? Icon(
-                Icons.done,
-                size: 30.sp,
-                color: Colors.white,
-              )
-            : Center(
-                child: SizedBox(
-                    width: 30.w,
-                    height: 30.h,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                    ))),
-      );
-    }
 
     return WillPopScope(
       onWillPop: () async {
@@ -128,9 +80,19 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.arrow_back,
-                                size: 24.sp,
+                              IconButton(
+                                icon: Icon(
+                                  Icons.arrow_back,
+                                  size: 24.sp,
+                                ),
+                                onPressed: () {
+                                  if (!Get.find<DiningBillingController>().billingItems.isEmpty) {
+                                    DiningBillingAlert.askConfirm(context);
+                                  } else {
+                                    Get.back();
+                                  }
+                                },
+                                splashRadius: 24.sp,
                               ),
                               15.horizontalSpace,
                               const HeadingRichText(name: 'Dining billing'),
@@ -146,7 +108,11 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                     Row(
                       children: [
                         //search bar
-                        SearchBarInBillingScreen(searchController: TextEditingController(), onChanged: (){},),
+                        SearchBarInBillingScreen(
+                          onChanged: (value) {
+                            ctrl.reciveSearchValue(value);
+                          },
+                        ),
                         //category
                         CategoryDropDown()
                       ],
@@ -251,14 +217,11 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Flexible(
-                                child: AnimatedContainer(
-                                  width: state == ButtonState.init ? 150.w : 45.w,
-                                  //width: 150.w,
-                                  height: 40,
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeIn,
-                                  onEnd: () => setState(() => isAnimating = !isAnimating),
-                                  child: isStreched ? elevatedButton(Color(0xff4caf50), 'Order') : buildSmallButton(isDone),
+                                child:ProgressBtnController(
+                                  function: () async {
+
+                                  },
+                                  text: 'Order',
                                 ),
                               ),
                               3.horizontalSpace,

@@ -47,6 +47,17 @@ class CreateTableScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        //back arrow
+                        IconButton(
+                          icon: Icon(
+                            Icons.arrow_back,
+                            size: 24.sp,
+                          ),
+                          onPressed: () {
+                            Get.back();
+                          },
+                          splashRadius: 24.sp,
+                        ),
                         // heading my restawrent
                         const HeadingRichText(name: 'Create your table'),
                         //notification

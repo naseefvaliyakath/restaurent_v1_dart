@@ -31,6 +31,7 @@ class UpdateFoodController extends GetxController {
   late TextEditingController fdHalfPriceTD;
   late TextEditingController fdQtrPriceTD;
 
+
   File? file;
   bool priceToggle = false;
   bool imageToggle = false;
@@ -48,6 +49,7 @@ class UpdateFoodController extends GetxController {
     fdThreeBiTwoPrsTD = TextEditingController();
     fdHalfPriceTD = TextEditingController();
     fdQtrPriceTD = TextEditingController();
+
     await  getCategory();
   }
 

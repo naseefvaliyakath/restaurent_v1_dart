@@ -28,7 +28,16 @@ class OnlineBookingScreen extends StatelessWidget {
             SliverAppBar(
               floating: true,
               snap: true,
-              leading: Icon(Icons.arrow_back,size: 24.sp,),
+              leading:  IconButton(
+                icon: Icon(
+                  Icons.arrow_back,
+                  size: 24.sp,
+                ),
+                onPressed: () {
+                  Get.back();
+                },
+                splashRadius: 24.sp,
+              ),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

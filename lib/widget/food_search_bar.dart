@@ -2,8 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../app_constans/app_colors.dart';
+
 class FoodSearchBar extends StatelessWidget {
-  const FoodSearchBar({Key? key}) : super(key: key);
+  final Function onChanged;
+  const FoodSearchBar({Key? key, required this.onChanged}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,25 +19,20 @@ class FoodSearchBar extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: 8.0.w, vertical: 8.h),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.search,
-                    color: Colors.grey,
-                    size: 24.sp,
-                  ),
-                  Padding(
-                    padding:
-                    EdgeInsets.only(left: 10.0.w),
-                    child: Text(
-                      "Search",
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  )
-                ],
+              child:TextField(
+                onChanged: (vale){
+                  onChanged(vale);
+                },
+
+                textAlignVertical: TextAlignVertical.center,
+                decoration: InputDecoration(
+                  icon:  Icon(Icons.search,size: 24.sp,color: AppColors.textGrey,),
+                  border: InputBorder.none,
+                  hintText: 'Search here ...',
+                  hintStyle: TextStyle(color: AppColors.textGrey,fontSize: 16.sp),
+                  isDense: true,                      // Added this
+                  contentPadding: EdgeInsets.all(3),  // Added this
+                ),
               ),
             ),
           ),

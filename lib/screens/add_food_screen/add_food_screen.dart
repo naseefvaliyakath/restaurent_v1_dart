@@ -65,7 +65,16 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Icon(Icons.arrow_back),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.arrow_back,
+                                          size: 24.sp,
+                                        ),
+                                        onPressed: () {
+                                          Get.back();
+                                        },
+                                        splashRadius: 24.sp,
+                                      ),
                                       15.horizontalSpace,
                                       const HeadingRichText(name: 'Add Your Food'),
                                     ],
