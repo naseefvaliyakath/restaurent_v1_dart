@@ -1,5 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:getwidget/components/search_bar/gf_search_bar.dart';
@@ -686,7 +687,7 @@ class _HomePageState extends State<HomePage> {
   }
 }*/
 
-class ImageShowing extends StatefulWidget {
+/*class ImageShowing extends StatefulWidget {
   const ImageShowing({Key? key}) : super(key: key);
 
   @override
@@ -739,4 +740,124 @@ class _ImageShowingState extends State<ImageShowing> {
       ),
     );
   }
+}*/
+
+import 'package:getwidget/getwidget.dart';
+import 'package:ticket_widget/ticket_widget.dart';
+
+
+
+class Ticket extends StatefulWidget {
+
+
+
+   Ticket({Key? key}) : super(key: key);
+
+  @override
+  State<Ticket> createState() => _TicketState();
 }
+
+class _TicketState extends State<Ticket> {
+
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    bool showBlur = false;
+    Widget alertWidget;
+    return Scaffold(
+      backgroundColor: Colors.black54,
+      body: TicketWidget(
+        width: 250,
+        height: 300,
+        isCornerRounded: true,
+        padding: EdgeInsets.all(20),
+        child: Container(
+          child: Text('naseef'),
+        ),
+      ),
+    );
+
+  }
+}
+
+/*
+Get.defaultDialog(
+title: '',
+content: TicketWidget(
+width: 1.sw * 0.7,
+height: 1.sh * 0.6,
+isCornerRounded: true,
+padding: EdgeInsets.all(20),
+child: Column(
+mainAxisSize: MainAxisSize.min,
+children: [
+BigText(text: 'KOT', color: Colors.black),
+Row(
+mainAxisAlignment: MainAxisAlignment.spaceBetween,
+children: [
+SmallText(
+text: 'OID : 20222036',
+color: Colors.black54,
+size: 10.sp,
+),
+SmallText(
+text: 'DATE : 01-05-2022',
+color: Colors.black54,
+size: 10.sp,
+),
+],
+),
+3.verticalSpace,
+HorezondalDivider(color: Colors.black, height: 1.sp),
+SizedBox(
+width: double.maxFinite,
+child: Column(
+mainAxisSize: MainAxisSize.min,
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+MidText(
+text: 'TYPE : TAKE AWAY',
+size: 13.sp,
+color: Colors.black,
+),
+MidText(
+text: 'TABLE : 0',
+size: 13.sp,
+color: Colors.black,
+),
+],
+),
+),
+3.verticalSpace,
+HorezondalDivider(color: Colors.black, height: 1.sp),
+ListView.builder(
+shrinkWrap: true,
+itemBuilder: (context, index) {
+return KotItemTile(
+index: index,
+slNumber: index + 1,
+itemName: ctrl.billingItems[index]['name'],
+qnt: ctrl.billingItems[index]['qnt'],
+kitchenNote: ctrl.billingItems[index]['ktNote'],
+);
+},
+itemCount: ctrl.billingItems.length,
+),
+],
+),
+),
+backgroundColor: Colors.transparent,
+cancel: AppMIniButton(
+bgColor: Colors.green,
+text: 'Print',
+onTap: () {},
+),
+confirm: AppMIniButton(
+bgColor: AppColors.mainColor,
+text: 'Close',
+onTap: () {Get.back();},
+),
+radius: 30);
+*/

@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'big_text.dart';
 
 class TotelPriceTxt extends StatelessWidget {
-  final int price;
+  final double price;
   const TotelPriceTxt({Key? key, required this.price}) : super(key: key);
 
   @override

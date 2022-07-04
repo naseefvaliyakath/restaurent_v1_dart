@@ -7,18 +7,24 @@ import '../app_constans/app_colors.dart';
 import 'big_text.dart';
 
 class DeleteBillingAlertEditBillBody extends StatelessWidget {
-
-
   final Function qntDecrement;
   final Function qntIncrement;
   final Function priceDecrement;
   final Function priceIncrement;
   final int count;
-  final int price;
+  final double price;
   final TextEditingController ktTextCtrl;
 
-
-  const DeleteBillingAlertEditBillBody({Key? key, required this.qntDecrement, required this.qntIncrement, required this.priceDecrement, required this.priceIncrement, required this.count, required this.price, required this.ktTextCtrl}) : super(key: key);
+  const DeleteBillingAlertEditBillBody(
+      {Key? key,
+      required this.qntDecrement,
+      required this.qntIncrement,
+      required this.priceDecrement,
+      required this.priceIncrement,
+      required this.count,
+      required this.price,
+      required this.ktTextCtrl})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +68,8 @@ class DeleteBillingAlertEditBillBody extends StatelessWidget {
                           Icons.add_circle,
                         ),
                         onPressed: () {
-                          qntIncrement();;
+                          qntIncrement();
+                          ;
                         },
                         iconSize: 24.w,
                         color: Colors.black54,
@@ -88,7 +95,8 @@ class DeleteBillingAlertEditBillBody extends StatelessWidget {
                           Icons.remove_circle,
                         ),
                         onPressed: () {
-                          priceDecrement();;
+                          priceDecrement();
+                          ;
                         },
                         iconSize: 24.w,
                         color: Colors.black54,
@@ -123,6 +131,7 @@ class DeleteBillingAlertEditBillBody extends StatelessWidget {
           hintText: 'Add Kitchen Text',
           textEditingController: ktTextCtrl,
           maxLIne: 2,
+          onChange: (_) {},
         ),
       ],
     );

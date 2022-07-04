@@ -16,7 +16,7 @@ class DeliveryBoySelectScreen extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const HorezondalDivider(),
+         HorezondalDivider(),
         10.verticalSpace,
         Wrap(
           direction: Axis.horizontal,

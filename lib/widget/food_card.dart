@@ -8,7 +8,7 @@ import 'package:restowrent_v_two/widget/big_text.dart';
 class FoodCard extends StatelessWidget {
   final String img;
   final String name;
-  final int price;
+  final double price;
   final String today;
 
   const FoodCard(

@@ -11,6 +11,7 @@ class TextFieldWidget extends StatelessWidget {
   final double? width;
   final double? hintSize;
   final bool readonly;
+  final Function onChange;
   final bool? isDens;
   final bool autoFocus;
   final TextInputType keybordType;
@@ -22,7 +23,7 @@ class TextFieldWidget extends StatelessWidget {
       this.maxLIne = 1,
       this.readonly = false,
       required this.borderRadius, this.isDens = false, this.width, this.hintSize, this.autoFocus = false,
-      this.keybordType = TextInputType.text})
+      this.keybordType = TextInputType.text, required this.onChange})
       : super(key: key);
 
   @override
@@ -35,6 +36,9 @@ class TextFieldWidget extends StatelessWidget {
         maxLines: maxLIne,
         readOnly: readonly,
         autofocus: autoFocus,
+        onChanged: (value){
+          onChange(value);
+        },
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle:  TextStyle(color: AppColors.textGrey,fontSize: hintSize ?? 18.w,),

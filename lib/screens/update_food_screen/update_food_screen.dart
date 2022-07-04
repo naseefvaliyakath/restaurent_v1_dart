@@ -50,10 +50,10 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
     int id = Get.arguments['id'] ?? 0;
     String fdName = Get.arguments['fdName'] ?? '';
     String fdCategory = Get.arguments['fdCategory'] ?? '';
-    int fdFullPrice = Get.arguments['fdFullPrice'] ?? 0;
-    int fdThreeBiTwoPrsPrice = Get.arguments['fdThreeBiTwoPrsPrice'] ?? 0;
-    int fdHalfPrice = Get.arguments['fdHalfPrice'] ?? 0;
-    int fdQtrPrice = Get.arguments['fdQtrPrice'] ?? 0;
+    double fdFullPrice = Get.arguments['fdFullPrice'] ?? 0;
+    double fdThreeBiTwoPrsPrice = Get.arguments['fdThreeBiTwoPrsPrice'] ?? 0;
+    double fdHalfPrice = Get.arguments['fdHalfPrice'] ?? 0;
+    double fdQtrPrice = Get.arguments['fdQtrPrice'] ?? 0;
     String fdIsLoos = Get.arguments['fdIsLoos'] ?? '';
     int cookTime = Get.arguments['cookTime'] ?? 0;
     int fdShopId = Get.arguments['fdShopId'] ?? 0;
@@ -90,7 +90,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                     scrollDirection: Axis.vertical,
                     children: [
                       Container(
-                        height: 1.sh,
+                        height: double.maxFinite,
                         width: double.maxFinite,
                         padding: EdgeInsets.symmetric(horizontal: 10.w),
                         child: Column(
@@ -140,17 +140,14 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: ctrl.category!.length,
                                 itemBuilder: (BuildContext ctx, index) {
-                                  return InkWell(
-                                    onTap: () {
+                                  return Catogeries(
+                                    onTap: (){
                                       ctrl.setCategoryTappedIndex(index);
                                       fdCategory = ctrl.category![index].catName;
                                       print(fdCategory);
                                     },
-                                    //category tile
-                                    child: Catogeries(
-                                      color: ctrl.tappedIndex == index ? AppColors.mainColor_2 : Colors.white,
-                                      text: ctrl.category![index].catName,
-                                    ),
+                                    color: ctrl.tappedIndex == index ? AppColors.mainColor_2 : Colors.white,
+                                    text: ctrl.category![index].catName,
                                   );
                                 },
                               ),
@@ -217,7 +214,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                             TextFieldWidget(
                               hintText: 'Enter Your Food Name ....',
                               textEditingController: ctrl.fdNameTD,
-                              borderRadius: 15.r,
+                              borderRadius: 15.r, onChange: (_) {},
                             ),
 
                             20.verticalSpace,
@@ -243,7 +240,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                                 keybordType: TextInputType.number,
                                 hintText: 'Enter Your Food Price ....',
                                 textEditingController: ctrl.fdPriceTD,
-                                borderRadius: 15.r,
+                                borderRadius: 15.r, onChange: (_) {},
                               ),
                               secondChild: Row(
                                 children: [
@@ -252,7 +249,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                                       keybordType: TextInputType.number,
                                       hintText: 'Full',
                                       textEditingController: ctrl.fdFullPriceTD,
-                                      borderRadius: 15.r,
+                                      borderRadius: 15.r, onChange: (_) {},
                                     ),
                                   ),
                                   Expanded(
@@ -260,7 +257,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                                       keybordType: TextInputType.number,
                                       hintText: '3/4',
                                       textEditingController: ctrl.fdThreeBiTwoPrsTD,
-                                      borderRadius: 15.r,
+                                      borderRadius: 15.r, onChange: (_) {},
                                     ),
                                   ),
                                   Expanded(
@@ -268,7 +265,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                                       keybordType: TextInputType.number,
                                       hintText: 'Half',
                                       textEditingController: ctrl.fdHalfPriceTD,
-                                      borderRadius: 15.r,
+                                      borderRadius: 15.r, onChange: (_) {},
                                     ),
                                   ),
                                   Expanded(
@@ -276,7 +273,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                                       keybordType: TextInputType.number,
                                       hintText: 'Qartar',
                                       textEditingController: ctrl.fdQtrPriceTD,
-                                      borderRadius: 15.r,
+                                      borderRadius: 15.r, onChange: (_) {},
                                     ),
                                   ),
                                 ],

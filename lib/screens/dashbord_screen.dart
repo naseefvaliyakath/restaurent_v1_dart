@@ -42,7 +42,7 @@ class DashBordScreen extends StatelessWidget {
                 //notification
                 InkWell(
                   onTap: () {
-                    Get.to(ImageShowing());
+                    Get.to(Ticket());
 
                   },
                   child: Container(

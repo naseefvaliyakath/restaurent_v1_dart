@@ -171,13 +171,13 @@ class DiningBillingAlert{
         await Get.find<DiningBillingController>().clearBillInHive();
         Navigator.pop(context, true);
       },
-      btnCancelIcon: Icons.clear_all,
+
       btnCancelText: ' No',
       btnOkOnPress: () async {
         await Get.find<DiningBillingController>().saveBillInHive();
         Navigator.pop(context, true);
       },
-      btnOkIcon: Icons.save,
+
       btnOkText: ' Yes',
     ).show();
   }

@@ -105,15 +105,10 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                               itemBuilder: (BuildContext ctx, index) {
                                 //categorys
                                 if (index < ctrl.category!.length) {
-                                  return InkWell(
-                                    onTap: () {
-                                      ctrl.setCategoryTappedIndex(index);
-                                    },
-                                    //category tile
-                                    child: Catogeries(
-                                      color: ctrl.tappedIndex == index ? AppColors.mainColor_2 : Colors.white,
-                                      text: ctrl.category![index].catName.toUpperCase(),
-                                    ),
+                                  return Catogeries(
+                                    onTap: ()=>ctrl.setCategoryTappedIndex(index),
+                                    color: ctrl.tappedIndex == index ? AppColors.mainColor_2 : Colors.white,
+                                    text: ctrl.category![index].catName.toUpperCase(),
                                   );
                                 }
 
@@ -184,7 +179,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                           TextFieldWidget(
                             hintText: 'Enter Your Food Name ....',
                             textEditingController: ctrl.fdNameTD,
-                            borderRadius: 15.r,
+                            borderRadius: 15.r, onChange: (_) {},
                           ),
 
                           20.verticalSpace,
@@ -211,7 +206,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                               keybordType: TextInputType.number,
                               hintText: 'Enter Your Food Price ....',
                               textEditingController: ctrl.fdPriceTD,
-                              borderRadius: 15.r,
+                              borderRadius: 15.r, onChange: (_) {},
                             ),
                             secondChild: Row(
                               children: [
@@ -220,7 +215,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     keybordType: TextInputType.number,
                                     hintText: 'Full',
                                     textEditingController: ctrl.fdFullPriceTD,
-                                    borderRadius: 15.r,
+                                    borderRadius: 15.r, onChange: (_) {},
                                   ),
                                 ),
                                 Expanded(
@@ -228,7 +223,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     keybordType: TextInputType.number,
                                     hintText: '3/4',
                                     textEditingController: ctrl.fdThreeBiTwoPrsTD,
-                                    borderRadius: 15.r,
+                                    borderRadius: 15.r, onChange: (_) {},
                                   ),
                                 ),
                                 Expanded(
@@ -236,7 +231,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     keybordType: TextInputType.number,
                                     hintText: 'Half',
                                     textEditingController: ctrl.fdHalfPriceTD,
-                                    borderRadius: 15.r,
+                                    borderRadius: 15.r, onChange: (_) {},
                                   ),
                                 ),
                                 Expanded(
@@ -244,7 +239,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     keybordType: TextInputType.number,
                                     hintText: 'Qartar',
                                     textEditingController: ctrl.fdQtrPriceTD,
-                                    borderRadius: 15.r,
+                                    borderRadius: 15.r, onChange: (_) {},
                                   ),
                                 ),
                               ],

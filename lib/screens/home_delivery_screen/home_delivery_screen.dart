@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/components/button/gf_button.dart';
 import 'package:getwidget/shape/gf_button_shape.dart';
-import 'package:restowrent_v_two/screens/order_view%20_screen.dart';
+import 'package:restowrent_v_two/screens/order_view_screen/order_view%20_screen.dart';
 import '../../app_constans/app_colors.dart';
 import '../../widget/app_alerts.dart';
 import '../../widget/app_min_button.dart';
@@ -18,7 +18,7 @@ import '../../widget/home_delivery/home_delivery_billing_alerts.dart';
 import '../../widget/notification_icon.dart';
 import '../../widget/progress_btn_controle.dart';
 import '../../widget/search_bar_in_billing_screen.dart';
-import '../../widget/take_away_screen/billing_item_tile.dart';
+import '../../widget/billing_item_tile.dart';
 import '../../widget/take_away_screen/billing_table_heading.dart';
 import '../../widget/take_away_screen/category_drop_down.dart';
 import '../../widget/billing_food_err_card.dart';
@@ -88,7 +88,11 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                                   size: 24.sp,
                                 ),
                                 onPressed: () {
-                                  Get.back();
+                                  if (Get.find<HomeDeliveryController>().billingItems.isNotEmpty) {
+                                    HomeDeliveryBillingAlert.askConfirm(context);
+                                  } else {
+                                    Get.back();
+                                  }
                                 },
                                 splashRadius: 24.sp,
                               ),
@@ -216,8 +220,9 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                               Flexible(
                                 child: ProgressBtnController(
                                   function: () async {
-
+                                    await  ctrl.sendOrder();
                                   },
+                                  ctrl: ctrl,
                                   text: 'Order',
                                 ),
                               ),
@@ -227,7 +232,7 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                                   bgColor: Color(0xffee588f),
                                   text: 'Settle',
                                   onTap: () {
-                                    billingCashScreenAlert(context);
+                                    billingCashScreenAlert(ctrl: ctrl, context: context);
                                   },
                                 ),
                               ),
@@ -243,8 +248,8 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                               Flexible(
                                 child: AppMIniButton(
                                   bgColor: AppColors.mainColor,
-                                  text: 'Quick Pay',
-                                  onTap: () {},
+                                  text: 'KOT',
+                                  onTap: () { ctrl.kotDialogBox();},
                                 ),
                               ),
                               3.horizontalSpace,

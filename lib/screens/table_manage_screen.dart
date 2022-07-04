@@ -12,7 +12,6 @@ import '../widget/table_manage_screen/table_chair_widget_test.dart';
 import 'create_table_screen/create_table_binding.dart';
 import 'create_table_screen/create_table_screen.dart';
 
-
 class TableManageScreen extends StatelessWidget {
   TableManageScreen({Key? key}) : super(key: key);
 
@@ -36,7 +35,7 @@ class TableManageScreen extends StatelessWidget {
             SliverAppBar(
               floating: true,
               pinned: true,
-              leading:  IconButton(
+              leading: IconButton(
                 icon: Icon(
                   Icons.arrow_back,
                   size: 24.sp,
@@ -52,10 +51,7 @@ class TableManageScreen extends StatelessWidget {
                 overflow: TextOverflow.fade,
                 softWrap: false,
               ),
-              titleTextStyle: TextStyle(
-                  fontSize: 26.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600),
+              titleTextStyle: TextStyle(fontSize: 26.sp, color: Colors.black, fontWeight: FontWeight.w600),
               actions: [
                 Badge(
                   badgeColor: Colors.red,
@@ -67,7 +63,6 @@ class TableManageScreen extends StatelessWidget {
                       )),
                 ),
               ],
-
               bottom: PreferredSize(
                 preferredSize: Size.fromHeight(60.h),
                 child: Padding(
@@ -81,16 +76,11 @@ class TableManageScreen extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           itemCount: categoryCard.length,
                           itemBuilder: (BuildContext ctx, index) {
-                            return InkWell(
+                            return OrderCategory(
+                              color: tappedIndex == index ? AppColors.mainColor_2 : Colors.white,
+                              circleColor: categoryCard[index]['circleColor'],
+                              text: categoryCard[index]['text'],
                               onTap: () {},
-                              //category tile
-                              child: OrderCategory(
-                                color: tappedIndex == index
-                                    ? AppColors.mainColor_2
-                                    : Colors.white,
-                                circleColor: categoryCard[index]['circleColor'],
-                                text: categoryCard[index]['text'],
-                              ),
                             );
                           },
                         ),
@@ -115,7 +105,6 @@ class TableManageScreen extends StatelessWidget {
                     TableChairWidgetTest(),
                     TableChairWidgetTest(),
                     TableChairWidgetTest(),
-
                   ]),
             ),
           ],

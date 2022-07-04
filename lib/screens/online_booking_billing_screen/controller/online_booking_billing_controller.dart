@@ -11,25 +11,35 @@ import '../../../commoen/dio_error.dart';
 import '../../../model/foods_respons/food_response.dart';
 import '../../../model/foods_respons/foods.dart';
 import '../../../services/service.dart';
+import '../../../socket/socket_controller.dart';
+import '../../../widget/kot_bill_show_alert.dart';
 import '../../../widget/snack_bar.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class OnlineBookingBillingController extends GetxController {
+  late IO.Socket socket;
+  final SocketController _socketCtrl = Get.find<SocketController>();
   final FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
   final MyLocalStorage _myLocalStorage = Get.find<MyLocalStorage>();
-    //for search field text
+
+  //for search field text
   late TextEditingController searchTD;
+
   //to convert search query to obs for debounce
   var searchQuery = ''.obs;
 
-
+  //for progress button if true it show cross else show tick
+  final _socketError = false.obs;
+  RxBool get socketError => _socketError;
 
   @override
   void onInit() async {
+    socket = _socketCtrl.socket;
     await getTodayFoods();
     await initialLoadingBillFromHive();
-        searchTD = TextEditingController();
+    searchTD = TextEditingController();
     //only send search requst after typing 500 millisecond
-    debounce(searchQuery, (callback) => searchTodayFoods(),time: const Duration(milliseconds: 500));
+    debounce(searchQuery, (callback) => searchTodayFoods(), time: const Duration(milliseconds: 500));
     super.onInit();
   }
 
@@ -42,9 +52,9 @@ class OnlineBookingBillingController extends GetxController {
 
   int get count => _count;
 
-  int _price = 0;
+  double _price = 0;
 
-  int get price => _price;
+  double get price => _price;
 
   // billing list
   final List<dynamic> _billingItems = [];
@@ -56,8 +66,66 @@ class OnlineBookingBillingController extends GetxController {
   bool isVisibleEditBillItem = false;
 
   // totel price in bill
-  int _totelPrice = 0;
-  int get totelPrice => _totelPrice;
+  double _totelPrice = 0;
+
+  double get totelPrice => _totelPrice;
+
+  ////socket io////
+
+  Future<void> sendOrder() async {
+    var data = {"fdShopId": 10, "fdOrder": _billingItems, "fdOrderStatus": "Pending", "fdOrderType": "Online"};
+    if (_billingItems.isEmpty) {
+      _socketError.value = true;
+      AppSnackBar.errorSnackBar('No item added', 'No bills added');
+    } else {
+      try {
+        _socketError.value = false;
+        update();
+        //delay for progress btn
+        await Future.delayed(const Duration(milliseconds: 500));
+        //check interet coectio then only coect else it try to coect again ad again
+        socket.connect();
+        //check socket is connected or not
+        if (!socket.connected) {
+          _socketError.value = true;
+          AppSnackBar.errorSnackBar('Error', 'Something went to wrong !');
+          print('socket not connected');
+        } else {
+          socket.emitWithAck('kitchen_orders', data, ack: (dataAck) {
+            if (dataAck == 'success') {
+              print('suceess');
+              _billingItems.clear();
+              clearBillInHive();
+              _socketError.value = false;
+              update();
+            } else {
+              if (dataAck == 'error') {
+                _socketError.value = true;
+                update();
+                AppSnackBar.errorSnackBar('Error', 'Something went to wrong !');
+              } else {
+                _socketError.value = true;
+                update();
+                AppSnackBar.errorSnackBar('Error', 'Something went to wrong !');
+              }
+            }
+          });
+        }
+      } catch (e) {
+        _socketError.value = true;
+        update();
+        rethrow;
+      }
+    }
+  }
+
+  ///socket io ////
+
+
+  //kot printing dialog
+  kotDialogBox() {
+    showKotBillAlert(type: 'ONLINE BOOKING', billingItems: _billingItems);
+  }
 
   getTodayFoods() async {
     try {
@@ -69,22 +137,22 @@ class OnlineBookingBillingController extends GetxController {
       update();
 
       if (response.statusCode == 1) {
-            FoodResponse parsedResponse = response.data;
-            if (parsedResponse.data == null) {
-              _foods = [];
-            } else {
-              _foods = parsedResponse.data;
-            }
+        FoodResponse parsedResponse = response.data;
+        if (parsedResponse.data == null) {
+          _foods = [];
+        } else {
+          _foods = parsedResponse.data;
+        }
 
-            //toast
+        //toast
 
-          } else {
-            print('${response.message}');
-            AppSnackBar.errorSnackBar(response.status, response.message);
-            return;
-          }
+      } else {
+        print('${response.message}');
+        AppSnackBar.errorSnackBar(response.status, response.message);
+        return;
+      }
     } catch (e) {
-     rethrow;
+      rethrow;
     }
     update();
   }
@@ -120,15 +188,14 @@ class OnlineBookingBillingController extends GetxController {
     update();
   }
 
-  reciveSearchValue(String query){
+  reciveSearchValue(String query) {
     searchQuery.value = query;
   }
 
   // bill manipulations
 
-  addFoodToBill(int fdId, String name, int qnt, int price, String ktNote) {
-
-    try{
+  addFoodToBill(int fdId, String name, int qnt, double price, String ktNote) {
+    try {
       //checking if the food alrady added
       var values = _billingItems.map((items) => items['fdId']).toList();
 
@@ -144,19 +211,15 @@ class OnlineBookingBillingController extends GetxController {
         _billingItems.add({'fdId': fdId, 'name': name, 'qnt': qnt, 'price': price, 'ktNote': ktNote});
       }
       find_totelPrice();
-
-    }
-    catch(e){
+    } catch (e) {
       rethrow;
     }
-
 
     update();
   }
 
   //update bill qnt and pricde
-  updateFodToBill(int index, int qnt, int price, String ktNote) {
-
+  updateFodToBill(int index, int qnt, double price, String ktNote) {
     try {
       _billingItems[index]['qnt'] = qnt;
       _billingItems[index]['price'] = price;
@@ -186,20 +249,20 @@ class OnlineBookingBillingController extends GetxController {
     try {
       billingItems.clear();
     } catch (e) {
-     rethrow;
+      rethrow;
     }
     update();
   }
 
   // finding totel price
-  
-  find_totelPrice(){
+
+  find_totelPrice() {
     try {
-      int totalScores = 0;
-      _billingItems.forEach((item){
-            int result = item["price"] * item["qnt"];
-            totalScores +=result;
-          });
+      double totalScores = 0;
+      _billingItems.forEach((item) {
+        double result = item["price"] * item["qnt"];
+        totalScores += result;
+      });
       _totelPrice = totalScores;
       update();
     } catch (e) {
@@ -207,8 +270,7 @@ class OnlineBookingBillingController extends GetxController {
     }
   }
 
-
-  saveBillInHive(){
+  saveBillInHive() {
     try {
       _myLocalStorage.setData(HIVE_ONLINE_BOOKING_BILL, _billingItems);
     } catch (e) {
@@ -216,15 +278,15 @@ class OnlineBookingBillingController extends GetxController {
     }
   }
 
-  Future readBillInHive(){
-   try {
-     return _myLocalStorage.readData(HIVE_ONLINE_BOOKING_BILL);
-   } catch (e) {
-     rethrow;
-   }
+  Future readBillInHive() {
+    try {
+      return _myLocalStorage.readData(HIVE_ONLINE_BOOKING_BILL);
+    } catch (e) {
+      rethrow;
+    }
   }
 
-  Future? clearBillInHive(){
+  Future? clearBillInHive() {
     try {
       return _myLocalStorage.removeData(HIVE_ONLINE_BOOKING_BILL);
     } catch (e) {
@@ -236,25 +298,21 @@ class OnlineBookingBillingController extends GetxController {
     try {
       List<dynamic>? billFromHive = [];
       billFromHive = await readBillInHive();
-      if(billFromHive != null){
+      if (billFromHive != null) {
         // if data in hive
-        if(billFromHive.isNotEmpty){
+        if (billFromHive.isNotEmpty) {
           _billingItems.addAll(billFromHive);
           update();
-        }
-        else{
+        } else {
           _billingItems.clear();
         }
-      }
-      else{
-
+      } else {
         return;
       }
     } catch (e) {
       rethrow;
     }
   }
-
 
   // to visible and hide edit options in delete popup
   setIsVisibleEditBillItem(bool val) {
@@ -269,7 +327,7 @@ class OnlineBookingBillingController extends GetxController {
   }
 
   //used in billing popup start
-  updatePriceFirstTime(int price) {
+  updatePriceFirstTime(double price) {
     _price = price;
     update();
   }

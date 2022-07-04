@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:getwidget/components/button/gf_button.dart';
 import 'package:getwidget/shape/gf_button_shape.dart';
 import 'package:restowrent_v_two/screens/online_booking_billing_screen/controller/online_booking_billing_controller.dart';
-import 'package:restowrent_v_two/screens/order_view%20_screen.dart';
+import 'package:restowrent_v_two/screens/order_view_screen/order_view%20_screen.dart';
 import '../../app_constans/app_colors.dart';
 import '../../widget/app_alerts.dart';
 import '../../widget/app_min_button.dart';
@@ -18,15 +18,13 @@ import '../../widget/notification_icon.dart';
 import '../../widget/online_booking_screen/online_billing_alerts.dart';
 import '../../widget/progress_btn_controle.dart';
 import '../../widget/search_bar_in_billing_screen.dart';
-import '../../widget/take_away_screen/billing_item_tile.dart';
+import '../../widget/billing_item_tile.dart';
 import '../../widget/take_away_screen/billing_table_heading.dart';
 import '../../widget/take_away_screen/category_drop_down.dart';
 import '../../widget/take_away_screen/clear_all_bill_widget.dart';
 import '../../widget/take_away_screen/take_away_billing_alerts.dart';
 import '../../widget/totel_price_txt.dart';
 import '../../widget/white_button_with_icon.dart';
-
-
 
 class OnlineBookingBillingScreen extends StatefulWidget {
   const OnlineBookingBillingScreen({Key? key}) : super(key: key);
@@ -36,12 +34,8 @@ class OnlineBookingBillingScreen extends StatefulWidget {
 }
 
 class _OnlineBookingBillingScreenState extends State<OnlineBookingBillingScreen> {
-
-
   @override
   Widget build(BuildContext context) {
-
-
     return WillPopScope(
       onWillPop: () async {
         if (!Get.find<OnlineBookingBillingController>().billingItems.isEmpty) {
@@ -85,7 +79,6 @@ class _OnlineBookingBillingScreenState extends State<OnlineBookingBillingScreen>
                                 onPressed: () {
                                   if (!Get.find<OnlineBookingBillingController>().billingItems.isEmpty) {
                                     OnlineBookingBillingAlert.askConfirm(context);
-
                                   } else {
                                     Get.back();
                                   }
@@ -106,7 +99,9 @@ class _OnlineBookingBillingScreenState extends State<OnlineBookingBillingScreen>
                     Row(
                       children: [
                         //search bar
-                        SearchBarInBillingScreen(onChanged: (value){ctrl.reciveSearchValue(value);}),
+                        SearchBarInBillingScreen(onChanged: (value) {
+                          ctrl.reciveSearchValue(value);
+                        }),
                         //category
                         CategoryDropDown()
                       ],
@@ -213,9 +208,10 @@ class _OnlineBookingBillingScreenState extends State<OnlineBookingBillingScreen>
                               Flexible(
                                 child: ProgressBtnController(
                                   function: () async {
-
+                                    await ctrl.sendOrder();
                                   },
                                   text: 'Order',
+                                  ctrl: ctrl,
                                 ),
                               ),
                               3.horizontalSpace,
@@ -224,7 +220,7 @@ class _OnlineBookingBillingScreenState extends State<OnlineBookingBillingScreen>
                                   bgColor: Color(0xffee588f),
                                   text: 'Settle',
                                   onTap: () {
-                                    billingCashScreenAlert(context);
+                                    billingCashScreenAlert(ctrl: ctrl, context: context);
                                   },
                                 ),
                               ),
@@ -240,8 +236,8 @@ class _OnlineBookingBillingScreenState extends State<OnlineBookingBillingScreen>
                               Flexible(
                                 child: AppMIniButton(
                                   bgColor: AppColors.mainColor,
-                                  text: 'Quick Pay',
-                                  onTap: () {},
+                                  text: 'KOT',
+                                  onTap: () { ctrl.kotDialogBox();},
                                 ),
                               ),
                               3.horizontalSpace,

@@ -17,7 +17,6 @@ class FoodResponse{
   int totalSize;
 
 
-
   @JsonKey(name : "data")
   List<Foods>? data;
 

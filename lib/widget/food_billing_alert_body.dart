@@ -13,7 +13,7 @@ class FoodBillingAlertBody extends StatelessWidget {
   final Function priceDecrement;
   final Function priceIncrement;
   final int count;
-  final int price;
+  final double price;
   final TextEditingController ktTextCtrl;
   final Function addFoodToBill;
 
@@ -129,7 +129,7 @@ class FoodBillingAlertBody extends StatelessWidget {
             borderRadius: 10.r,
             hintText: 'Add Kitchen Text',
             textEditingController: ktTextCtrl,
-            maxLIne: 2,
+            maxLIne: 2, onChange: (_) {},
           ),
           10.verticalSpace,
           AppMIniButton(text: 'Add Item', bgColor: AppColors.mainColor,

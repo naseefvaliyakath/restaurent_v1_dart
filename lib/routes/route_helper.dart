@@ -6,6 +6,8 @@ import 'package:restowrent_v_two/screens/all_food_screen/binding/all_food_bindin
 import 'package:restowrent_v_two/screens/dining_screen/binding/dining_billing_binding.dart';
 import 'package:restowrent_v_two/screens/dining_screen/dining_billing_screen.dart';
 import 'package:restowrent_v_two/screens/online_booking_billing_screen/onlinebooking_billing_screen.dart';
+import 'package:restowrent_v_two/screens/order_view_screen/binding/order_view_binding.dart';
+import 'package:restowrent_v_two/screens/order_view_screen/order_view%20_screen.dart';
 import 'package:restowrent_v_two/screens/take_away_billing%20screen/take_away_billing%20screen.dart';
 import 'package:restowrent_v_two/screens/update_food_screen/binding/update_food_binding.dart';
 import 'package:restowrent_v_two/screens/update_food_screen/update_food_screen.dart';
@@ -26,6 +28,7 @@ class RouteHelper {
   static const String homeDeliveryScreen = '/home-delivery-screen';
   static const String onlineBookingBillingScreen = '/online-booking-billing-screen';
   static const String diningBillingScreen = '/dining-billing-screen';
+  static const String orderViewScreen = '/order-view-screen';
 
 
   static String getInitial() => intial;
@@ -43,6 +46,8 @@ class RouteHelper {
   static String getOnlineBookingBillingScreen() => onlineBookingBillingScreen;
 
   static String getDiningBillingScreen() => diningBillingScreen;
+
+  static String getOrderViewScreen() => orderViewScreen;
 
   static List<GetPage> routes = [
     GetPage(
@@ -98,6 +103,14 @@ class RouteHelper {
         binding: DiningBillingBinding(),
         transitionDuration: const Duration(milliseconds: 400)
     ),
+
+    GetPage(
+        name: orderViewScreen,
+        page: () =>  OrderViewScreen(),
+        binding: OrderViewBinding(),
+        transitionDuration: const Duration(milliseconds: 400)
+    ),
+
 
   ];
 }

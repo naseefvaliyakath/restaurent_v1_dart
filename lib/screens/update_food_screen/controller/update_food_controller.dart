@@ -143,7 +143,7 @@ class UpdateFoodController extends GetxController {
     try {
       if ((fdPriceTD.text != '' || fdFullPriceTD.text != '')) {
             var fdIsLoos = 'no';
-            int fdPriceNew = 0;
+            double fdPriceNew = 0;
             var fdNameNew = fdName == null ? fdName = '' : fdName = fdName;
             var fdCategoryNew = fdCategory == null ? fdCategory = '' : fdCategory = fdCategory;
             int idNew  = id == null ? id = 0 : id = id;
@@ -151,24 +151,24 @@ class UpdateFoodController extends GetxController {
             var fdIsTodayNew = fdIsToday == null ? fdIsToday = '' : fdIsToday = fdIsToday;
             int cookTimeNew = cookTime == null ? cookTime = '' : cookTime = cookTime;
             int fdShopIdNew = fdShopId == null ? fdShopId = '' : fdShopId = fdShopId;
-            int fdThreeBiTwoPrsPriceNew = 0;
-            int fdHalfPriceNew = 0;
-            int fdQtrPriceNew = 0;
+            double fdThreeBiTwoPrsPriceNew = 0;
+            double fdHalfPriceNew = 0;
+            double fdQtrPriceNew = 0;
 
             print(' kkk $fdIsLoos');
             //full price only
             if (!priceToggle) {
               fdIsLoos = 'no';
-              fdPriceNew = fdPriceTD.text == '' ? 0 : int.parse(fdPriceTD.text);
+              fdPriceNew = fdPriceTD.text == '' ? 0 : double.parse(fdPriceTD.text);
             } else {
               fdIsLoos = 'yes';
-              fdPriceNew = fdFullPriceTD.text == '' ? 0 : int.parse(fdFullPriceTD.text);
+              fdPriceNew = fdFullPriceTD.text == '' ? 0 : double.parse(fdFullPriceTD.text);
             }
             print(' hhh $fdIsLoos');
             fdNameNew = fdNameTD.text;
-            fdThreeBiTwoPrsPriceNew = fdThreeBiTwoPrsTD.text == '' ? 0 : int.parse(fdThreeBiTwoPrsTD.text);
-            fdHalfPriceNew = fdHalfPriceTD.text == '' ? 0 : int.parse(fdHalfPriceTD.text);
-            fdQtrPriceNew = fdQtrPriceTD.text == '' ? 0 : int.parse(fdQtrPriceTD.text);
+            fdThreeBiTwoPrsPriceNew = fdThreeBiTwoPrsTD.text == '' ? 0 : double.parse(fdThreeBiTwoPrsTD.text);
+            fdHalfPriceNew = fdHalfPriceTD.text == '' ? 0 : double.parse(fdHalfPriceTD.text);
+            fdQtrPriceNew = fdQtrPriceTD.text == '' ? 0 : double.parse(fdQtrPriceTD.text);
 
             showLoading();
             update();
@@ -231,7 +231,7 @@ class UpdateFoodController extends GetxController {
             }
             else{
               _category = parsedResponse.data;
-              print('category ${_category}');
+              print('category $_category');
 
             }
 

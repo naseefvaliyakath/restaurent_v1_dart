@@ -30,7 +30,7 @@ class AddressTextInputScreen extends StatelessWidget {
                     hintText: 'Phone Number',
                     isDens: true,
                     hintSize: 16,
-                    borderRadius: 10.r)),
+                    borderRadius: 10.r, onChange: (_) {},)),
             10.verticalSpace,
 
             //cus name
@@ -40,7 +40,7 @@ class AddressTextInputScreen extends StatelessWidget {
                     hintText: 'Customer Name',
                     isDens: true,
                     hintSize: 16,
-                    borderRadius: 10.r)),
+                    borderRadius: 10.r, onChange: (_) {},)),
             10.verticalSpace,
             //cus address
             Flexible(
@@ -50,7 +50,7 @@ class AddressTextInputScreen extends StatelessWidget {
                     isDens: true,
                     maxLIne: 3,
                     hintSize: 16,
-                    borderRadius: 10.r)),
+                    borderRadius: 10.r, onChange: (_) {},)),
 
             10.verticalSpace,
             //buttons

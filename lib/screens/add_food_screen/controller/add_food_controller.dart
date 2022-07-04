@@ -103,26 +103,26 @@ class AddFoodController extends GetxController {
             update();
             var fdIsLoos = 'no';
             var fdCategoryNew = 'COMMON';
-            int fdPriceNew = 0;
+            double fdPriceNew = 0;
             var fdNameNew = '';
-            int fdThreeBiTwoPrsPriceNew = 0;
-            int fdHalfPriceNew = 0;
-            int fdQtrPriceNew = 0;
+            double fdThreeBiTwoPrsPriceNew = 0;
+            double fdHalfPriceNew = 0;
+            double fdQtrPriceNew = 0;
 
             //full price only
             if (!priceToggle) {
               fdIsLoos = 'no';
-              fdPriceNew = fdPriceTD.text == '' ? 0 : int.parse(fdPriceTD.text);
+              fdPriceNew = fdPriceTD.text == '' ? 0 : double.parse(fdPriceTD.text);
             } else {
               fdIsLoos = 'yes';
-              fdPriceNew = fdFullPriceTD.text == '' ? 0 : int.parse(fdFullPriceTD.text);
+              fdPriceNew = fdFullPriceTD.text == '' ? 0 : double.parse(fdFullPriceTD.text);
             }
 
             fdNameNew = fdNameTD.text;
             fdCategoryNew = fdCategory == '' ? 'COMMON' : fdCategory;
-            fdThreeBiTwoPrsPriceNew = fdThreeBiTwoPrsTD.text == '' ? 0 : int.parse(fdThreeBiTwoPrsTD.text);
-            fdHalfPriceNew = fdHalfPriceTD.text == '' ? 0 : int.parse(fdHalfPriceTD.text);
-            fdQtrPriceNew = fdQtrPriceTD.text == '' ? 0 : int.parse(fdQtrPriceTD.text);
+            fdThreeBiTwoPrsPriceNew = fdThreeBiTwoPrsTD.text == '' ? 0 : double.parse(fdThreeBiTwoPrsTD.text);
+            fdHalfPriceNew = fdHalfPriceTD.text == '' ? 0 : double.parse(fdHalfPriceTD.text);
+            fdQtrPriceNew = fdQtrPriceTD.text == '' ? 0 : double.parse(fdQtrPriceTD.text);
 
 
             print('object start');

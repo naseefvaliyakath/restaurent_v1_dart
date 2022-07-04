@@ -108,13 +108,13 @@ orderManageAlert(context) {
   ).show();
 }
 //in all billing page
-void billingCashScreenAlert(context) {
+void billingCashScreenAlert({required context, required  ctrl}) {
   showDialog<String>(
     context: context,
     builder: (BuildContext context) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(const Radius.circular(20.0))),
       title: Center(child: BigText(text: 'Settle Order')),
-      content: SingleChildScrollView(child: const OrderSettileScreen()),
+      content:  SingleChildScrollView(child: OrderSettileScreen(ctrl: ctrl)),
     ),
   );
 }
@@ -168,7 +168,7 @@ void addOrderIdAlert(context) {
           ),
           10.verticalSpace,
           TextFieldWidget(
-              textEditingController: TextEditingController(), autoFocus: true, hintText: 'hintText', borderRadius: 15.r),
+              textEditingController: TextEditingController(), autoFocus: true, hintText: 'hintText', borderRadius: 15.r, onChange: (_) {},),
           10.verticalSpace,
           AppMIniButton(
             text: 'Submit Order ID',

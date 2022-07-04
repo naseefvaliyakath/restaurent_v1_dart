@@ -11,21 +11,28 @@ import '../../../commoen/dio_error.dart';
 import '../../../model/foods_respons/food_response.dart';
 import '../../../model/foods_respons/foods.dart';
 import '../../../services/service.dart';
+import '../../../socket/socket_controller.dart';
+import '../../../widget/kot_bill_show_alert.dart';
 import '../../../widget/snack_bar.dart';
-
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 class HomeDeliveryController extends GetxController {
+    late IO.Socket socket;
+  final SocketController _socketCtrl = Get.find<SocketController>();
   final FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
   final MyLocalStorage _myLocalStorage = Get.find<MyLocalStorage>();
   //for search field text
   late TextEditingController searchTD;
   //to convert search query to obs for debounce
   var searchQuery = ''.obs;
-
+  //for progress button if true it show cross else show tick
+    final _socketError = false.obs;
+    RxBool get socketError => _socketError;
 
 
 
   @override
   void onInit() async {
+       socket = _socketCtrl.socket;
     await getTodayFoods();
     await initialLoadingBillFromHive();
     searchTD = TextEditingController();
@@ -43,9 +50,9 @@ class HomeDeliveryController extends GetxController {
 
   int get count => _count;
 
-  int _price = 0;
+  double _price = 0;
 
-  int get price => _price;
+    double get price => _price;
 
   // billing list
   final List<dynamic> _billingItems = [];
@@ -57,8 +64,68 @@ class HomeDeliveryController extends GetxController {
   bool isVisibleEditBillItem = false;
 
   // totel price in bill
-  int _totelPrice = 0;
-  int get totelPrice => _totelPrice;
+  double _totelPrice = 0;
+    double get totelPrice => _totelPrice;
+
+    ////socket io////
+
+    Future<void> sendOrder() async {
+      var data = {"fdShopId": 10, "fdOrder": _billingItems, "fdOrderStatus": "Pending", "fdOrderType": "Home Delivery"};
+      if (_billingItems.isEmpty) {
+        _socketError.value = true;
+        AppSnackBar.errorSnackBar('No item added', 'No bills added');
+      } else {
+        try {
+          _socketError.value = false;
+          update();
+          //delay for progress btn
+          await Future.delayed(const Duration(milliseconds: 500));
+          //check interet coectio then only coect else it try to coect again ad again
+          socket.connect();
+          //check socket is connected or not
+          if(!socket.connected){
+            _socketError.value = true;
+            AppSnackBar.errorSnackBar('Error', 'Something went to wrong !');
+            print('socket not connected');
+          }
+          else {
+            socket.emitWithAck('kitchen_orders', data, ack: (dataAck) {
+              if (dataAck == 'success') {
+                print('suceess');
+                _billingItems.clear();
+                clearBillInHive();
+                _socketError.value = false;
+                update();
+              } else {
+                if (dataAck == 'error') {
+                  _socketError.value = true;
+                  update();
+                  AppSnackBar.errorSnackBar('Error', 'Something went to wrong !');
+                } else {
+                  _socketError.value = true;
+                  update();
+                  AppSnackBar.errorSnackBar('Error', 'Something went to wrong !');
+                }
+              }
+            });
+          }
+        } catch (e) {
+          _socketError.value = true;
+          update();
+          rethrow;
+        }
+      }
+    }
+
+
+
+    ///socket io ////
+
+
+    //kot printing dialog
+    kotDialogBox() {
+      showKotBillAlert(type: 'HOME DELIVERY', billingItems: _billingItems);
+    }
 
   getTodayFoods() async {
     try {
@@ -127,7 +194,7 @@ class HomeDeliveryController extends GetxController {
 
   // bill manipulations
 
-  addFoodToBill(int fdId, String name, int qnt, int price, String ktNote) {
+  addFoodToBill(int fdId, String name, int qnt, double price, String ktNote) {
 
     try{
       //checking if the food alrady added
@@ -156,7 +223,7 @@ class HomeDeliveryController extends GetxController {
   }
 
   //update bill qnt and pricde
-  updateFodToBill(int index, int qnt, int price, String ktNote) {
+  updateFodToBill(int index, int qnt, double price, String ktNote) {
 
     try {
       _billingItems[index]['qnt'] = qnt;
@@ -196,9 +263,9 @@ class HomeDeliveryController extends GetxController {
 
   find_totelPrice(){
     try {
-      int totalScores = 0;
+      double totalScores = 0;
       _billingItems.forEach((item){
-        int result = item["price"] * item["qnt"];
+        double result = item["price"] * item["qnt"];
         totalScores +=result;
       });
       _totelPrice = totalScores;
@@ -270,7 +337,7 @@ class HomeDeliveryController extends GetxController {
   }
 
   //used in billing popup start
-  updatePriceFirstTime(int price) {
+  updatePriceFirstTime(double price) {
     _price = price;
     update();
   }

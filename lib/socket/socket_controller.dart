@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
+import 'package:restowrent_v_two/widget/snack_bar.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+
 
 class SocketController extends GetxController {
   late IO.Socket socket;
@@ -14,7 +16,7 @@ class SocketController extends GetxController {
   Future<void> onInit() async {
     await initSocket();
     socket.on("connect_error", (data) {
-      print(data);
+      //print(data);
     });
     super.onInit();
   }
@@ -38,19 +40,22 @@ class SocketController extends GetxController {
       socket.emitWithAck('kitchen_orders', data, ack: (dataAck) {
         if (dataAck == 'success') {
           print('suceess');
-        }
-        else{
+          return false;
+        } else {
           if (dataAck == 'error') {
-            print('error');
-          }
-          else{
-            print('error !!');
+            AppSnackBar.errorSnackBar('Error', 'Something wnt to wrong !');
+            return true;
+          } else {
+            AppSnackBar.errorSnackBar('Error', 'Something wnt to wrong !');
+            return true;
           }
         }
-
       });
-    } catch (e) {
+    }catch (e) {
+      return true;
       rethrow;
     }
   }
+
+
 }

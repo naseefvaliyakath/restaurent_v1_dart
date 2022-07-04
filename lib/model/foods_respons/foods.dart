@@ -15,16 +15,16 @@ class Foods{
   String fdCategory;
 
   @JsonKey(name : "fdFullPrice")
-  int fdFullPrice;
+  double fdFullPrice;
 
   @JsonKey(name : "fdThreeBiTwoPrsPrice")
-  int fdThreeBiTwoPrsPrice;
+  double fdThreeBiTwoPrsPrice;
 
   @JsonKey(name : "fdHalfPrice")
-  int fdHalfPrice;
+  double fdHalfPrice;
 
   @JsonKey(name : "fdQtrPrice")
-  int fdQtrPrice;
+  double fdQtrPrice;
 
   @JsonKey(name : "fdIsLoos")
   String fdIsLoos;

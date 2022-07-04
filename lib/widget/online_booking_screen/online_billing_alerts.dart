@@ -164,19 +164,19 @@ class OnlineBookingBillingAlert{
       animType: AnimType.BOTTOMSLIDE,
       title: 'Hold the items ?',
       desc: 'Do you Want to hold the  item entered ?',
-      buttonsTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      buttonsTextStyle:  TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 18.sp),
       showCloseIcon: true,
       btnCancelOnPress: () async {
         await Get.find<OnlineBookingBillingController>().clearBillInHive();
         Navigator.pop(context, true);
       },
-      btnCancelIcon: Icons.clear_all,
+
       btnCancelText: ' No',
       btnOkOnPress: () async {
         await Get.find<OnlineBookingBillingController>().saveBillInHive();
         Navigator.pop(context, true);
       },
-      btnOkIcon: Icons.save,
+
       btnOkText: ' Yes',
     ).show();
   }

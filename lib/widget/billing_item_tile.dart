@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../app_constans/app_colors.dart';
+import '../app_constans/app_colors.dart';
 
 class BillingItemTile extends StatelessWidget {
   final int index;
   final int slNumber;
   final String itemName;
   final int qnt;
-  final int price;
+  final double price;
   final String kitchenNote;
   final Function onLongTap;
 
@@ -63,6 +63,7 @@ class BillingItemTile extends StatelessWidget {
               Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       itemName,

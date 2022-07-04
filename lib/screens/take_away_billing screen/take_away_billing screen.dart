@@ -4,26 +4,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:getwidget/components/button/gf_button.dart';
-import 'package:getwidget/shape/gf_button_shape.dart';
-import 'package:restowrent_v_two/screens/order_view%20_screen.dart';
+import 'package:restowrent_v_two/routes/route_helper.dart';
 import 'package:restowrent_v_two/screens/take_away_billing%20screen/controller/take_away_controller.dart';
 import 'package:restowrent_v_two/widget/take_away_screen/clear_all_bill_widget.dart';
 import 'package:restowrent_v_two/widget/billing_food_err_card.dart';
-
 import '../../app_constans/app_colors.dart';
 import '../../widget/app_alerts.dart';
 import '../../widget/app_min_button.dart';
 import '../../widget/big_text.dart';
 import '../../widget/billing_food_card.dart';
-import '../../widget/dialog_button.dart';
 import '../../widget/heading_rich_text.dart';
 import '../../widget/notification_icon.dart';
 import '../../widget/progress_btn_controle.dart';
 import '../../widget/search_bar_in_billing_screen.dart';
-import '../../widget/take_away_screen/billing_item_tile.dart';
+import '../../widget/billing_item_tile.dart';
 import '../../widget/take_away_screen/billing_table_heading.dart';
 import '../../widget/take_away_screen/category_drop_down.dart';
 import '../../widget/take_away_screen/take_away_billing_alerts.dart';
@@ -80,7 +75,7 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                                   size: 24.sp,
                                 ),
                                 onPressed: () {
-                                  if (!Get.find<TakeAwayController>().billingItems.isEmpty) {
+                                  if (Get.find<TakeAwayController>().billingItems.isNotEmpty) {
                                     TakeAwayBillingAlert.askConfirm(context);
                                   } else {
                                     Get.back();
@@ -210,6 +205,7 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                                   await  ctrl.sendOrder();
                                   },
                                   text: 'Order',
+                                  ctrl: ctrl,
                                 ),
                               ),
                               3.horizontalSpace,
@@ -218,7 +214,7 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                                   bgColor: Color(0xffee588f),
                                   text: 'Settle',
                                   onTap: () {
-                                    billingCashScreenAlert(context);
+                                    ctrl.settleBillingCash(context,ctrl);
                                   },
                                 ),
                               ),
@@ -234,8 +230,10 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                               Flexible(
                                 child: AppMIniButton(
                                   bgColor: AppColors.mainColor,
-                                  text: 'Quick Pay',
-                                  onTap: () {},
+                                  text: 'KOT',
+                                  onTap: () {
+                                  ctrl.kotDialogBox();
+                                  },
                                 ),
                               ),
                               3.horizontalSpace,
@@ -243,7 +241,9 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                                 child: AppMIniButton(
                                   bgColor: AppColors.mainColor,
                                   text: 'New Order',
-                                  onTap: () {},
+                                  onTap: () {
+                                    //Get.find<SocketController>().setUpSocketListner();
+                                  },
                                 ),
                               ),
                               3.horizontalSpace,
@@ -252,7 +252,7 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                                   bgColor: Color(0xff62c5ce),
                                   text: 'All Order',
                                   onTap: () {
-                                    Get.to(OrderViewScreen());
+                                    Get.toNamed(RouteHelper.getOrderViewScreen());
                                   },
                                 ),
                               ),

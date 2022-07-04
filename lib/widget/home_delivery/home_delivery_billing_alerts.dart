@@ -170,13 +170,13 @@ class HomeDeliveryBillingAlert{
         await Get.find<HomeDeliveryController>().clearBillInHive();
         Navigator.pop(context, true);
       },
-      btnCancelIcon: Icons.clear_all,
+
       btnCancelText: ' No',
       btnOkOnPress: () async {
         await Get.find<HomeDeliveryController>().saveBillInHive();
         Navigator.pop(context, true);
       },
-      btnOkIcon: Icons.save,
+
       btnOkText: ' Yes',
     ).show();
   }

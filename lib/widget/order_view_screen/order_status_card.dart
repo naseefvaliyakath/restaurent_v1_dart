@@ -5,16 +5,32 @@ import 'package:restowrent_v_two/app_constans/app_colors.dart';
 class OrderStatusCard extends StatelessWidget {
   final String name;
   final String price;
+  final String orderStatus;
+  final int orderId;
+  final int totelItem;
+  final String dateTime;
+  final String orderType;
+
   final Function onTap;
 
   const OrderStatusCard(
-      {Key? key,required this.name, required this.price, required this.onTap})
+      {Key? key,
+      required this.name,
+      required this.price,
+      required this.onTap,
+      required this.orderStatus,
+      required this.orderId,
+      required this.totelItem,
+      required this.dateTime,
+      required this.orderType})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){onTap();},
+      onTap: () {
+        onTap();
+      },
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.r),
@@ -48,7 +64,20 @@ class OrderStatusCard extends StatelessWidget {
                     children: [
                       FittedBox(
                         child: Text(
-                          'PENDING',
+                          orderType,
+                          softWrap: false,
+                          style: TextStyle(
+                            fontSize: 21.sp,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.fade,
+                        ),
+                      ),
+                      5.verticalSpace,
+                      FittedBox(
+                        child: Text(
+                          orderStatus,
                           softWrap: false,
                           style: TextStyle(
                             fontSize: 18.sp,
@@ -61,7 +90,7 @@ class OrderStatusCard extends StatelessWidget {
                       5.verticalSpace,
                       FittedBox(
                         child: Text(
-                          'ID : 1595',
+                          'ID : $orderId',
                           softWrap: false,
                           style: TextStyle(
                             fontSize: 16.sp,
@@ -74,15 +103,20 @@ class OrderStatusCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.access_time,size: 10.sp,),
-                          Text('5 Min',style: TextStyle(fontSize: 10.sp),)
+                          Icon(
+                            Icons.access_time,
+                            size: 10.sp,
+                          ),
+                          Text(
+                            '5 Min',
+                            style: TextStyle(fontSize: 10.sp),
+                          )
                         ],
                       )
                     ],
                   ),
                   5.verticalSpace,
-                  Column(
-                      mainAxisAlignment: MainAxisAlignment.start, children: [
+                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                     FittedBox(
                       child: Text(
                         name,
@@ -98,7 +132,7 @@ class OrderStatusCard extends StatelessWidget {
                     5.verticalSpace,
                     FittedBox(
                       child: Text(
-                        'Totel Items : 5',
+                        'Totel Items : $totelItem',
                         softWrap: false,
                         style: TextStyle(
                           fontSize: 15.sp,
@@ -111,7 +145,7 @@ class OrderStatusCard extends StatelessWidget {
                     5.verticalSpace,
                     FittedBox(
                       child: Text(
-                        'Time : 12-3-2022 :05:20',
+                        dateTime,
                         softWrap: false,
                         style: TextStyle(
                           fontSize: 10.sp,

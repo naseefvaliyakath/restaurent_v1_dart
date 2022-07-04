@@ -7,7 +7,7 @@ import 'package:restowrent_v_two/app_constans/app_colors.dart';
 class BillingFoodCard extends StatelessWidget {
   final String img;
   final String name;
-  final int price;
+  final double price;
   final Function onTap;
 
   const BillingFoodCard({Key? key, required this.img, required this.name, required this.price, required this.onTap}) : super(key: key);
