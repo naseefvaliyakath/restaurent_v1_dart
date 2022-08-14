@@ -5,8 +5,8 @@ part 'foods.g.dart';
 @JsonSerializable()
 class Foods{
 
-  @JsonKey(name : "id")
-  int id;
+  @JsonKey(name : "fdId")
+  int fdId;
 
   @JsonKey(name : "fdName")
   String fdName;
@@ -43,7 +43,7 @@ class Foods{
 
 
   Foods(
-      this.id,
+      this.fdId,
       this.fdName,
       this.fdCategory,
       this.fdFullPrice,

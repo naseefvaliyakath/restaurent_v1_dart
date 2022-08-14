@@ -48,59 +48,76 @@ class BillingItemTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                child: Text(
-                  slNumber.toString(),
-                  maxLines: 1,
-                  style: TextStyle(fontSize: 13.sp),
-                ),
                 width: 1.sw * 0.1,
                 padding: EdgeInsets.only(left: 5.sp),
+                child: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    slNumber.toString(),
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 13.sp),
+                  ),
+                ),
               ),
               VerticalDivider(
                 color: Colors.black,
                 thickness: 1.sp,
               ),
               Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      itemName,
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 13.sp),
-                    ),
-                    Text(
-                      kitchenNote,
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 8.sp, color: Colors.grey),
-                    ),
-                  ],
-                ),
                 width: 1.sw * 0.38,
+                child: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        itemName,
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 13.sp),
+                      ),
+                      Text(
+                        kitchenNote,
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 8.sp, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
               ),
               VerticalDivider(
                 color: Colors.black,
                 thickness: 1.sp,
               ),
               Container(
-                child: Text(
-                  qnt.toString(),
-                  maxLines: 1,
-                  style: TextStyle(fontSize: 13.sp),
-                ),
                 width: 1.sw * 0.1,
+                child: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    qnt.toString(),
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 13.sp),
+                  ),
+                ),
               ),
               VerticalDivider(
                 color: Colors.black,
                 thickness: 1.sp,
               ),
-              Container(
-                child: Text(
-                  price.toString(),
-                  style: TextStyle(fontSize: 13.sp),
-                ),
+              SizedBox(
                 width: 1.sw * 0.1,
+                child: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    price.toString(),
+                    style: TextStyle(fontSize: 13.sp),
+                  ),
+                ),
               )
             ],
           ),

@@ -21,7 +21,7 @@ class KotBillWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TicketWidget(
-      width: 600.w,
+      width: 0.8*1.sw,
       height:0.68*1.sh,
       isCornerRounded: true,
       padding: EdgeInsets.symmetric(horizontal: 20.sp),

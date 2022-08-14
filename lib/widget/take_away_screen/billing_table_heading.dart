@@ -17,37 +17,52 @@ class BillingTableHeading extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              child: MidText(text: 'No'),
-              width: 1.sw * 0.1,
+            FittedBox(
+              alignment: Alignment.centerLeft,
+              fit: BoxFit.scaleDown,
+              child: SizedBox(
+                child: MidText(text: 'No'),
+                width: 1.sw * 0.1,
+              ),
             ),
             VerticalDivider(
               color: Colors.black,
               thickness: 1.sp,
             ),
-            Container(
-              child: MidText(
-                text: 'Name',
-              ),
+            SizedBox(
               width: 1.sw * 0.38,
-            ),
-            VerticalDivider(
-              color: Colors.black,
-              thickness: 1.sp,
-            ),
-            Container(
-              child: MidText(text: 'Qnt'),
-              width: 1.sw * 0.1,
-            ),
-            VerticalDivider(
-              color: Colors.black,
-              thickness: 1.sp,
-            ),
-            Container(
-              child: MidText(
-                text: 'Price',
+              child: FittedBox(
+                alignment: Alignment.centerLeft,
+                fit: BoxFit.scaleDown,
+                child: MidText(
+                  text: 'Name',
+                ),
               ),
+            ),
+            VerticalDivider(
+              color: Colors.black,
+              thickness: 1.sp,
+            ),
+            SizedBox(
               width: 1.sw * 0.1,
+              child: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: MidText(text: 'Qnt')),
+            ),
+            VerticalDivider(
+              color: Colors.black,
+              thickness: 1.sp,
+            ),
+            SizedBox(
+              width: 1.sw * 0.1,
+              child: FittedBox(
+                alignment: Alignment.centerLeft,
+                fit: BoxFit.scaleDown,
+                child: MidText(
+                  text: 'Price',
+                ),
+              ),
             )
           ],
         ),

@@ -15,6 +15,7 @@ class ChairWidget extends StatelessWidget {
       child: FittedBox(
         child: Container(
           padding: EdgeInsets.all(5.sp),
+          margin: EdgeInsets.all(1.sp),
           decoration: BoxDecoration(
               color: Colors.grey.withOpacity(0.5),
               borderRadius: BorderRadius.circular(5.r),

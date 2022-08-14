@@ -1,5 +1,3 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,16 +5,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:restowrent_v_two/routes/route_helper.dart';
 import 'package:restowrent_v_two/screens/take_away_billing%20screen/controller/take_away_controller.dart';
+import 'package:restowrent_v_two/widget/snack_bar.dart';
 import 'package:restowrent_v_two/widget/take_away_screen/clear_all_bill_widget.dart';
 import 'package:restowrent_v_two/widget/billing_food_err_card.dart';
 import '../../app_constans/app_colors.dart';
-import '../../widget/app_alerts.dart';
 import '../../widget/app_min_button.dart';
 import '../../widget/big_text.dart';
 import '../../widget/billing_food_card.dart';
 import '../../widget/heading_rich_text.dart';
 import '../../widget/notification_icon.dart';
-import '../../widget/progress_btn_controle.dart';
+import '../../widget/progress_button.dart';
 import '../../widget/search_bar_in_billing_screen.dart';
 import '../../widget/billing_item_tile.dart';
 import '../../widget/take_away_screen/billing_table_heading.dart';
@@ -36,11 +34,16 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (!Get.find<TakeAwayController>().billingItems.isEmpty) {
-          TakeAwayBillingAlert.askConfirm(context);
-          return false;
-        } else {
+        //if navigated from kotupdate  tab on back press not ask save in hive
+        if (Get.find<TakeAwayController>().isNavigateFromKotUpdate == true) {
           return true;
+        } else {
+          if (Get.find<TakeAwayController>().billingItems.isNotEmpty) {
+            TakeAwayBillingAlert.askConfirm(context);
+            return false;
+          } else {
+            return true;
+          }
         }
       },
       child: Scaffold(
@@ -75,10 +78,15 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                                   size: 24.sp,
                                 ),
                                 onPressed: () {
-                                  if (Get.find<TakeAwayController>().billingItems.isNotEmpty) {
-                                    TakeAwayBillingAlert.askConfirm(context);
-                                  } else {
+                                  //if navigated from kotupdate  tab on back press not ask save in hive
+                                  if (Get.find<TakeAwayController>().isNavigateFromKotUpdate == true) {
                                     Get.back();
+                                  } else {
+                                    if (Get.find<TakeAwayController>().billingItems.isNotEmpty) {
+                                      TakeAwayBillingAlert.askConfirm(context);
+                                    } else {
+                                      Get.back();
+                                    }
                                   }
                                 },
                                 splashRadius: 24.sp,
@@ -101,7 +109,7 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                           ctrl.reciveSearchValue(value);
                         }),
                         //category
-                        CategoryDropDown()
+                        const CategoryDropDown()
                       ],
                     ),
                     // show foods
@@ -118,15 +126,20 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                                 : BillingFoodCard(
                                     //foodBillingAlert9context
                                     onTap: () {
-                                      TakeAwayBillingAlert.foodBillingAlert(
-                                        context,
-                                        price: ctrl.foods?[index].fdFullPrice ?? 0,
-                                        img: ctrl.foods![index].fdImg == 'no_data'
-                                            ? 'https://mobizate.com/uploads/sample.jpg'
-                                            : ctrl.foods![index].fdImg,
-                                        name: ctrl.foods?[index].fdName ?? '',
-                                        fdId: ctrl.foods?[index].id ?? 0,
-                                      );
+                                      //if settled button clicked cant add new item
+                                      if (ctrl.isClickedSettle.value) {
+                                        AppSnackBar.errorSnackBar('This bill is already settled', 'Click new order !');
+                                      } else {
+                                        TakeAwayBillingAlert.foodBillingAlert(
+                                          context,
+                                          price: ctrl.foods?[index].fdFullPrice ?? 0,
+                                          img: ctrl.foods![index].fdImg == 'no_data'
+                                              ? 'https://mobizate.com/uploads/sample.jpg'
+                                              : ctrl.foods![index].fdImg,
+                                          name: ctrl.foods?[index].fdName ?? '',
+                                          fdId: ctrl.foods?[index].fdId ?? 0,
+                                        );
+                                      }
                                       //to close key bord on outside touch
                                       FocusScope.of(context).requestFocus(FocusNode());
                                     },
@@ -158,15 +171,15 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                           BoxDecoration(border: Border.all(color: AppColors.mainColor), borderRadius: BorderRadius.circular(5.r)),
                       padding: EdgeInsets.all(3.sp),
                       width: double.maxFinite,
-                      height: 0.53.sh,
+                      height: 0.52.sh,
                       child: Column(
                         children: [
                           // table hedings
                           BillingTableHeading(),
                           6.verticalSpace,
-                          Container(
-                            height: 0.46.sh,
+                          SizedBox(
                             child: ListView.builder(
+                              shrinkWrap:true,
                               itemBuilder: (context, index) {
                                 return BillingItemTile(
                                   index: index,
@@ -186,79 +199,127 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                         ],
                       ),
                     ),
-                    Container(
-                      child: TotelPriceTxt(price: ctrl.totelPrice),
-                    ),
-                    // controlle buttons
-                    Container(
-                        width: double.maxFinite,
-                        padding: EdgeInsets.symmetric(vertical: 3.h),
-                        height: 40.h,
-                        child: IntrinsicHeight(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Flexible(
-                                child: ProgressBtnController(
-                                  function: () async {
-                                  await  ctrl.sendOrder();
-                                  },
-                                  text: 'Order',
-                                  ctrl: ctrl,
-                                ),
+                    TotelPriceTxt(price: ctrl.totelPrice),
+                    // controller buttons
+                    ctrl.isNavigateFromKotUpdate
+                        ? Container(
+                            width: double.maxFinite,
+                            padding: EdgeInsets.symmetric(vertical: 3.h),
+                            height: 40.h,
+                            child: IntrinsicHeight(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Flexible(
+                                    child: ProgressButton(
+                                      btnCtrlName: 'kotUpdate',
+                                      text: 'Update KOT Order',
+                                      ctrl: ctrl,
+                                      color: Colors.green,
+                                      onTap: () async {
+                                        ctrl.updateKotOrder();
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: AppMIniButton(
+                                      bgColor: Colors.redAccent,
+                                      text: 'Cancel Update',
+                                      onTap: () {
+                                        Get.offNamed(RouteHelper.getOrderViewScreen());
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                              3.horizontalSpace,
-                              Flexible(
-                                child: AppMIniButton(
-                                  bgColor: Color(0xffee588f),
-                                  text: 'Settle',
-                                  onTap: () {
-                                    ctrl.settleBillingCash(context,ctrl);
-                                  },
-                                ),
+                            ))
+                        : Container(
+                            width: double.maxFinite,
+                            padding: EdgeInsets.symmetric(vertical: 3.h),
+                            height: 40.h,
+                            child: IntrinsicHeight(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Flexible(
+                                    child: ProgressButton(
+                                      btnCtrlName: 'kot',
+                                      text: 'Order',
+                                      ctrl: ctrl,
+                                      color: Colors.green,
+                                      onTap: () async {
+                                        //if settled button clicked cant add new item
+                                        if (ctrl.isClickedSettle.value) {
+                                          AppSnackBar.errorSnackBar('This bill is already settled', 'Click new order !');
+                                          ctrl.btnControllerKot.error();
+                                          await Future.delayed(const Duration(milliseconds: 500), () {
+                                            ctrl.btnControllerKot.reset();
+                                          });
+                                        } else {
+                                          await ctrl.sendKotOrder();
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: AppMIniButton(
+                                      bgColor: Color(0xffee588f),
+                                      text: 'Settle',
+                                      onTap: () {
+                                        ctrl.settleBillingCash(context, ctrl);
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: ProgressButton(
+                                      btnCtrlName: 'hold',
+                                      text: 'Hold',
+                                      ctrl: ctrl,
+                                      color: AppColors.mainColor_2,
+                                      onTap: () async {
+                                        await ctrl.addHoldBillItem();
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: AppMIniButton(
+                                      bgColor: AppColors.mainColor,
+                                      text: 'KOT',
+                                      onTap: () {
+                                        ctrl.kotDialogBox(context);
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: AppMIniButton(
+                                      bgColor: AppColors.mainColor,
+                                      text: 'New Order',
+                                      onTap: () async {
+                                        //Get.find<HiveHoldBillController>().clearBill(index: 1);
+                                        ctrl.enableNewOrder();
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: AppMIniButton(
+                                      bgColor: const Color(0xff62c5ce),
+                                      text: 'All Order',
+                                      onTap: () {
+                                        Get.offNamed(RouteHelper.getOrderViewScreen());
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                              3.horizontalSpace,
-                              Flexible(
-                                child: AppMIniButton(
-                                  bgColor: AppColors.mainColor_2,
-                                  text: 'Hold',
-                                  onTap: () {},
-                                ),
-                              ),
-                              3.horizontalSpace,
-                              Flexible(
-                                child: AppMIniButton(
-                                  bgColor: AppColors.mainColor,
-                                  text: 'KOT',
-                                  onTap: () {
-                                  ctrl.kotDialogBox();
-                                  },
-                                ),
-                              ),
-                              3.horizontalSpace,
-                              Flexible(
-                                child: AppMIniButton(
-                                  bgColor: AppColors.mainColor,
-                                  text: 'New Order',
-                                  onTap: () {
-                                    //Get.find<SocketController>().setUpSocketListner();
-                                  },
-                                ),
-                              ),
-                              3.horizontalSpace,
-                              Flexible(
-                                child: AppMIniButton(
-                                  bgColor: Color(0xff62c5ce),
-                                  text: 'All Order',
-                                  onTap: () {
-                                    Get.toNamed(RouteHelper.getOrderViewScreen());
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
+                            )),
                   ],
                 ),
               ),

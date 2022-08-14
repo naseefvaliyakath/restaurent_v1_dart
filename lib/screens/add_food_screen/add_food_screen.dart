@@ -42,7 +42,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GetBuilder<AddFoodController>(builder: (ctrl) {
-        return ctrl.isLoading
+        state = ctrl.priceToggle == false ? CrossFadeState.showFirst : CrossFadeState.showSecond;
+        return ctrl.isLoading == true
             ? const MyLoading()
             : SafeArea(
                 child: ListView(
@@ -97,49 +98,50 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                           //category scrolling
                           SizedBox(
                             height: 60.h,
-                            child: ctrl.isLoadingCategory
+                            child: ctrl.isLoadingCategory == true
                                 ? const SizedBox()
-                                :  ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: ctrl.category!.length + 1,
-                              itemBuilder: (BuildContext ctx, index) {
-                                //categorys
-                                if (index < ctrl.category!.length) {
-                                  return Catogeries(
-                                    onTap: ()=>ctrl.setCategoryTappedIndex(index),
-                                    color: ctrl.tappedIndex == index ? AppColors.mainColor_2 : Colors.white,
-                                    text: ctrl.category![index].catName.toUpperCase(),
-                                  );
-                                }
+                                : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: ctrl.category!.length + 1,
+                                    itemBuilder: (BuildContext ctx, index) {
+                                      //categorys
+                                      if (index < ctrl.category!.length) {
+                                        return Catogeries(
+                                          onTap: () => ctrl.setCategoryTappedIndex(index),
+                                          color: ctrl.tappedIndex == index ? AppColors.mainColor_2 : Colors.white,
+                                          text: ctrl.category![index].catName.toUpperCase(),
+                                        );
+                                      }
 
-                                //add category card
-                                else {
-                                  return AnimatedCrossFade(
-                                    firstChild: AddCatogeries(
-                                      onTap: () {
-                                        ctrl.setAddcategoryToggle(true);
-                                        stateCategory = ctrl.addCategoryToggle == false
-                                            ? CrossFadeState.showFirst
-                                            : CrossFadeState.showSecond;
-                                      },
-                                    ),
-                                    secondChild: AddCatogeriesTextField(
-                                      onTapAdd: () {},
-                                      onTapBack: () {
-                                        ctrl.setAddcategoryToggle(false);
-                                        stateCategory = ctrl.addCategoryToggle == false
-                                            ? CrossFadeState.showFirst
-                                            : CrossFadeState.showSecond;
-                                      },
-                                    ),
-                                    duration: const Duration(seconds: 1),
-                                    crossFadeState: stateCategory,
-                                    firstCurve: Curves.fastLinearToSlowEaseIn,
-                                    secondCurve: Curves.linear,
-                                  );
-                                }
-                              },
-                            ) ,
+                                      //add category card
+                                      else {
+                                        return AnimatedCrossFade(
+                                          firstChild: AddCatogeries(
+                                            onTap: () {
+                                              ctrl.setAddcategoryToggle(true);
+                                              stateCategory = ctrl.addCategoryToggle == false
+                                                  ? CrossFadeState.showFirst
+                                                  : CrossFadeState.showSecond;
+                                            },
+                                          ),
+                                          secondChild: AddCategorysTextField(
+                                            onTapAdd: () {},
+                                            onTapBack: () {
+                                              ctrl.setAddcategoryToggle(false);
+                                              stateCategory = ctrl.addCategoryToggle == false
+                                                  ? CrossFadeState.showFirst
+                                                  : CrossFadeState.showSecond;
+                                            },
+                                            roomNameController: TextEditingController(),
+                                          ),
+                                          duration: const Duration(seconds: 1),
+                                          crossFadeState: stateCategory,
+                                          firstCurve: Curves.fastLinearToSlowEaseIn,
+                                          secondCurve: Curves.linear,
+                                        );
+                                      }
+                                    },
+                                  ),
                           ),
                           20.verticalSpace,
                           // upload image
@@ -179,7 +181,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                           TextFieldWidget(
                             hintText: 'Enter Your Food Name ....',
                             textEditingController: ctrl.fdNameTD,
-                            borderRadius: 15.r, onChange: (_) {},
+                            borderRadius: 15.r,
+                            onChange: (_) {},
                           ),
 
                           20.verticalSpace,
@@ -206,7 +209,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                               keybordType: TextInputType.number,
                               hintText: 'Enter Your Food Price ....',
                               textEditingController: ctrl.fdPriceTD,
-                              borderRadius: 15.r, onChange: (_) {},
+                              borderRadius: 15.r,
+                              onChange: (_) {},
                             ),
                             secondChild: Row(
                               children: [
@@ -215,7 +219,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     keybordType: TextInputType.number,
                                     hintText: 'Full',
                                     textEditingController: ctrl.fdFullPriceTD,
-                                    borderRadius: 15.r, onChange: (_) {},
+                                    borderRadius: 15.r,
+                                    onChange: (_) {},
                                   ),
                                 ),
                                 Expanded(
@@ -223,7 +228,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     keybordType: TextInputType.number,
                                     hintText: '3/4',
                                     textEditingController: ctrl.fdThreeBiTwoPrsTD,
-                                    borderRadius: 15.r, onChange: (_) {},
+                                    borderRadius: 15.r,
+                                    onChange: (_) {},
                                   ),
                                 ),
                                 Expanded(
@@ -231,7 +237,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     keybordType: TextInputType.number,
                                     hintText: 'Half',
                                     textEditingController: ctrl.fdHalfPriceTD,
-                                    borderRadius: 15.r, onChange: (_) {},
+                                    borderRadius: 15.r,
+                                    onChange: (_) {},
                                   ),
                                 ),
                                 Expanded(
@@ -239,7 +246,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     keybordType: TextInputType.number,
                                     hintText: 'Qartar',
                                     textEditingController: ctrl.fdQtrPriceTD,
-                                    borderRadius: 15.r, onChange: (_) {},
+                                    borderRadius: 15.r,
+                                    onChange: (_) {},
                                   ),
                                 ),
                               ],

@@ -41,40 +41,46 @@ class DeleteBillingAlertEditBillBody extends StatelessWidget {
                   text: 'QUANTITY',
                   size: 15.sp,
                 ),
-                Card(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      10.horizontalSpace,
-                      IconButton(
-                        icon: const Icon(
-                          Icons.remove_circle,
-                        ),
-                        onPressed: () {
-                          qntDecrement();
-                        },
-                        iconSize: 24.w,
-                        color: Colors.black54,
+                SizedBox(
+                  width: 120.w,
+                  child: FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Card(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          10.horizontalSpace,
+                          IconButton(
+                            icon: const Icon(
+                              Icons.remove_circle,
+                            ),
+                            onPressed: () {
+                              qntDecrement();
+                            },
+                            iconSize: 24.w,
+                            color: Colors.black54,
+                          ),
+                          5.horizontalSpace,
+                          BigText(
+                            text: count.toString(),
+                            size: 15.w,
+                            color: AppColors.titleColor,
+                          ),
+                          5.horizontalSpace,
+                          IconButton(
+                            icon: const Icon(
+                              Icons.add_circle,
+                            ),
+                            onPressed: () {
+                              qntIncrement();
+                              ;
+                            },
+                            iconSize: 24.w,
+                            color: Colors.black54,
+                          ),
+                        ],
                       ),
-                      5.horizontalSpace,
-                      BigText(
-                        text: count.toString(),
-                        size: 15.w,
-                        color: AppColors.titleColor,
-                      ),
-                      5.horizontalSpace,
-                      IconButton(
-                        icon: const Icon(
-                          Icons.add_circle,
-                        ),
-                        onPressed: () {
-                          qntIncrement();
-                          ;
-                        },
-                        iconSize: 24.w,
-                        color: Colors.black54,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ]),
@@ -85,40 +91,46 @@ class DeleteBillingAlertEditBillBody extends StatelessWidget {
                   text: 'PRICE',
                   size: 15.sp,
                 ),
-                Card(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      10.horizontalSpace,
-                      IconButton(
-                        icon: const Icon(
-                          Icons.remove_circle,
-                        ),
-                        onPressed: () {
-                          priceDecrement();
-                          ;
-                        },
-                        iconSize: 24.w,
-                        color: Colors.black54,
+                SizedBox(
+                  width: 120.w,
+                  child: FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Card(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          10.horizontalSpace,
+                          IconButton(
+                            icon: const Icon(
+                              Icons.remove_circle,
+                            ),
+                            onPressed: () {
+                              priceDecrement();
+                              ;
+                            },
+                            iconSize: 24.w,
+                            color: Colors.black54,
+                          ),
+                          5.horizontalSpace,
+                          BigText(
+                            text: price.toString(),
+                            size: 15.w,
+                            color: AppColors.titleColor,
+                          ),
+                          5.horizontalSpace,
+                          IconButton(
+                            icon: const Icon(
+                              Icons.add_circle,
+                            ),
+                            onPressed: () {
+                              priceIncrement();
+                            },
+                            iconSize: 24.w,
+                            color: Colors.black54,
+                          ),
+                        ],
                       ),
-                      5.horizontalSpace,
-                      BigText(
-                        text: price.toString(),
-                        size: 15.w,
-                        color: AppColors.titleColor,
-                      ),
-                      5.horizontalSpace,
-                      IconButton(
-                        icon: const Icon(
-                          Icons.add_circle,
-                        ),
-                        onPressed: () {
-                          priceIncrement();
-                        },
-                        iconSize: 24.w,
-                        color: Colors.black54,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ]),

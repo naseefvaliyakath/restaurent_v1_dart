@@ -13,6 +13,7 @@ class AppRoundMiniBtn extends StatelessWidget {
       style: ElevatedButton.styleFrom(
           onPrimary: Colors.white,
           primary: color,
+          minimumSize: Size(70.w, 40.h),
           padding: EdgeInsets.symmetric(horizontal: 16.sp),
           shape:  RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(50.r)),

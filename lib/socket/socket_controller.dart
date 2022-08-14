@@ -16,7 +16,7 @@ class SocketController extends GetxController {
   Future<void> onInit() async {
     await initSocket();
     socket.on("connect_error", (data) {
-      //print(data);
+      print(data);
     });
     super.onInit();
   }
@@ -28,7 +28,7 @@ class SocketController extends GetxController {
         IO.OptionBuilder()
             .setTransports(['websocket']) // for Flutter or Dart VM
             .disableAutoConnect()
-            .setPath('/socket.io') // disable auto-connection
+            .setPath('/socket.io/') // disable auto-connection
             .build());
   }
 

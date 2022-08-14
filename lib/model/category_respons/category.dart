@@ -5,8 +5,8 @@ part 'category.g.dart';
 @JsonSerializable()
 class Category{
 
-  @JsonKey(name : "id")
-  int id;
+  @JsonKey(name : "Catid")
+  int Catid;
 
   @JsonKey(name : "catName")
   String catName;
@@ -18,7 +18,7 @@ class Category{
 
 
   Category(
-      this.id,
+      this.Catid,
       this.catName,
       this.fdShopId,
 ); // DateTime get getPublishedAtDate => DateTime.tryParse(publishedAt);

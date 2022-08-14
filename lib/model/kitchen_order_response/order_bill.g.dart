@@ -10,7 +10,7 @@ OrderBill _$OrderBillFromJson(Map<String, dynamic> json) => OrderBill(
       json['fdId'] as int,
       json['name'] as String,
       json['qnt'] as int,
-      json['price'] as int,
+      json['price'] as num,
       json['ktNote'] as String,
     );
 

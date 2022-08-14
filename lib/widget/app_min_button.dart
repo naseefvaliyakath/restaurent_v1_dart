@@ -20,6 +20,7 @@ class AppMIniButton extends StatelessWidget {
       onPressed: () {
         onTap();
       },
+       blockButton: true,
       textStyle: TextStyle(fontSize: 14.sp),
       shape: GFButtonShape.pills,
       color: bgColor,
@@ -30,7 +31,7 @@ class AppMIniButton extends StatelessWidget {
           softWrap: false,
           overflow: TextOverflow.clip,
           maxLines: 1,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 16.sp),
         ),
 
       ),

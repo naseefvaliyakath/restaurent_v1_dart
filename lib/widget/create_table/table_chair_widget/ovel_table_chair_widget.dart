@@ -2,21 +2,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:restowrent_v_two/screens/create_table_screen/create_table_controller.dart';
+import 'package:restowrent_v_two/screens/create_table_screen/controller/create_table_controller.dart';
+import 'package:restowrent_v_two/widget/create_table/table_circle.dart';
 import 'package:restowrent_v_two/widget/create_table/table_rectangle.dart';
 
-import '../create_table/chair_widget.dart';
+import '../chair_widget.dart';
 
 
-class TableChairWidget extends StatelessWidget {
-  const TableChairWidget({Key? key}) : super(key: key);
+
+
+class OvalTableChairWidget extends StatelessWidget {
+  const OvalTableChairWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
     return Container(
-      height: 200.h,
-      width: 210.w,
+      height: 260.w,
+      width: 200.w,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
           boxShadow: [
@@ -42,18 +45,19 @@ class TableChairWidget extends StatelessWidget {
                     children: [
                       //table
                       Center(
-                        child: TableRectangle(
-                          text: 'TABLE 1',
+                        child: TableCircle(
+                          text: 'TABLE',
                           width: constraints.maxWidth - 100.w,
-                          height: constraints.maxHeight - 100.h,
+                          height: constraints.maxHeight - 100.w,
                         ),
                       ),
 
                       //left side
                       Positioned(
+                        top: 50.h,
                         child: Container(
                           width: 40.w,
-                          height: constraints.maxHeight - 100.h,
+                          height: constraints.maxHeight - 100.w,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: List<Widget>.generate(
@@ -62,13 +66,14 @@ class TableChairWidget extends StatelessWidget {
                             }).toList(growable: true),
                           ),
                         ),
-                        top: 50.h,
                       ),
                       //right side
                       Positioned(
+                        top: 50.h,
+                        right: 0,
                         child: Container(
                           width: 40.w,
-                          height: constraints.maxHeight - 100.h,
+                          height: constraints.maxHeight - 100.w,
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: List<Widget>.generate(
@@ -76,34 +81,38 @@ class TableChairWidget extends StatelessWidget {
                                 return ChairWidget(text: 'C $index');
                               }).toList(growable: true)),
                         ),
-                        top: 50.h,
-                        right: 0,
                       ),
                       //top side
                       Positioned(
-                        child: Container(
-                          width: constraints.maxWidth - 100.w,
-                          height: 40.h,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [],
-                          ),
-                        ),
                         top: 0,
                         left: 50.w,
+                        child: Container(
+                          width: constraints.maxWidth - 100.w,
+                          height: 40.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: List<Widget>.generate(
+                                  controller.topChairCount, (index) {
+                                return ChairWidget(text: 'C $index');
+                              }).toList(growable: true)
+                          ),
+                        ),
                       ),
                       //bottom side
                       Positioned(
-                        child: Container(
-                          width: constraints.maxWidth - 100.w,
-                          height: 40.h,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [],
-                          ),
-                        ),
                         bottom: 0,
                         left: 50.w,
+                        child: Container(
+                          width: constraints.maxWidth - 100.w,
+                          height: 40.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: List<Widget>.generate(
+                                  controller.bottomChairCount, (index) {
+                                return ChairWidget(text: 'C $index');
+                              }).toList(growable: true)
+                          ),
+                        ),
                       ),
                     ],
                   );

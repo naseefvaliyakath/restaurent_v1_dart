@@ -24,7 +24,9 @@ class HttpService {
       response = await _dio.get(url);
     } on DioError catch (e) {
       throw Exception(e.message);
-    }
+    } catch (e) {
+      rethrow;
+    } finally {}
 
     return response;
   }
@@ -34,10 +36,12 @@ class HttpService {
 
     Response response;
     try {
-      response = await _dio.get(url,queryParameters:body );
+      response = await _dio.get(url, queryParameters: body);
     } on DioError catch (e) {
       throw Exception(e.message);
-    }
+    } catch (e) {
+      rethrow;
+    } finally {}
 
     return response;
   }
@@ -48,10 +52,12 @@ class HttpService {
 
     Response response;
     try {
-      response = await _dio.delete(url,data:json.encode(body) );
+      response = await _dio.delete(url, data: json.encode(body));
     } on DioError catch (e) {
       throw Exception(e.message);
-    }
+    } catch (e) {
+      rethrow;
+    } finally {}
 
     return response;
   }
@@ -63,7 +69,25 @@ class HttpService {
       response = await _dio.put(url, data: json.encode(body));
     } on DioError catch (e) {
       throw Exception(e.message);
-    }
+    } catch (e) {
+      rethrow;
+    } finally {}
+    return response;
+  }
+
+  //insert with body
+  Future<Response> insertWithBody(String url, body) async {
+    // TODO: implement getRequest
+
+    Response response;
+    try {
+      response = await _dio.post(url, data: body);
+    } on DioError catch (e) {
+      throw Exception(e.message);
+    } catch (e) {
+      rethrow;
+    } finally {}
+
     return response;
   }
 
@@ -118,6 +142,10 @@ class HttpService {
     } on DioError catch (e) {
       // AppSnackBar.errorSnackBar('Error', MyDioError.dioError(e));
       throw Exception(e.message);
+    } catch (e) {
+      rethrow;
+    } finally {
+
     }
 
     return response;
@@ -136,7 +164,7 @@ class HttpService {
       required fdShopId,
       required fdImg,
       required fdIsToday,
-      required id}) async {
+      required fdId}) async {
     FormData formData;
     print('naseef');
     print(file);
@@ -157,14 +185,14 @@ class HttpService {
         "fdShopId": 10,
         "fdImg": fdImg,
         "fdIsToday": fdIsToday,
-        "id": id,
+        "fdId": fdId,
       });
     } else {
       print('file not');
       formData = FormData.fromMap({
         "myFile": null,
         "fdName": fdName,
-        "fdCategory":fdCategory,
+        "fdCategory": fdCategory,
         "fdFullPrice": fdPrice,
         "fdThreeBiTwoPrsPrice": fdThreeBiTwoPrsPrice,
         "fdHalfPrice": fdHalfPrice,
@@ -173,7 +201,7 @@ class HttpService {
         "cookTime": 0,
         "fdShopId": 10,
         "fdIsToday": fdIsToday,
-        "id": id,
+        "fdId": fdId,
       });
     }
 

@@ -117,7 +117,7 @@ class TodayFoodScreen extends StatelessWidget {
                                             b2Name: 'Close',
                                             b1Function: () async {
                                               Navigator.pop(context);
-                                              ctrl.removeFromToday(ctrl.foods![index].id, 'no');
+                                              ctrl.removeFromToday(ctrl.foods![index].fdId, 'no');
                                             },
                                             b2Function: () {
                                               Navigator.pop(context);

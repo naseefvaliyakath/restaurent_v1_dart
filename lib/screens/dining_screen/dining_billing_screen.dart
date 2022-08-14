@@ -9,8 +9,9 @@ import 'package:getwidget/components/button/gf_button.dart';
 import 'package:getwidget/shape/gf_button_shape.dart';
 import 'package:restowrent_v_two/screens/dining_screen/controller/dining_billing_controller.dart';
 import 'package:restowrent_v_two/screens/order_view_screen/order_view%20_screen.dart';
-import 'package:restowrent_v_two/screens/table_manage_screen.dart';
+import 'package:restowrent_v_two/screens/table_manage_screen/table_manage_screen.dart';
 import '../../app_constans/app_colors.dart';
+import '../../routes/route_helper.dart';
 import '../../widget/app_alerts.dart';
 import '../../widget/app_min_button.dart';
 import '../../widget/big_text.dart';
@@ -20,16 +21,17 @@ import '../../widget/dining_screen/dining_billing_alerts.dart';
 import '../../widget/heading_rich_text.dart';
 import '../../widget/notification_icon.dart';
 import '../../widget/progress_btn_controle.dart';
+import '../../widget/progress_button.dart';
 import '../../widget/search_bar_in_billing_screen.dart';
 import '../../widget/billing_item_tile.dart';
+import '../../widget/snack_bar.dart';
 import '../../widget/take_away_screen/billing_table_heading.dart';
 import '../../widget/take_away_screen/category_drop_down.dart';
 import '../../widget/take_away_screen/clear_all_bill_widget.dart';
 import '../../widget/take_away_screen/take_away_billing_alerts.dart';
 import '../../widget/totel_price_txt.dart';
 import '../../widget/white_button_with_icon.dart';
-
-
+import '../create_table_screen/binding/create_table_binding.dart';
 
 class DiningBillingScreen extends StatefulWidget {
   const DiningBillingScreen({Key? key}) : super(key: key);
@@ -39,19 +41,19 @@ class DiningBillingScreen extends StatefulWidget {
 }
 
 class _DiningBillingScreenState extends State<DiningBillingScreen> {
-
-
   @override
   Widget build(BuildContext context) {
-
-
     return WillPopScope(
       onWillPop: () async {
-        if (!Get.find<DiningBillingController>().billingItems.isEmpty) {
-          DiningBillingAlert.askConfirm(context);
-          return false;
-        } else {
+        if (Get.find<DiningBillingController>().isNavigateFromKotUpdate == true) {
           return true;
+        } else {
+          if (Get.find<DiningBillingController>().billingItems.isNotEmpty) {
+            DiningBillingAlert.askConfirm(context);
+            return false;
+          } else {
+            return true;
+          }
         }
       },
       child: GestureDetector(
@@ -86,10 +88,14 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                                   size: 24.sp,
                                 ),
                                 onPressed: () {
-                                  if (!Get.find<DiningBillingController>().billingItems.isEmpty) {
-                                    DiningBillingAlert.askConfirm(context);
-                                  } else {
+                                  if (Get.find<DiningBillingController>().isNavigateFromKotUpdate == true) {
                                     Get.back();
+                                  } else {
+                                    if (Get.find<DiningBillingController>().billingItems.isNotEmpty) {
+                                      DiningBillingAlert.askConfirm(context);
+                                    } else {
+                                      Get.back();
+                                    }
                                   }
                                 },
                                 splashRadius: 24.sp,
@@ -114,7 +120,7 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                           },
                         ),
                         //category
-                        CategoryDropDown()
+                        const CategoryDropDown()
                       ],
                     ),
                     // show foods
@@ -131,15 +137,20 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                                 : BillingFoodCard(
                                     //foodBillingAlert9context
                                     onTap: () {
-                                      DiningBillingAlert.foodBillingAlert(
-                                        context,
-                                        price: ctrl.foods?[index].fdFullPrice ?? 0,
-                                        img: ctrl.foods![index].fdImg == 'no_data'
-                                            ? 'https://mobizate.com/uploads/sample.jpg'
-                                            : ctrl.foods![index].fdImg,
-                                        name: ctrl.foods?[index].fdName ?? '',
-                                        fdId: ctrl.foods?[index].id ?? 0,
-                                      );
+                                      //if settled button clicked cant add new item
+                                      if (ctrl.isClickedSettle.value) {
+                                        AppSnackBar.errorSnackBar('This bill is already settled', 'Click new order !');
+                                      } else {
+                                        DiningBillingAlert.foodBillingAlert(
+                                          context,
+                                          price: ctrl.foods?[index].fdFullPrice ?? 0,
+                                          img: ctrl.foods![index].fdImg == 'no_data'
+                                              ? 'https://mobizate.com/uploads/sample.jpg'
+                                              : ctrl.foods![index].fdImg,
+                                          name: ctrl.foods?[index].fdName ?? '',
+                                          fdId: ctrl.foods?[index].fdId ?? 0,
+                                        );
+                                      }
                                       FocusScope.of(context).requestFocus(FocusNode());
                                     },
                                     img: ctrl.foods![index].fdImg == 'no_data'
@@ -160,9 +171,17 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                         ),
                         10.horizontalSpace,
                         WhiteButtonWithIcon(
-                          text: 'Select Table',
+                          text: ctrl.selectedTableName,
                           icon: Icons.edit,
-                          onTap: () => Get.to(TableManageScreen()),
+                          onTap: () {
+                            //checking if any item is added  befor select table
+                            if (ctrl.billingItems.isNotEmpty) {
+                              ctrl.saveBillInHive();
+                              Get.offNamed(RouteHelper.getTableManageScreen());
+                            } else {
+                              Get.offNamed(RouteHelper.getTableManageScreen());
+                            }
+                          },
                         ),
                         ClearAllBill(onTap: () {
                           ctrl.clearAllBillItems();
@@ -179,11 +198,11 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                       child: Column(
                         children: [
                           // table hedings
-                          BillingTableHeading(),
+                          const BillingTableHeading(),
                           6.verticalSpace,
-                          Container(
-                            height: 0.45.sh,
+                          SizedBox(
                             child: ListView.builder(
+                              shrinkWrap:true,
                               itemBuilder: (context, index) {
                                 return BillingItemTile(
                                   index: index,
@@ -207,71 +226,138 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                       child: TotelPriceTxt(price: ctrl.totelPrice),
                     ),
                     // controlle buttons
-                    Container(
-                        width: double.maxFinite,
-                        padding: EdgeInsets.symmetric(vertical: 3.h),
-                        height: 40.h,
-                        child: IntrinsicHeight(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Flexible(
-                                child:ProgressBtnController(
-                                  function: () async {
-                                    await  ctrl.sendOrder();
-                                  },
-                                  text: 'Order',
-                                  ctrl: ctrl,
-                                ),
+                    ctrl.isNavigateFromKotUpdate
+                        ? Container(
+                            width: double.maxFinite,
+                            padding: EdgeInsets.symmetric(vertical: 3.h),
+                            height: 40.h,
+                            child: IntrinsicHeight(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Flexible(
+                                    child: ProgressButton(
+                                      btnCtrlName: 'kotUpdate',
+                                      text: 'Update KOT Order',
+                                      ctrl: ctrl,
+                                      color: Colors.green,
+                                      onTap: () async {
+                                        ctrl.updateKotOrder();
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: AppMIniButton(
+                                      bgColor: Colors.redAccent,
+                                      text: 'Cancel Update',
+                                      onTap: () {
+                                        if (ctrl.from == 'tableManage') {
+                                          Get.offNamed(RouteHelper.getTableManageScreen());
+                                        } else {
+                                          Get.offNamed(RouteHelper.getOrderViewScreen());
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                              3.horizontalSpace,
-                              Flexible(
-                                child: AppMIniButton(
-                                  bgColor: Color(0xffee588f),
-                                  text: 'Settle',
-                                  onTap: () {
-                                    billingCashScreenAlert(ctrl: ctrl, context: context);
-                                  },
-                                ),
+                            ))
+                        : Container(
+                            width: double.maxFinite,
+                            padding: EdgeInsets.symmetric(vertical: 3.h),
+                            height: 40.h,
+                            child: IntrinsicHeight(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Flexible(
+                                    child: ProgressButton(
+                                      btnCtrlName: 'kot',
+                                      text: 'Order',
+                                      ctrl: ctrl,
+                                      color: Colors.green,
+                                      onTap: () async {
+                                        //if settled button clicked cant send order
+                                        if (ctrl.isClickedSettle.value) {
+                                          AppSnackBar.errorSnackBar('This bill is already settled', 'Click new order !');
+                                          ctrl.btnControllerKot.error();
+                                          await Future.delayed(const Duration(milliseconds: 500), () {
+                                            ctrl.btnControllerKot.reset();
+                                          });
+                                        } else {
+                                          //check table is selected
+                                          if (ctrl.tableId == -1) {
+                                            AppSnackBar.errorSnackBar('Select Table', 'Pleas select a table');
+                                            ctrl.btnControllerKot.error();
+                                            await Future.delayed(const Duration(milliseconds: 500), () {
+                                              ctrl.btnControllerKot.reset();
+                                            });
+                                          } else {
+                                            await ctrl.sendKotOrder();
+
+                                          }
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: AppMIniButton(
+                                      bgColor: const Color(0xffee588f),
+                                      text: 'Settle',
+                                      onTap: () {
+                                        ctrl.settleBillingCash(context, ctrl);
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: ProgressButton(
+                                      btnCtrlName: 'hold',
+                                      text: 'Hold',
+                                      ctrl: ctrl,
+                                      color: AppColors.mainColor_2,
+                                      onTap: () async {
+                                        ctrl.addHoldBillItem();
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: AppMIniButton(
+                                      bgColor: AppColors.mainColor,
+                                      text: 'KOT',
+                                      onTap: () {
+                                        ctrl.kotDialogBox(context);
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: AppMIniButton(
+                                      bgColor: AppColors.mainColor,
+                                      text: 'New Order',
+                                      onTap: () {
+                                        ctrl.enableNewOrder();
+                                      },
+                                    ),
+                                  ),
+                                  3.horizontalSpace,
+                                  Flexible(
+                                    child: AppMIniButton(
+                                      bgColor: Color(0xff62c5ce),
+                                      text: 'All Order',
+                                      onTap: () {
+                                        Get.offNamed(RouteHelper.getOrderViewScreen());
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                              3.horizontalSpace,
-                              Flexible(
-                                child: AppMIniButton(
-                                  bgColor: AppColors.mainColor_2,
-                                  text: 'Hold',
-                                  onTap: () {},
-                                ),
-                              ),
-                              3.horizontalSpace,
-                              Flexible(
-                                child: AppMIniButton(
-                                  bgColor: AppColors.mainColor,
-                                  text: 'KOT',
-                                  onTap: () {ctrl.kotDialogBox();},
-                                ),
-                              ),
-                              3.horizontalSpace,
-                              Flexible(
-                                child: AppMIniButton(
-                                  bgColor: AppColors.mainColor,
-                                  text: 'New Order',
-                                  onTap: () {},
-                                ),
-                              ),
-                              3.horizontalSpace,
-                              Flexible(
-                                child: AppMIniButton(
-                                  bgColor: Color(0xff62c5ce),
-                                  text: 'All Order',
-                                  onTap: () {
-                                    Get.to(OrderViewScreen());
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
+                            )),
                   ],
                 ),
               ),

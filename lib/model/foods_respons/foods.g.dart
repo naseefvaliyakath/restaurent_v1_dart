@@ -7,7 +7,7 @@ part of 'foods.dart';
 // **************************************************************************
 
 Foods _$FoodsFromJson(Map<String, dynamic> json) => Foods(
-      json['id'] as int,
+      json['fdId'] as int,
       json['fdName'] as String,
       json['fdCategory'] as String,
       (json['fdFullPrice'] as num).toDouble(),
@@ -22,7 +22,7 @@ Foods _$FoodsFromJson(Map<String, dynamic> json) => Foods(
     );
 
 Map<String, dynamic> _$FoodsToJson(Foods instance) => <String, dynamic>{
-      'id': instance.id,
+      'fdId': instance.fdId,
       'fdName': instance.fdName,
       'fdCategory': instance.fdCategory,
       'fdFullPrice': instance.fdFullPrice,

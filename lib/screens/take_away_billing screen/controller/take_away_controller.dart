@@ -1,71 +1,48 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:getwidget/components/button/gf_button.dart';
-import 'package:getwidget/shape/gf_button_shape.dart';
+import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:restowrent_v_two/app_constans/hive_costants.dart';
 import 'package:restowrent_v_two/commoen/local_storage_controller.dart';
+import 'package:restowrent_v_two/hive_database/controller/hive_hold_bill_controller.dart';
+import 'package:restowrent_v_two/hive_database/hive_model/hold_item/hive_hold_item.dart';
 import 'package:restowrent_v_two/model/my_response.dart';
 import 'package:restowrent_v_two/repository/foods_repo.dart';
 import 'package:restowrent_v_two/socket/socket_controller.dart';
 import 'package:restowrent_v_two/widget/kot_bill_show_alert.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
+import '../../../app_constans/api_link.dart';
+import '../../../commoen/dio_error.dart';
+import '../../../hive_database/box_repository.dart';
 import '../../../model/foods_respons/food_response.dart';
 import '../../../model/foods_respons/foods.dart';
+import '../../../model/kitchen_order_response/kitchen_order.dart';
+import '../../../model/kitchen_order_response/order_bill.dart';
+import '../../../routes/route_helper.dart';
+import '../../../services/service.dart';
 import '../../../widget/app_alerts.dart';
 import '../../../widget/snack_bar.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import '../../order_view_screen/controller/order_view_controller.dart';
 
 class TakeAwayController extends GetxController {
   final FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
   late IO.Socket socket;
   final SocketController _socketCtrl = Get.find<SocketController>();
   final MyLocalStorage _myLocalStorage = Get.find<MyLocalStorage>();
+  final HttpService _httpService = Get.find<HttpService>();
+  final HiveHoldBillController _hiveHoldBillController = Get.find<HiveHoldBillController>();
 
-  //for search field text
-  late TextEditingController searchTD;
-
-  //to convert search query to obs for debounce
-  var searchQuery = ''.obs;
-
-  //for progress button if true it show cross else show tick
-  final _socketError = false.obs;
-
-  RxBool get socketError => _socketError;
-
-  ///bill settled///
-
-  var grandTotal = 0.0.obs;
-  var balanceChange = 0.0.obs;
-
-  late Rx<TextEditingController> settleNetTotalCtrl;
-  late  Rx<TextEditingController> settleDiscountCashCtrl;
-  late  Rx<TextEditingController> settleDiscountPersentCtrl;
-  late  Rx<TextEditingController> settleChargesCtrl;
-  late  Rx<TextEditingController> settleGrandTotelCtrl;
-  late  Rx<TextEditingController> settleCashRecivedCtrl;
-  ///bill settle///
-
-  @override
-  void onInit() async {
-    socket = _socketCtrl.socket;
-    await getTodayFoods();
-    await initialLoadingBillFromHive();
-    searchTD = TextEditingController();
-    settleNetTotalCtrl = TextEditingController().obs;
-    settleDiscountCashCtrl = TextEditingController().obs;
-    settleDiscountPersentCtrl = TextEditingController().obs;
-    settleChargesCtrl =  TextEditingController().obs;
-    settleGrandTotelCtrl = TextEditingController().obs;
-    settleCashRecivedCtrl = TextEditingController().obs;
-    //only send search requst after typing 500 millisecond
-    debounce(searchQuery, (callback) => searchTodayFoods(), time: const Duration(milliseconds: 500));
-    super.onInit();
-  }
+  final RoundedLoadingButtonController btnControllerKot = RoundedLoadingButtonController();
+  final RoundedLoadingButtonController btnControllerSettle = RoundedLoadingButtonController();
+  final RoundedLoadingButtonController btnControllerHold = RoundedLoadingButtonController();
+  final RoundedLoadingButtonController btnControllerUpdateKot = RoundedLoadingButtonController();
 
   bool isLoading = false;
-  List<Foods>? _foods;
+  List<Foods>? _foods = [];
 
   List<Foods>? get foods => _foods;
 
@@ -91,96 +68,342 @@ class TakeAwayController extends GetxController {
 
   double get totelPrice => _totelPrice;
 
+  //for search field text
+  late TextEditingController searchTD;
+
+  //to convert search query to obs for debounce
+  var searchQuery = ''.obs;
+
+  //to dasable button after click settle button
+  var isClickedSettle = false.obs;
+
+  //to check navigated from kotUpdate bill
+  bool isNavigateFromKotUpdate = false;
+
+  //kot id from orderview screen for update kot item,it will assign in when navigation
+  //from kotupdate from orderview screen
+  int kotIdReciveFromKotUpdate = -1;
+
+  ///bill settled///
+
+  var grandTotal = 0.0.obs;
+  var balanceChange = 0.0.obs;
+
+  late Rx<TextEditingController> settleNetTotalCtrl;
+  late Rx<TextEditingController> settleDiscountCashCtrl;
+  late Rx<TextEditingController> settleDiscountPersentCtrl;
+  late Rx<TextEditingController> settleChargesCtrl;
+  late Rx<TextEditingController> settleGrandTotelCtrl;
+  late Rx<TextEditingController> settleCashRecivedCtrl;
+
+  double netTotal = 0;
+  double discountCash = 0;
+  double discountPresent = 0;
+  double charges = 0;
+  double cashReceived = 0;
+  double grandTotalNew = 0;
+
+  ///bill settle///
+
+  @override
+  void onInit() async {
+    getxArgumetsReciveHadler();
+    searchTD = TextEditingController();
+    settleNetTotalCtrl = TextEditingController().obs;
+    settleDiscountCashCtrl = TextEditingController().obs;
+    settleDiscountPersentCtrl = TextEditingController().obs;
+    settleChargesCtrl = TextEditingController().obs;
+    settleGrandTotelCtrl = TextEditingController().obs;
+    settleCashRecivedCtrl = TextEditingController().obs;
+    socket = _socketCtrl.socket;
+    await getTodayFoods();
+    await initialLoadingBillFromHive();
+    //only send search requst after typing 500 millisecond
+    debounce(searchQuery, (callback) => searchTodayFoods(), time: const Duration(milliseconds: 500));
+    super.onInit();
+  }
+
   ////socket io////
 
-  Future<void> sendOrder() async {
-    var data = {"fdShopId": 10, "fdOrder": _billingItems, "fdOrderStatus": "Pending", "fdOrderType": "Takeaway"};
-    if (_billingItems.isEmpty) {
-      _socketError.value = true;
-      AppSnackBar.errorSnackBar('No item added', 'No bills added');
-    } else {
-      try {
-        _socketError.value = false;
-        update();
-        //delay for progress btn
-        await Future.delayed(const Duration(milliseconds: 500));
-        //check interet coectio then only coect else it try to coect again ad again
-        socket.connect();
-        //check socket is connected or not
-        if (!socket.connected) {
-          _socketError.value = true;
-          AppSnackBar.errorSnackBar('Error', 'Something went to wrong !');
-          print('socket not connected');
+  Future sendKotOrder() async {
+    try {
+      if (_billingItems.isNotEmpty) {
+        Map<String, dynamic> kotOrder = {
+          'fdShopId': 10,
+          'fdOrder': _billingItems,
+          'fdOrderStatus': 'pending',
+          'fdOrderType': 'Takeaway',
+        };
+
+        final response = await _httpService.insertWithBody(ADD_KOT_ORDER, kotOrder);
+
+        FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
+        if (parsedResponse.error) {
+          btnControllerKot.error();
+          AppSnackBar.errorSnackBar('Error', parsedResponse.errorCode);
         } else {
-          socket.emitWithAck('kitchen_orders', data, ack: (dataAck) {
-            if (dataAck == 'success') {
-              print('suceess');
-              _billingItems.clear();
-              clearBillInHive();
-              _socketError.value = false;
-              update();
-            } else {
-              if (dataAck == 'error') {
-                _socketError.value = true;
-                update();
-                AppSnackBar.errorSnackBar('Error', 'Something went to wrong !');
-              } else {
-                _socketError.value = true;
-                update();
-                AppSnackBar.errorSnackBar('Error', 'Something went to wrong !');
-              }
-            }
-          });
+          print('object');
+          _billingItems.clear();
+          clearBillInHive();
+          btnControllerKot.success();
+          AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
+          update();
         }
-      } catch (e) {
-        _socketError.value = true;
-        update();
-        rethrow;
       }
+      //if bill is empty
+      else {
+        btnControllerKot.error();
+        AppSnackBar.errorSnackBar('No item added', 'No bills added');
+      }
+    } on DioError catch (e) {
+      print('dio eero');
+      btnControllerKot.error();
+      AppSnackBar.errorSnackBar('Error', MyDioError.dioError(e));
+    } catch (e) {
+      btnControllerKot.error();
+      print('catch eero');
+    } finally {
+      update();
+      print('finally');
+      Future.delayed(const Duration(seconds: 1), () {
+        btnControllerKot.reset();
+      });
     }
   }
 
   ///socket io ////
 
-  //kot printing dialog
-  kotDialogBox() {
-    showKotBillAlert(type: 'Take away', billingItems: _billingItems);
+  /// edit or update kot billing item  to receive data for orderView screen and process ////
+
+  reciveUpdateKotBillingItem() {
+    try {
+      //otherwaiys will throw error
+      KitchenOrder emptyKotOrder = KitchenOrder(
+          Kot_id: -1,
+          error: true,
+          errorCode: 'SomthingWrong',
+          totalSize: 0,
+          fdOrderStatus: 'Pending',
+          fdOrderType: 'Takeaway',
+          fdOrder: [],
+          totelPrice: 0,
+          orderColor: 111);
+      var args = Get.arguments ?? {'kotItem': emptyKotOrder};
+      KitchenOrder? kotOrder = args['kotItem'] ?? emptyKotOrder;
+      kotIdReciveFromKotUpdate = kotOrder?.Kot_id ?? -1;
+      List<OrderBill>? kotItem = kotOrder?.fdOrder;
+      if (kotItem == null) {
+        AppSnackBar.errorSnackBar('Something wrong', 'something went to wrong this order !! ');
+        _billingItems.clear();
+      } else {
+        //from other pages than orderview screen
+        if (kotItem.isEmpty) {
+          //normal working will happened
+          _billingItems.clear();
+        } else {
+          isNavigateFromKotUpdate = true; //to make kot update button
+          clearBillInHive();
+          _billingItems.clear();
+          for (var element in kotItem) {
+            _billingItems.add({
+              'fdId': element.fdId,
+              'name': element.name,
+              'qnt': element.qnt,
+              'price': element.price.toDouble(),
+              'ktNote': element.ktNote
+            });
+          }
+          find_totelPrice();
+          update();
+        }
+      }
+    } catch (e) {
+      _billingItems.clear();
+      rethrow;
+    } finally {}
   }
 
+  /// edit or update kot billing item  to receive data for orderView screen and process ////
+
+  /// updatekot to server///
+
+  Future updateKotOrder() async {
+    try {
+      if (_billingItems.isNotEmpty) {
+        Map<String, dynamic> kotOrderUpdate = {'fdOrder': _billingItems, 'Kot_id': kotIdReciveFromKotUpdate};
+        final response = await _httpService.updateData(UPDATE_KOT_ORDER, kotOrderUpdate);
+
+        FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
+        if (parsedResponse.error) {
+          btnControllerUpdateKot.error();
+          AppSnackBar.errorSnackBar('Error', parsedResponse.errorCode);
+        } else {
+          print('object');
+          _billingItems.clear();
+          clearBillInHive();
+          btnControllerUpdateKot.success();
+          AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
+          Get.offNamed(RouteHelper.getOrderViewScreen());
+          update();
+        }
+      }
+      //if bill is empty
+      else {
+        btnControllerUpdateKot.error();
+        AppSnackBar.errorSnackBar('No item added', 'No bills added');
+      }
+    } on DioError catch (e) {
+      btnControllerUpdateKot.error();
+      AppSnackBar.errorSnackBar('Error', MyDioError.dioError(e));
+    } catch (e) {
+      btnControllerUpdateKot.error();
+    } finally {
+      update();
+      print('finally');
+      Future.delayed(const Duration(seconds: 1), () {
+        btnControllerUpdateKot.reset();
+      });
+    }
+  }
+
+  /// updatekot to server//
+
+  //to handle Get.argemrt fro diffrent pages like fro hold item or kot update .. etc
+  getxArgumetsReciveHadler() {
+    KitchenOrder emptyKotOrder = KitchenOrder(
+        Kot_id: -1,
+        error: true,
+        errorCode: 'SomthingWrong',
+        totalSize: 0,
+        fdOrderStatus: 'Pending',
+        fdOrderType: 'Takeaway',
+        fdOrder: [],
+        totelPrice: 0,
+        orderColor: 111); //just [] will throw error
+    var args = Get.arguments ?? {'holdItem': [], 'kotItem': emptyKotOrder};
+    KitchenOrder? kotOrder = args['kotItem'] ?? emptyKotOrder;
+    List<OrderBill>? kotItem = kotOrder?.fdOrder;
+    List<dynamic>? holdItem = args['holdItem'] ?? [];
+    if (kotItem!.isNotEmpty) {
+      reciveUpdateKotBillingItem();
+    } else if (holdItem!.isNotEmpty) {
+      unHoldTakeAwayBillingItem();
+    } else {
+      _billingItems.clear;
+    }
+  }
+
+  //kot printing dialog
+  kotDialogBox(context) {
+    showKotBillAlert(type: 'Take away', billingItems: _billingItems,context: context);
+  }
 
   ///settle bill ////
   //checking int is in text field
-    bool isNumeric(String? s) {
-      if (s == null) {
-        return false;
-      }
-      return double.tryParse(s) != null;
+  bool isNumeric(String? s) {
+    if (s == null) {
+      return false;
     }
+    return double.tryParse(s) != null;
+  }
 
-  calculateNetTotal(){
-    double netTotal =  !isNumeric(settleNetTotalCtrl.value.text) ? 0 : double.parse(settleNetTotalCtrl.value.text);
-    double discountCash = !isNumeric(settleDiscountCashCtrl.value.text) ? 0 : double.parse(settleDiscountCashCtrl.value.text);
-    double discountPresent =     !isNumeric(settleDiscountPersentCtrl.value.text) ? 0 : double.parse(settleDiscountPersentCtrl.value.text);
-    double charges = !isNumeric(settleChargesCtrl.value.text) ? 0 : double.parse(settleChargesCtrl.value.text);
-    double cashReceived = !isNumeric(settleCashRecivedCtrl.value.text) ? 0 : double.parse(settleCashRecivedCtrl.value.text);
-    //finding discount value from %
-    double discountCashFromPercent = (netTotal/100)*discountPresent;
+  calculateNetTotal() {
+    try {
+      netTotal = !isNumeric(settleNetTotalCtrl.value.text) ? 0 : double.parse(settleNetTotalCtrl.value.text);
+      discountCash = !isNumeric(settleDiscountCashCtrl.value.text) ? 0 : double.parse(settleDiscountCashCtrl.value.text);
+      discountPresent = !isNumeric(settleDiscountPersentCtrl.value.text) ? 0 : double.parse(settleDiscountPersentCtrl.value.text);
+      charges = !isNumeric(settleChargesCtrl.value.text) ? 0 : double.parse(settleChargesCtrl.value.text);
+      cashReceived = !isNumeric(settleCashRecivedCtrl.value.text) ? 0 : double.parse(settleCashRecivedCtrl.value.text);
+      //finding discount value from %
+      double discountCashFromPercent = (netTotal / 100) * discountPresent;
 
-    double grandTotalNew = grandTotal.value = netTotal - discountCash - discountCashFromPercent - charges ;
-    balanceChange.value = settleCashRecivedCtrl.value.text == '' ? 0 : cashReceived - grandTotalNew;
-    settleGrandTotelCtrl.value.text = '$grandTotalNew';
+      grandTotal.value = netTotal - discountCash - discountCashFromPercent - charges;
+      grandTotalNew = double.parse(grandTotal.value.toStringAsFixed(3));
+      balanceChange.value = double.parse((settleCashRecivedCtrl.value.text == '' ? 0 : cashReceived - grandTotalNew)
+          .toStringAsFixed(3)); //limit double to 3 pont after decimal
+      settleGrandTotelCtrl.value.text = '$grandTotalNew';
+    } catch (e) {
+      rethrow;
+    }
   }
 
   //settile billing cash alert
-  settleBillingCash(context,ctrl){
-    settleNetTotalCtrl.value.text = _totelPrice.toString();
-    settleDiscountCashCtrl.value.text = '0';
-    settleDiscountPersentCtrl.value.text = '0';
-    settleChargesCtrl.value.text = '0';
-    settleGrandTotelCtrl.value.text = '0';
-    settleCashRecivedCtrl.value.text = '';
-    calculateNetTotal();
-    billingCashScreenAlert( context: context, ctrl:ctrl);
+  settleBillingCash(context, ctrl) {
+    try {
+      settleNetTotalCtrl.value.text = _totelPrice.toString();
+      settleDiscountCashCtrl.value.text = '0';
+      settleDiscountPersentCtrl.value.text = '0';
+      settleChargesCtrl.value.text = '0';
+      settleGrandTotelCtrl.value.text = '0';
+      settleCashRecivedCtrl.value.text = '';
+      calculateNetTotal();
+      billingCashScreenAlert(context: context, ctrl: ctrl, from: 'billing');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //insert settiled bill
+  insertSettledBill(context) async {
+    try {
+      //check bill or grand totel is empty
+      if (_billingItems.isEmpty &&
+          (settleGrandTotelCtrl.value.text == '0.0' ||
+              settleGrandTotelCtrl.value.text == '0' ||
+              settleGrandTotelCtrl.value.text == '')) {
+        btnControllerSettle.error();
+        AppSnackBar.errorSnackBar('Error', 'No bill added');
+      } else {
+        Map<String, dynamic> settledBill = {
+          'fdShopId': 10,
+          'fdOrder': billingItems,
+          'fdOrderKot': '-1',
+          'fdOrderStatus': 'pending',
+          'fdOrderType': 'Takeaway',
+          'netAmount': netTotal,
+          'discountPersent': discountPresent,
+          'discountCash': discountCash,
+          'charges': charges,
+          'grandTotal': grandTotalNew,
+          'paymentType': 'cash',
+          'cashReceived': cashReceived,
+          'change': balanceChange.value
+        };
+
+        final response = await _httpService.insertWithBody(ADD_SETTLED_ORDER, settledBill);
+
+        FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
+        if (parsedResponse.error) {
+          print('paesed eero');
+          btnControllerSettle.error();
+          AppSnackBar.errorSnackBar('Error', parsedResponse.errorCode);
+        } else {
+          btnControllerSettle.success();
+          isClickedSettle.value = true;
+          AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
+        }
+      }
+    } on DioError catch (e) {
+      print('dio eero');
+      btnControllerSettle.error();
+      AppSnackBar.errorSnackBar('Error', MyDioError.dioError(e));
+    } catch (e) {
+      btnControllerSettle.error();
+      print('catch eero');
+    } finally {
+      print('finally');
+      Future.delayed(const Duration(seconds: 1), () {
+        btnControllerSettle.reset();
+      });
+    }
+  }
+
+  //again enable settle order for new order button click
+  enableNewOrder() {
+    isClickedSettle.value = false;
+    clearBillInHive();
+    _billingItems.clear();
+    update();
   }
 
   ///settle bill ////
@@ -223,9 +446,6 @@ class TakeAwayController extends GetxController {
       update();
       MyResponse response = await _foodsRepo.searchTodayFoods(searchQuery.value, 'yes');
 
-      hideLoading();
-      update();
-
       if (response.statusCode == 1) {
         FoodResponse parsedResponse = response.data;
         if (parsedResponse.data == null) {
@@ -243,8 +463,10 @@ class TakeAwayController extends GetxController {
       }
     } catch (e) {
       rethrow;
+    } finally {
+      hideLoading();
+      update();
     }
-    update();
   }
 
   reciveSearchValue(String query) {
@@ -307,6 +529,7 @@ class TakeAwayController extends GetxController {
   clearAllBillItems() {
     try {
       billingItems.clear();
+      clearBillInHive();
     } catch (e) {
       rethrow;
     }
@@ -361,6 +584,7 @@ class TakeAwayController extends GetxController {
         // if data in hive
         if (billFromHive.isNotEmpty) {
           _billingItems.addAll(billFromHive);
+          find_totelPrice();
           update();
         } else {
           _billingItems.clear();
@@ -372,6 +596,73 @@ class TakeAwayController extends GetxController {
       rethrow;
     }
   }
+
+  ///hold bikll item//
+
+  addHoldBillItem() async {
+    try {
+      //check bill is not empty
+      if (_billingItems.isNotEmpty) {
+        DateTime now = DateTime.now();
+        String date = DateFormat('d MMM yyyy').format(now);
+        String time = DateFormat('kk:mm:ss').format(now);
+        int timeStamp = DateTime.now().millisecondsSinceEpoch;
+        HiveHoldItem holdBillingItem = HiveHoldItem(
+            holdItem: _billingItems, date: date, time: time, id: timeStamp, totel: _totelPrice, orderType: 'Takeaway');
+        await _hiveHoldBillController.createHoldBill(holdBillingItem: holdBillingItem);
+        _hiveHoldBillController.getHoldBill();
+        //_billingItems.clear();
+        clearBillInHive();
+        btnControllerHold.success();
+        update();
+      } else {
+        AppSnackBar.errorSnackBar('No item Added', 'No any bill items to hold');
+        btnControllerHold.error();
+      }
+
+      //_hiveHoldBillController.clearBill(index: 1);
+    } catch (e) {
+      btnControllerHold.error();
+      rethrow;
+    } finally {
+      Future.delayed(const Duration(seconds: 1), () {
+        btnControllerHold.reset();
+      });
+    }
+  }
+
+  /// hold bill item//
+
+  /// Unhold billing item////
+
+  unHoldTakeAwayBillingItem() {
+    try {
+      var args = Get.arguments ?? {'holdItem': []};
+      List<dynamic>? holdItem = args['holdItem'] ?? [];
+      if (holdItem == null) {
+        AppSnackBar.errorSnackBar('Something wrong', 'something went to wrong this order !! ');
+        _billingItems.clear();
+      } else {
+        //from other pages than orderview screen
+        if (holdItem.isEmpty) {
+          //normal working will happened
+          _billingItems.clear();
+        } else {
+          clearBillInHive();
+          _billingItems.clear();
+          _billingItems.addAll(holdItem);
+          find_totelPrice();
+          update();
+          print(holdItem.length);
+        }
+      }
+    } catch (e) {
+      _billingItems.clear();
+      rethrow;
+    }
+  }
+
+  /// Unhold billing item///
 
   // to visible and hide edit options in delete popup
   setIsVisibleEditBillItem(bool val) {

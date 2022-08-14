@@ -32,7 +32,7 @@ class TodayFoodController extends GetxController {
 
   bool isLoading = false;
   bool isloading2 =false; //for hide screen on update remove because isloading only change cards in today food
-  List<Foods>? _foods;
+  List<Foods>? _foods = [];
   List<Foods>? get foods => _foods;
 
   getTodayFoods() async {
@@ -65,6 +65,10 @@ class TodayFoodController extends GetxController {
           }
     } catch (e) {
       rethrow;
+    }
+    finally{
+      hideLoading();
+      update();
     }
     update();
 
@@ -107,14 +111,14 @@ class TodayFoodController extends GetxController {
     searchQuery.value = query;
   }
 
-   removeFromToday(int id ,String isToday) async {
+   removeFromToday(int fdId ,String isToday) async {
 
     try {
       showLoading();
       isloading2 = true;
       update();
       Map<String,dynamic>foodData={
-        'id':id,
+        'fdId':fdId,
         'fdIsToday': isToday
       };
       final response = await _httpService.updateData(TODAY_FOOD_UPDATE,foodData);
@@ -132,6 +136,11 @@ class TodayFoodController extends GetxController {
     } on DioError catch (e) {
 
        AppSnackBar.errorSnackBar('Error',MyDioError.dioError(e));
+    }
+    catch (e) {
+      AppSnackBar.errorSnackBar('Error', 'Something wet to wrong');
+    } finally {
+      update();
     }
 
     update();

@@ -9,18 +9,33 @@ class DialogButton extends StatelessWidget {
   final String text;
   final IconData icon;
   final Color bgColor;
-  final Function onPressd ;
-  const DialogButton({Key? key, required this.text, required this.icon, this.bgColor=AppColors.mainColor, required this.onPressd}) : super(key: key);
+  final Function onPressd;
+
+  const DialogButton(
+      {Key? key, required this.text, required this.icon, this.bgColor = AppColors.mainColor, required this.onPressd})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return    GFButton(
-      onPressed: (){onPressd();},
-      text: text,
-      textStyle: TextStyle(color: Colors.white,fontSize: 18.sp,fontWeight: FontWeight.bold),
-      icon: Icon(icon,color: Colors.white,size: 20.sp,),
-      shape: GFButtonShape.pills,
-      color: bgColor,
+    return SizedBox(
+      width: 180.w,
+      height: 50.h,
+      child: FittedBox(
+        child: GFButton(
+          onPressed: () {
+            onPressd();
+          },
+          text: text,
+          textStyle: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.bold),
+          icon: Icon(
+            icon,
+            color: Colors.white,
+            size: 20.sp,
+          ),
+          shape: GFButtonShape.pills,
+          color: bgColor,
+        ),
+      ),
     );
   }
 }

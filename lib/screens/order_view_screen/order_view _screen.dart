@@ -3,22 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:restowrent_v_two/hive_database/controller/hive_hold_bill_controller.dart';
 import 'package:restowrent_v_two/model/kitchen_order_response/order_bill.dart';
+import 'package:restowrent_v_two/routes/route_helper.dart';
 import 'package:restowrent_v_two/screens/order_view_screen/controller/order_view_controller.dart';
+import 'package:restowrent_v_two/screens/take_away_billing%20screen/take_away_billing%20screen.dart';
 import 'package:restowrent_v_two/widget/big_text.dart';
 import 'package:restowrent_v_two/widget/order_view_screen/order_category.dart';
 
 import '../../app_constans/app_colors.dart';
+import '../../model/kitchen_order_response/kitchen_order.dart';
 import '../../widget/app_alerts.dart';
+import '../../widget/app_min_button.dart';
 import '../../widget/date_range_picker.dart';
+import '../../widget/myDialogBody.dart';
 import '../../widget/order_view_screen/errOrder_status_card.dart';
+import '../../widget/order_view_screen/order_hold_card.dart';
+import '../../widget/order_view_screen/order_settled_card.dart';
 import '../../widget/order_view_screen/order_status_card.dart';
+import '../../widget/progress_button.dart';
 
 class OrderViewScreen extends StatelessWidget {
   OrderViewScreen({Key? key}) : super(key: key);
 
   List categoryCard = [
-    {'text': "PENDING", 'circleColor': Colors.redAccent},
+    {'text': "KOT", 'circleColor': Colors.redAccent},
     {'text': "SETTLED", 'circleColor': Colors.green},
     {'text': "HOLD", 'circleColor': Colors.blueAccent},
     {'text': "QUICK PAY", 'circleColor': Colors.yellowAccent},
@@ -150,7 +159,22 @@ class OrderViewScreen extends StatelessWidget {
                             itemCount: categoryCard.length,
                             itemBuilder: (BuildContext ctx, index) {
                               return OrderCategory(
-                                onTap: () => ctrl.setStatusTappedIndex(index),
+                                onTap: () async {
+                                  //for color change
+                                  ctrl.setStatusTappedIndex(index);
+                                  //for show different orders
+                                  ctrl.updateTappedTabName(categoryCard[index]['text']);
+                                  if (ctrl.tappedTabName == 'KOT') {
+                                   ctrl.refreshDatabaseKot();
+                                  }
+                                  if (ctrl.tappedTabName == 'SETTLED') {
+                                    ctrl.getAllSettledOrder();
+                                    Get.find<HiveHoldBillController>().getHoldBill();
+                                  }
+                                  if (ctrl.tappedTabName == 'HOLD') {
+                                    await ctrl.getAllHoldOrder();
+                                  }
+                                },
                                 color: ctrl.tappedIndex == index ? AppColors.mainColor_2 : Colors.white,
                                 circleColor: categoryCard[index]['circleColor'],
                                 text: categoryCard[index]['text'],
@@ -175,23 +199,104 @@ class OrderViewScreen extends StatelessWidget {
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      //OrderBill? firstProductInBill = ctrl.billingItems?[index].fdOrder?[0];
-                      return ctrl.billingItems![index].fdOrder!.isEmpty
-                          ? const ErrOrderStatusCard()
-                          : OrderStatusCard(
-                              name: ctrl.billingItems?[index].fdOrder?[0]?.name ?? "",
-                              price: 'Total : ${ctrl.billingItems?[index].totelPrice ?? 0}',
-                              onTap: () {
-                                orderManageAlert(context);
-                              },
-                              orderId: ctrl.billingItems?[index].id ?? 0,
-                              orderStatus: ctrl.billingItems![index].fdOrderStatus,
-                              orderType: ctrl.billingItems![index].fdOrderType,
-                              dateTime: '26-04-20222 : 10:30',
-                              totelItem: ctrl.billingItems![index].fdOrder!.length,
-                            );
+                      // checking witch tab is selected
+                      if (ctrl.tappedTabName == 'KOT') {
+                        return OrderStatusCard(
+                          name: ctrl.kotBillingItems![index].fdOrder!.isEmpty
+                              ? "error"
+                              : ctrl.kotBillingItems?[index].fdOrder?[0].name ?? "",
+                          price: (ctrl.kotBillingItems?[index].totelPrice ?? 0).toString(),
+                          onTap: () {
+                          kotOrderManageAlert(context: context, ctrl: ctrl, index: index);
+                          },
+                          orderId: ctrl.kotBillingItems?[index].Kot_id ?? 0,
+                          orderStatus: ctrl.kotBillingItems![index].fdOrderStatus,
+                          orderType: ctrl.kotBillingItems![index].fdOrderType,
+                          dateTime: '26-04-20222 : 10:30',
+                          totelItem: ctrl.kotBillingItems![index].fdOrder!.length,
+                        );
+                      }
+                      if (ctrl.tappedTabName == 'SETTLED') {
+                        return OrderSettledCard(
+                          name: ctrl.settledBillingItems![index].fdOrder!.isEmpty
+                              ? "no item"
+                              : (ctrl.settledBillingItems?[index].fdOrder?[0].name ?? ""),
+                          price: '${ctrl.settledBillingItems?[index].grandTotal ?? 0}',
+                          onTap: () {
+                            MyDialogBody.myConfirmDialogBody(
+                                title: 'update this order ?',
+                                context: context,
+                                desc: ' Do yoy want to update this order ? ',
+                                btnCancelText: 'Delete',
+                                btnOkText: 'Edit',
+                                onTapOK: () {
+                                  ctrl.updateSettleBillingCash(context, ctrl, index);
+
+                                },
+                                onTapCancel: () async {
+                                  //delete the settled item from list
+                                  await ctrl.deleteSettledOrder(ctrl.settledBillingItems?[index].settled_id ?? -1);
+                                  Navigator.pop(context);
+                                  //to refresh after update
+                                  ctrl.getAllSettledOrder();
+
+                                });
+                          },
+                          settledId: ctrl.settledBillingItems?[index].settled_id ?? 0,
+                          orderStatus: ctrl.settledBillingItems?[index].fdOrderStatus ?? 'error',
+                          orderType: ctrl.settledBillingItems?[index].fdOrderType ?? 'error',
+                          dateTime: '26-04-20222 : 10:30',
+                          totelItem: ctrl.settledBillingItems?[index].fdOrder!.length ?? 0,
+                          kotId: ctrl.settledBillingItems?[index].fdOrderKot ?? -1,
+                          payType: ctrl.settledBillingItems?[index].paymentType ?? 'cash',
+                        );
+                      }
+
+                      if (ctrl.tappedTabName == 'HOLD') {
+                        return OrderHoldCard(
+                          //checking if bill arry is empty
+                          name: ctrl.holdBillingItems![index].holdItem!.isEmpty
+                              ? 'error'
+                              : ctrl.holdBillingItems?[index].holdItem?[0]['name'] ?? 'error',
+                          price: (ctrl.holdBillingItems?[index].totel ?? 0).toString(),
+                          onTap: () {
+                            MyDialogBody.myConfirmDialogBody(
+                                title: 'update this order ?',
+                                context: context,
+                                desc: ' Do yoy want to update this order ? ',
+                                btnCancelText: 'Delete',
+                                btnOkText: 'Update',
+                                onTapOK: () {
+                                  ctrl.unHoldHoldItem(
+                                      holdBillingItems: ctrl.holdBillingItems?[index].holdItem ?? [],
+                                      holdItemIndex: index,
+                                      orderType: ctrl.holdBillingItems?[index].orderType ?? 'Takeaway');
+                                },
+                                onTapCancel: () async {
+                                  //delete the hold item from list
+                                  await Get.find<HiveHoldBillController>().deleteHoldBill(index: index);
+                                  Navigator.pop(context);
+                                  //to refresh after delete
+                                  ctrl.getAllHoldOrder();
+                                  //to dismiss popup
+                                //  Get.off(OrderViewScreen());
+                                });
+                          },
+                          orderId: index + 1,
+                          orderType: ctrl.holdBillingItems![index].orderType!,
+                          dateTime:
+                              '${ctrl.holdBillingItems![index].date ?? 'date'} ${ctrl.holdBillingItems![index].time ?? 'time'}',
+                          totelItem: ctrl.holdBillingItems![index].holdItem?.length ?? 0,
+                        );
+                      }
                     },
-                    childCount: ctrl.billingItems!.length,
+                    childCount: ctrl.tappedTabName == 'KOT'
+                        ? ctrl.kotBillingItems!.length
+                        : ctrl.tappedTabName == 'SETTLED'
+                            ? ctrl.settledBillingItems!.length
+                            : ctrl.tappedTabName == 'HOLD'
+                                ? ctrl.holdBillingItems!.length
+                                : 0,
                   ),
                 ),
               ),
@@ -202,3 +307,4 @@ class OrderViewScreen extends StatelessWidget {
     );
   }
 }
+

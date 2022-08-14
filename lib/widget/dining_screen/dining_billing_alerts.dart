@@ -14,6 +14,7 @@ import '../delete_biiling_alert_edit_food_dody.dart';
 import '../dialog_button.dart';
 import '../food_billing_alert_body.dart';
 import '../mid_text.dart';
+import '../myDialogBody.dart';
 import '../take_away_screen/billing_alert_food.dart';
 import '../text_field_widget.dart';
 
@@ -158,7 +159,25 @@ class DiningBillingAlert{
 
   // confirmation for save bill data before close
   static void askConfirm(context) {
-    AwesomeDialog(
+    MyDialogBody.myConfirmDialogBody(
+      context: context,
+      title: 'Hold the items ?',
+      desc: 'Do you Want to hold the  item entered ?',
+      btnCancelText: 'No',
+      btnOkText: 'Yes',
+      onTapOK: () async {
+        await Get.find<DiningBillingController>().saveBillInHive();
+        Navigator.pop(context);
+        Navigator.pop(context, true);
+      },
+      onTapCancel: () async {
+        await Get.find<DiningBillingController>().clearBillInHive();
+        Navigator.pop(context);
+        Navigator.pop(context, true);
+      },
+    );
+    //old one , its close poppup and back screen same time
+  /*  AwesomeDialog(
       context: context,
       dialogType: DialogType.QUESTION,
       headerAnimationLoop: false,
@@ -179,7 +198,7 @@ class DiningBillingAlert{
       },
 
       btnOkText: ' Yes',
-    ).show();
+    ).show();*/
   }
 }
 

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:restowrent_v_two/screens/create_table_screen/controller/create_table_controller.dart';
 
 class TableShapeDropDown extends StatefulWidget {
   const TableShapeDropDown({Key? key}) : super(key: key);
@@ -10,13 +12,13 @@ class TableShapeDropDown extends StatefulWidget {
 }
 
 class _TableShapeDropDownState extends State<TableShapeDropDown> {
-  String? _selected;
+  String _selected  = '1';
 
-  List<Map> _myJson = [
-    {"id": '1', "image": "assets/image/squre.png", "name": "Squre"},
-    {"id": '2', "image": "assets/image/circle.png", "name": "Rectangle"},
-    {"id": '3', "image": "assets/image/circle.png", "name": "Round"},
-    {"id": '4', "image": "assets/image/squre.png", "name": "Ovel shape"},
+  final List<Map> _myJson = [
+    {"id": '1', "image": "assets/image/rectangle.png", "name": "Rectangle"},
+    {"id": '2', "image": "assets/image/squre.png", "name": "Squre"},
+    {"id": '3', "image": "assets/image/circle.png", "name": "Circle"},
+    {"id": '4', "image": "assets/image/ovel.png", "name": "Ovel"},
   ];
 
   @override
@@ -33,6 +35,7 @@ class _TableShapeDropDownState extends State<TableShapeDropDown> {
             children: <Widget>[
               DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
+                  focusColor:Colors.white,
                   isDense: true,
                   hint: Text(
                     "Table Shape",
@@ -44,7 +47,8 @@ class _TableShapeDropDownState extends State<TableShapeDropDown> {
                   value: _selected,
                   onChanged: (String? newValue) {
                     setState(() {
-                      _selected = newValue!;
+                      _selected = newValue ?? '1';
+                      Get.find<CreateTableController>().updateTableShape(newValue ?? '1');
                     });
 
                     print(_selected);
@@ -58,15 +62,15 @@ class _TableShapeDropDownState extends State<TableShapeDropDown> {
                         child: Row(
                           children: <Widget>[
                             ClipRRect(
+                              borderRadius: BorderRadius.circular(8.r),
                               child: Image.asset(
                                 map["image"],
-                                width: 25.sp,
-                                height: 25.sp,
-                                fit: BoxFit.cover,
+                                width: 35.sp,
+                                height: 35.sp,
+                                fit: BoxFit.contain,
                               ),
-                              borderRadius: BorderRadius.circular(8.r),
                             ),
-                            3.horizontalSpace,
+                            17.horizontalSpace,
                             Flexible(
                               child: Container(
                                 child: Text(

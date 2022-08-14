@@ -14,10 +14,10 @@ import '../../../repository/foods_repo.dart';
 import '../../../services/service.dart';
 
 class AddFoodController extends GetxController {
-
   //to get categorys
   final FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
   List<Category>? _category;
+
   List<Category>? get category => _category;
 
   //tochane tapped coloer of category
@@ -32,25 +32,25 @@ class AddFoodController extends GetxController {
 
   File? file;
 
-
   bool priceToggle = false;
-  bool addCategoryToggle = false;
+  bool addCategoryToggle = false; // to show add category or room card and textfield
 
   final HttpService _httpService = HttpService();
   bool isLoading = false;
+
   //for category update need other loader , so after catch isLoading become false so in ctr.list.length may couse error
   bool isLoadingCategory = false;
 
   @override
   Future<void> onInit() async {
-    super.onInit();
+    await getCategory();
     fdNameTD = TextEditingController();
     fdPriceTD = TextEditingController();
     fdFullPriceTD = TextEditingController();
     fdThreeBiTwoPrsTD = TextEditingController();
     fdHalfPriceTD = TextEditingController();
     fdQtrPriceTD = TextEditingController();
-    await  getCategory();
+    super.onInit();
   }
 
   @override
@@ -91,76 +91,76 @@ class AddFoodController extends GetxController {
       return MyResponse(statusCode: 1, status: 'Success', data: parsedResponse, message: parsedResponse.errorCode);
     } on DioError catch (e) {
       return MyResponse(statusCode: 0, status: 'Error', message: MyDioError.dioError(e));
-    }
+    } catch (e) {
+      return MyResponse(statusCode: 0, status: 'Error', message: 'Error');
+    } finally {}
   }
 
   //validate before insert
   validateFoodDetails(fdCategory) async {
-
     try {
       if ((fdPriceTD.text != '' || fdFullPriceTD.text != '')) {
-            showLoading();
-            update();
-            var fdIsLoos = 'no';
-            var fdCategoryNew = 'COMMON';
-            double fdPriceNew = 0;
-            var fdNameNew = '';
-            double fdThreeBiTwoPrsPriceNew = 0;
-            double fdHalfPriceNew = 0;
-            double fdQtrPriceNew = 0;
+        showLoading();
+        update();
+        var fdIsLoos = 'no';
+        var fdCategoryNew = 'COMMON';
+        double fdPriceNew = 0;
+        var fdNameNew = '';
+        double fdThreeBiTwoPrsPriceNew = 0;
+        double fdHalfPriceNew = 0;
+        double fdQtrPriceNew = 0;
 
-            //full price only
-            if (!priceToggle) {
-              fdIsLoos = 'no';
-              fdPriceNew = fdPriceTD.text == '' ? 0 : double.parse(fdPriceTD.text);
-            } else {
-              fdIsLoos = 'yes';
-              fdPriceNew = fdFullPriceTD.text == '' ? 0 : double.parse(fdFullPriceTD.text);
-            }
+        //full price only
+        if (!priceToggle) {
+          fdIsLoos = 'no';
+          fdPriceNew = fdPriceTD.text == '' ? 0 : double.parse(fdPriceTD.text);
+        } else {
+          fdIsLoos = 'yes';
+          fdPriceNew = fdFullPriceTD.text == '' ? 0 : double.parse(fdFullPriceTD.text);
+        }
 
-            fdNameNew = fdNameTD.text;
-            fdCategoryNew = fdCategory == '' ? 'COMMON' : fdCategory;
-            fdThreeBiTwoPrsPriceNew = fdThreeBiTwoPrsTD.text == '' ? 0 : double.parse(fdThreeBiTwoPrsTD.text);
-            fdHalfPriceNew = fdHalfPriceTD.text == '' ? 0 : double.parse(fdHalfPriceTD.text);
-            fdQtrPriceNew = fdQtrPriceTD.text == '' ? 0 : double.parse(fdQtrPriceTD.text);
+        fdNameNew = fdNameTD.text;
+        fdCategoryNew = fdCategory == '' ? 'COMMON' : fdCategory;
+        fdThreeBiTwoPrsPriceNew = fdThreeBiTwoPrsTD.text == '' ? 0 : double.parse(fdThreeBiTwoPrsTD.text);
+        fdHalfPriceNew = fdHalfPriceTD.text == '' ? 0 : double.parse(fdHalfPriceTD.text);
+        fdQtrPriceNew = fdQtrPriceTD.text == '' ? 0 : double.parse(fdQtrPriceTD.text);
 
+        print('object start');
+        MyResponse response = await insertFood(
+          file: file,
+          fdName: fdNameNew,
+          fdCategory: fdCategoryNew,
+          fdPrice: fdPriceNew,
+          fdThreeBiTwoPrsPrice: fdThreeBiTwoPrsPriceNew,
+          fdHalfPrice: fdHalfPriceNew,
+          fdQtrPrice: fdQtrPriceNew,
+          fdIsLoos: fdIsLoos,
+        );
+        print('object end');
 
-            print('object start');
-            MyResponse response = await insertFood(
-              file: file,
-              fdName: fdNameNew,
-              fdCategory:  fdCategoryNew,
-              fdPrice: fdPriceNew,
-              fdThreeBiTwoPrsPrice: fdThreeBiTwoPrsPriceNew,
-              fdHalfPrice: fdHalfPriceNew,
-              fdQtrPrice: fdQtrPriceNew,
-              fdIsLoos: fdIsLoos,
-            );
-            print('object end');
-
-            hideLoading();
-            update();
-            print('is load end $isLoading');
-            if (response.statusCode == 1) {
-              FoodResponse parsedResponse = response.data;
-              if (parsedResponse.error) {
-                AppSnackBar.errorSnackBar(response.status, parsedResponse.errorCode);
-              } else {
-                clearFields();
-                AppSnackBar.successSnackBar(response.status, parsedResponse.errorCode);
-              }
-            } else {
-              AppSnackBar.errorSnackBar(response.status, response.message);
-            }
+        hideLoading();
+        update();
+        print('is load end $isLoading');
+        if (response.statusCode == 1) {
+          FoodResponse parsedResponse = response.data;
+          if (parsedResponse.error) {
+            AppSnackBar.errorSnackBar(response.status, parsedResponse.errorCode);
           } else {
-            AppSnackBar.errorSnackBar('Fill the fields!', 'Enter the values in fields!!');
+            clearFields();
+            setPricetoggle(false); // to set toggle old position
+            AppSnackBar.successSnackBar(response.status, parsedResponse.errorCode);
           }
+        } else {
+          AppSnackBar.errorSnackBar(response.status, response.message);
+        }
+      } else {
+        AppSnackBar.errorSnackBar('Fill the fields!', 'Enter the values in fields!!');
+      }
     } catch (e) {
       hideLoading();
       update();
       rethrow;
     }
-
   }
 
 //to clear value after toggle off
@@ -173,63 +173,58 @@ class AddFoodController extends GetxController {
     }
   }
 
-
   // get category
   getCategory() async {
     try {
-      print('category');
       showLoadingCategory();
+      showLoading();
       update();
-      print('category'+isLoadingCategory.toString());
       MyResponse response = await _foodsRepo.getCategory();
 
-      hideLoadingCategory();
-      update();
 
       if (response.statusCode == 1) {
+        hideLoadingCategory();
+        update();
+        CategoryResponse parsedResponse = response.data;
+        if (parsedResponse.data == null) {
+          _category = [];
+        } else {
+          _category = parsedResponse.data;
+          print('category $_category');
+        }
 
-            CategoryResponse parsedResponse = response.data;
-            if(parsedResponse.data == null){
-              _category = [];
+        //toast
 
-            }
-            else{
-              _category = parsedResponse.data;
-              print('category ${_category}');
-
-            }
-
-            //toast
-
-          } else {
-            print('${response.message}');
-            AppSnackBar.errorSnackBar(response.status, response.message);
-            return;
-          }
+      } else {
+        print(response.message);
+        AppSnackBar.errorSnackBar(response.status, response.message);
+        return;
+      }
     } catch (e) {
-      hideLoading();
+      showLoadingCategory();
       update();
       rethrow;
     }
-    update();
-
-
+    finally{
+      hideLoading();
+      update();
+    }
 
   }
 
   //to add category widget show and hide
-  setAddcategoryToggle(bool val){
+  setAddcategoryToggle(bool val) {
     addCategoryToggle = val;
     update();
   }
 
   //to change tapped category
-  setCategoryTappedIndex(int val){
+  setCategoryTappedIndex(int val) {
     tappedIndex = val;
     update();
   }
 
-  clearFields(){
+  clearFields() {
     fdNameTD.text = '';
     fdPriceTD.text = '';
     fdFullPriceTD.text = '';
@@ -242,7 +237,7 @@ class AddFoodController extends GetxController {
     update();
   }
 
-  setPricetoggle(bool val){
+  setPricetoggle(bool val) {
     priceToggle = val;
     update();
   }
@@ -262,5 +257,4 @@ class AddFoodController extends GetxController {
   hideLoadingCategory() {
     isLoadingCategory = false;
   }
-
 }

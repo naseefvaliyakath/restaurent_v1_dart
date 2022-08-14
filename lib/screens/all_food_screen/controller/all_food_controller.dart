@@ -12,7 +12,7 @@ import '../../../services/service.dart';
 import '../../../widget/snack_bar.dart';
 
 class AllFoodController extends GetxController {
-  FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
+  final FoodsRepo _foodsRepo = Get.find<FoodsRepo>();
   final HttpService _httpService = Get.find<HttpService>();
   //for search field text
   late TextEditingController searchTD;
@@ -21,23 +21,18 @@ class AllFoodController extends GetxController {
 
   bool isLoading = false;
   bool isloading2 = false;
-  List<Foods>? _foods;
+  List<Foods>? _foods= [];
 
   List<Foods>? get foods => _foods;
 
-  AllFoodController() {
 
-    _foodsRepo = Get.find<FoodsRepo>();
-
-  }
 
   @override
   void onInit() async {
-
+    searchTD = TextEditingController();
    await getAllFoods();
-   searchTD = TextEditingController();
    //only send search requst after typing 500 millisecond
-   debounce(searchQuery, (callback) => searchTodayFoods(),time: const Duration(milliseconds: 500));
+   debounce(searchQuery, (callback) => searchAllFoods(),time: const Duration(milliseconds: 500));
     super.onInit();
   }
 
@@ -75,7 +70,7 @@ class AllFoodController extends GetxController {
   }
 
   //searching today foods
-  searchTodayFoods() async {
+  searchAllFoods() async {
     try {
       showLoading();
       update();
@@ -117,7 +112,7 @@ class AllFoodController extends GetxController {
       update();
 
       Map<String,dynamic>foodData={
-        'id':id,
+        'fdId':id,
         'fdIsToday': isToday
       };
       final response = await _httpService.updateData(TODAY_FOOD_UPDATE,foodData);
@@ -136,6 +131,11 @@ class AllFoodController extends GetxController {
       hideLoading();
       AppSnackBar.errorSnackBar('Error',MyDioError.dioError(e));
     }
+    catch (e) {
+      AppSnackBar.errorSnackBar('Error', 'Something wet to wrong');
+    } finally {
+      update();
+    }
 
     update();
 
@@ -149,7 +149,7 @@ class AllFoodController extends GetxController {
       update();
 
       Map<String,dynamic>foodData={
-        'id':id,
+        'fdId':id,
       };
       final response = await _httpService.delete(DELETE_FOOD,foodData);
       isloading2 = false;
@@ -166,6 +166,11 @@ class AllFoodController extends GetxController {
     } on DioError catch (e) {
       hideLoading();
       AppSnackBar.errorSnackBar('Error',MyDioError.dioError(e));
+    }
+    catch (e) {
+      AppSnackBar.errorSnackBar('Error', 'Something wet to wrong');
+    } finally {
+      update();
     }
 
     update();

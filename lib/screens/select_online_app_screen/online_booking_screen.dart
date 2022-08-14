@@ -59,7 +59,7 @@ class OnlineBookingScreen extends StatelessWidget {
                   children: [
                     InkWell(
                       onTap: () {
-                        Get.toNamed(RouteHelper.getOnlineBookingBillingScreen()) ;
+                        Get.toNamed(RouteHelper.getOnlineBookingBillingScreen(),arguments: {'holdItem':[]});
                       },
                       child: OnlineAppCard(
                         text: 'Thalabath',

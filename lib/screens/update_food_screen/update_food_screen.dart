@@ -88,6 +88,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
               : SafeArea(
                   child: ListView(
                     scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
                     children: [
                       Container(
                         height: double.maxFinite,
@@ -136,7 +137,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                             //category scrolling
                             SizedBox(
                               height: 60.h,
-                              child: ListView.builder(
+                              child: !ctrl.isError ? ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: ctrl.category!.length,
                                 itemBuilder: (BuildContext ctx, index) {
@@ -150,7 +151,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                                     text: ctrl.category![index].catName,
                                   );
                                 },
-                              ),
+                              ) : const SizedBox(),
                             ),
                             20.verticalSpace,
                             // upload image

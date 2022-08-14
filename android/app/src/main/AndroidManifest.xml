@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.restowrent_v_two">
-   <application
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application
         android:label="restowrent_v_two"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

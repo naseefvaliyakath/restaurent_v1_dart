@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -7,6 +9,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/components/button/gf_button.dart';
 import 'package:getwidget/shape/gf_button_shape.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:restowrent_v_two/routes/route_helper.dart';
 import 'package:restowrent_v_two/screens/order_view_screen/order_view%20_screen.dart';
 import '../../app_constans/app_colors.dart';
 import '../../widget/app_alerts.dart';
@@ -17,8 +21,10 @@ import '../../widget/heading_rich_text.dart';
 import '../../widget/home_delivery/home_delivery_billing_alerts.dart';
 import '../../widget/notification_icon.dart';
 import '../../widget/progress_btn_controle.dart';
+import '../../widget/progress_button.dart';
 import '../../widget/search_bar_in_billing_screen.dart';
 import '../../widget/billing_item_tile.dart';
+import '../../widget/snack_bar.dart';
 import '../../widget/take_away_screen/billing_table_heading.dart';
 import '../../widget/take_away_screen/category_drop_down.dart';
 import '../../widget/billing_food_err_card.dart';
@@ -29,8 +35,6 @@ import '../../widget/white_button_with_icon.dart';
 import '../take_away_billing screen/controller/take_away_controller.dart';
 import 'controller/home_delivery_controller.dart';
 
-
-
 class HomeDeliveryScreen extends StatefulWidget {
   const HomeDeliveryScreen({Key? key}) : super(key: key);
 
@@ -39,21 +43,20 @@ class HomeDeliveryScreen extends StatefulWidget {
 }
 
 class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
-
-
   @override
   Widget build(BuildContext context) {
-
-
-
-
     return WillPopScope(
       onWillPop: () async {
-        if (!Get.find<HomeDeliveryController>().billingItems.isEmpty) {
-          HomeDeliveryBillingAlert.askConfirm(context);
-          return false;
-        } else {
+        //if navigated from kotupdate  tab on back press not ask save in hive
+        if (Get.find<HomeDeliveryController>().isNavigateFromKotUpdate == true) {
           return true;
+        } else {
+          if (Get.find<HomeDeliveryController>().billingItems.isNotEmpty) {
+            HomeDeliveryBillingAlert.askConfirm(context);
+            return false;
+          } else {
+            return true;
+          }
         }
       },
       child: GestureDetector(
@@ -88,10 +91,15 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                                   size: 24.sp,
                                 ),
                                 onPressed: () {
+                                  //if navigated from kotupdate  tab on back press not ask save in hive
+                                  if (Get.find<HomeDeliveryController>().isNavigateFromKotUpdate == true) {
+                                    Get.back();
+                                  } else {
                                   if (Get.find<HomeDeliveryController>().billingItems.isNotEmpty) {
                                     HomeDeliveryBillingAlert.askConfirm(context);
                                   } else {
                                     Get.back();
+                                  }
                                   }
                                 },
                                 splashRadius: 24.sp,
@@ -131,15 +139,20 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                                 : BillingFoodCard(
                                     //foodBillingAlert9context
                                     onTap: () {
-                                      HomeDeliveryBillingAlert.foodBillingAlert(
-                                        context,
-                                        price: ctrl.foods?[index].fdFullPrice ?? 0,
-                                        img: ctrl.foods![index].fdImg == 'no_data'
-                                            ? 'https://mobizate.com/uploads/sample.jpg'
-                                            : ctrl.foods![index].fdImg,
-                                        name: ctrl.foods?[index].fdName ?? '',
-                                        fdId: ctrl.foods?[index].id ?? 0,
-                                      );
+                                      //if settled button clicked cant add new item
+                                      if (ctrl.isClickedSettle.value) {
+                                        AppSnackBar.errorSnackBar('This bill is already settled', 'Click new order !');
+                                      } else {
+                                        HomeDeliveryBillingAlert.foodBillingAlert(
+                                          context,
+                                          price: ctrl.foods?[index].fdFullPrice ?? 0,
+                                          img: ctrl.foods![index].fdImg == 'no_data'
+                                              ? 'https://mobizate.com/uploads/sample.jpg'
+                                              : ctrl.foods![index].fdImg,
+                                          name: ctrl.foods?[index].fdName ?? '',
+                                          fdId: ctrl.foods?[index].fdId ?? 0,
+                                        );
+                                      }
                                       //to close key bord on outside touch
                                       FocusScope.of(context).requestFocus(FocusNode());
                                     },
@@ -163,7 +176,7 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                         WhiteButtonWithIcon(
                           text: 'Enter Address',
                           icon: Icons.edit,
-                          onTap: () => deliveryAddressAlert(context),
+                          onTap: () => deliveryAddressAlert(context: context,ctrl: ctrl),
                         ),
                         ClearAllBill(onTap: () {
                           ctrl.clearAllBillItems();
@@ -176,15 +189,15 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                           BoxDecoration(border: Border.all(color: AppColors.mainColor), borderRadius: BorderRadius.circular(5.r)),
                       padding: EdgeInsets.all(3.sp),
                       width: double.maxFinite,
-                      height: 0.53.sh,
+                      height: 0.52.sh,
                       child: Column(
                         children: [
                           // table hedings
                           BillingTableHeading(),
                           6.verticalSpace,
-                          Container(
-                            height: 0.46.sh,
+                          SizedBox(
                             child: ListView.builder(
+                              shrinkWrap:true,
                               itemBuilder: (context, index) {
                                 return BillingItemTile(
                                   index: index,
@@ -208,7 +221,8 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                       child: TotelPriceTxt(price: ctrl.totelPrice),
                     ),
                     // controlle buttons
-                    Container(
+                    ctrl.isNavigateFromKotUpdate
+                        ? Container(
                         width: double.maxFinite,
                         padding: EdgeInsets.symmetric(vertical: 3.h),
                         height: 40.h,
@@ -218,12 +232,56 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Flexible(
-                                child: ProgressBtnController(
-                                  function: () async {
-                                    await  ctrl.sendOrder();
-                                  },
+                                child: ProgressButton(
+                                  btnCtrlName: 'kotUpdate',
+                                  text: 'Update KOT Order',
                                   ctrl: ctrl,
+                                  color: Colors.green,
+                                  onTap: () async {
+                                    ctrl.updateKotOrder();
+                                  },
+                                ),
+                              ),
+                              3.horizontalSpace,
+                              Flexible(
+                                child: AppMIniButton(
+                                  bgColor: Colors.redAccent,
+                                  text: 'Cancel Update',
+                                  onTap: () {
+                                    Get.offNamed(RouteHelper.getOrderViewScreen());
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ))
+                        : Container(
+                        width: double.maxFinite,
+                        padding: EdgeInsets.symmetric(vertical: 3.h),
+                        height: 40.h,
+                        child: IntrinsicHeight(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Flexible(
+                                child: ProgressButton(
+                                  btnCtrlName: 'kot',
                                   text: 'Order',
+                                  ctrl: ctrl,
+                                  color: Colors.green,
+                                  onTap: () async {
+                                    //if settled button clicked cant send order
+                                    if (ctrl.isClickedSettle.value) {
+                                      AppSnackBar.errorSnackBar('This bill is already settled', 'Click new order !');
+                                      ctrl.btnControllerKot.error();
+                                      await Future.delayed(const Duration(milliseconds: 500), () {
+                                        ctrl.btnControllerKot.reset();
+                                      });
+                                    } else {
+                                      await ctrl.sendKotOrder();
+                                    }
+                                  },
                                 ),
                               ),
                               3.horizontalSpace,
@@ -232,16 +290,20 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                                   bgColor: Color(0xffee588f),
                                   text: 'Settle',
                                   onTap: () {
-                                    billingCashScreenAlert(ctrl: ctrl, context: context);
+                                    ctrl.settleBillingCash(context, ctrl);
                                   },
                                 ),
                               ),
                               3.horizontalSpace,
                               Flexible(
-                                child: AppMIniButton(
-                                  bgColor: AppColors.mainColor_2,
+                                child: ProgressButton(
+                                  btnCtrlName: 'hold',
                                   text: 'Hold',
-                                  onTap: () {},
+                                  ctrl: ctrl,
+                                  color: AppColors.mainColor_2,
+                                  onTap: () async {
+                                    ctrl.addHoldBillItem();
+                                  },
                                 ),
                               ),
                               3.horizontalSpace,
@@ -249,7 +311,9 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                                 child: AppMIniButton(
                                   bgColor: AppColors.mainColor,
                                   text: 'KOT',
-                                  onTap: () { ctrl.kotDialogBox();},
+                                  onTap: () {
+                                    ctrl.kotDialogBox(context);
+                                  },
                                 ),
                               ),
                               3.horizontalSpace,
@@ -257,7 +321,9 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                                 child: AppMIniButton(
                                   bgColor: AppColors.mainColor,
                                   text: 'New Order',
-                                  onTap: () {},
+                                  onTap: () {
+                                    ctrl.enableNewOrder();
+                                  },
                                 ),
                               ),
                               3.horizontalSpace,
@@ -266,7 +332,7 @@ class _HomeDeliveryScreenState extends State<HomeDeliveryScreen> {
                                   bgColor: Color(0xff62c5ce),
                                   text: 'All Order',
                                   onTap: () {
-                                    Get.to(OrderViewScreen());
+                                    Get.offNamed(RouteHelper.getOrderViewScreen());
                                   },
                                 ),
                               ),

@@ -79,7 +79,7 @@ class BillingFoodCard extends StatelessWidget {
                     children: [
                       FittedBox(
                         child: Text(
-                          name,
+                          name == '' ? 'error' : name,
                           softWrap: false,
                           style: TextStyle(
                             fontSize: 12.sp,

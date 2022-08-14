@@ -16,7 +16,7 @@ class OrderBill{
   int qnt;
 
   @JsonKey(name : "price")
-  int price;
+  num price;
 
 
 

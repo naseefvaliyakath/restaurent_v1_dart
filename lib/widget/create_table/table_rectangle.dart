@@ -19,7 +19,7 @@ class TableRectangle extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-          color: AppColors.mainColor_2,
+          color: Color(0xffe75f10),
           borderRadius: BorderRadius.circular(5.r),
           border: Border.all(width: 1.sp, color: AppColors.mainColor)),
       child: Center(

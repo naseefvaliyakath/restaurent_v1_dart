@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:getwidget/components/search_bar/gf_search_bar.dart';
 import 'package:lottie/lottie.dart';
 
@@ -742,7 +743,7 @@ class _ImageShowingState extends State<ImageShowing> {
   }
 }*/
 
-import 'package:getwidget/getwidget.dart';
+/*import 'package:getwidget/getwidget.dart';
 import 'package:ticket_widget/ticket_widget.dart';
 
 
@@ -780,7 +781,7 @@ class _TicketState extends State<Ticket> {
     );
 
   }
-}
+}*/
 
 /*
 Get.defaultDialog(
@@ -861,3 +862,163 @@ onTap: () {Get.back();},
 ),
 radius: 30);
 */
+
+/*
+packageimport 'package:flutter/material.dart';
+import 'package:icon_loading_button/icon_loading_button.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:restowrent_v_two/screens/take_away_billing%20screen/controller/take_away_controller.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  MyApp({Key? key}) : super(key: key);
+
+
+  // final IconButtonController _btnController1 = IconButtonController();
+   final IconButtonController _btnController2 = IconButtonController();
+
+  @override
+  Widget build(BuildContext context) {
+    Get.put(TakeAwayController());
+    var ctrl  = TakeAwayController();
+    return MaterialApp(
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        brightness: Brightness.light,
+      ),
+      home: SafeArea(
+        child: Scaffold(
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Center(
+                child: IconLoadingButton(
+                  height: 40,
+                  width: 100,
+                  color: Colors.green,
+                  iconColor:Colors.white,
+                  valueColor: Colors.white,
+                  errorColor: const Color(0xffe0333c),
+                  successColor: Colors.green,
+                  child: Text(
+                    'print',
+                    style: GoogleFonts.openSans().copyWith(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 24.sp,
+                      color: Colors.white,
+                    ),
+                  ),
+                  iconData: Icons.access_alarm,
+                  onPressed: () async {
+                    await ctrl.insertSettledBill(
+                      fdShopId: 10,
+                      fdOrder: ctrl.billingItems,
+                      netAmount: ctrl.netTotal,
+                      discoundPersent: ctrl.discountPresent,
+                      discountCash: ctrl.discountCash,
+                      charges: ctrl.charges,
+                      grandTotel: ctrl.grandTotalNew,
+                      paymentType: 'cash',
+                      cashRecived: ctrl.cashReceived,
+                      change: ctrl.balanceChange.value,
+                    );
+                  },
+                  successIcon: Icons.check,
+                  controller: ctrl.btnController1,
+                ),
+              ),
+              Center(
+                child: IconLoadingButton(
+                  color: const Color(0xff0066ff),
+                  iconColor: Colors.white,
+                  valueColor: const Color(0xff0066ff),
+                  errorColor: const Color(0xffe0333c),
+                  successColor: const Color(0xff58B09C),
+                  child: Text(
+                    'Login with Google',
+                    style: GoogleFonts.openSans().copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                  iconData: Icons.access_alarm,
+                  onPressed: () {
+                    Future.delayed(const Duration(seconds: 1), () {
+                      _btnController2.error();
+                      Future.delayed(const Duration(seconds: 1), () {
+                        _btnController2.reset();
+                      });
+                    });
+                  },
+                  successIcon: Icons.check,
+                  controller: _btnController2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}*/
+
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
+
+import '../widget/create_table/list_tile_table_chair_widget/list_tile_rectangle_table_chair_widget.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Rounded Loading Button Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+   MyHomePage();
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Rounded Loading Button Demo'),
+        ),
+        body:  Container(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+             // ListTileRectangleTableChairWidget()
+            ],
+          ),
+        ),
+    );
+  }
+}
+
+

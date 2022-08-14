@@ -17,7 +17,18 @@ class FoodBillingAlertBody extends StatelessWidget {
   final TextEditingController ktTextCtrl;
   final Function addFoodToBill;
 
-  const FoodBillingAlertBody({Key? key, required this.name, required this.qntDecrement, required this.qntIncrement, required this.priceDecrement, required this.priceIncrement, required this.count, required this.price, required this.ktTextCtrl, required this.addFoodToBill}) : super(key: key);
+  const FoodBillingAlertBody(
+      {Key? key,
+      required this.name,
+      required this.qntDecrement,
+      required this.qntIncrement,
+      required this.priceDecrement,
+      required this.priceIncrement,
+      required this.count,
+      required this.price,
+      required this.ktTextCtrl,
+      required this.addFoodToBill})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,96 +43,114 @@ class FoodBillingAlertBody extends StatelessWidget {
           ),
           10.verticalSpace,
           //price and qnt btn
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Flexible(
-                child: Wrap(direction: Axis.vertical, crossAxisAlignment: WrapCrossAlignment.center, children: [
+          IntrinsicHeight(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Wrap(direction: Axis.vertical, crossAxisAlignment: WrapCrossAlignment.center, children: [
                   BigText(
                     text: 'QUANTITY',
                     size: 15.sp,
                   ),
-                  Card(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        10.horizontalSpace,
-                        IconButton(
-                          icon: const Icon(
-                            Icons.remove_circle,
-                          ),
-                          onPressed: () {
-                            qntDecrement;
-                          },
-                          iconSize: 24.w,
-                          color: Colors.black54,
+                  SizedBox(
+                    width: 120.w,
+                    child: FittedBox(
+                      fit: BoxFit.fitWidth,
+                      alignment: Alignment.center,
+                      child: Card(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            10.horizontalSpace,
+                            IconButton(
+                              icon: Icon(
+                                Icons.remove_circle,
+                                size: 24.sp,
+                              ),
+                              onPressed: () {
+                                qntDecrement;
+                              },
+                              iconSize: 24.w,
+                              color: Colors.black54,
+                            ),
+                            5.horizontalSpace,
+                            BigText(
+                              text: count.toString(),
+                              size: 15.w,
+                              color: AppColors.titleColor,
+                            ),
+                            5.horizontalSpace,
+                            IconButton(
+                              icon: Icon(
+                                Icons.add_circle,
+                                size: 24.sp,
+                              ),
+                              onPressed: () {
+                                qntIncrement();
+                              },
+                              iconSize: 24.w,
+                              color: Colors.black54,
+                            ),
+                          ],
                         ),
-                        5.horizontalSpace,
-                        BigText(
-                          text: count.toString(),
-                          size: 15.w,
-                          color: AppColors.titleColor,
-                        ),
-                        5.horizontalSpace,
-                        IconButton(
-                          icon: const Icon(
-                            Icons.add_circle,
-                          ),
-                          onPressed: () {
-                            qntIncrement();
-                          },
-                          iconSize: 24.w,
-                          color: Colors.black54,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ]),
-              ),
-              Flexible(
-                child: Wrap(direction: Axis.vertical, crossAxisAlignment: WrapCrossAlignment.center, children: [
+                Wrap(direction: Axis.vertical, crossAxisAlignment: WrapCrossAlignment.center, children: [
                   BigText(
                     text: 'PRICE',
                     size: 15.sp,
                   ),
-                  Card(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        10.horizontalSpace,
-                        IconButton(
-                          icon: const Icon(
-                            Icons.remove_circle,
-                          ),
-                          onPressed: () {
-                            priceDecrement();
-                          },
-                          iconSize: 24.w,
-                          color: Colors.black54,
+                  SizedBox(
+                    width: 120.w,
+                    child: FittedBox(
+                      fit: BoxFit.fitWidth,
+                      alignment: Alignment.center,
+                      child: Card(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            10.horizontalSpace,
+                            IconButton(
+                              icon: Icon(
+                                size: 24.sp,
+                                Icons.remove_circle,
+                              ),
+                              onPressed: () {
+                                priceDecrement();
+                              },
+                              iconSize: 24.w,
+                              color: Colors.black54,
+                            ),
+                            5.horizontalSpace,
+                            BigText(
+                              text: price.toString(),
+                              size: 15.w,
+                              color: AppColors.titleColor,
+                            ),
+                            5.horizontalSpace,
+                            IconButton(
+                              icon: Icon(
+                                size: 24.sp,
+                                Icons.add_circle,
+                              ),
+                              onPressed: () {
+                                priceIncrement();
+                              },
+                              iconSize: 24.w,
+                              color: Colors.black54,
+                            ),
+                          ],
                         ),
-                        5.horizontalSpace,
-                        BigText(
-                          text: price.toString(),
-                          size: 15.w,
-                          color: AppColors.titleColor,
-                        ),
-                        5.horizontalSpace,
-                        IconButton(
-                          icon: const Icon(
-                            Icons.add_circle,
-                          ),
-                          onPressed: () {
-                            priceIncrement();
-                          },
-                          iconSize: 24.w,
-                          color: Colors.black54,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ]),
-              ),
-            ],
+              ],
+            ),
           ),
           10.verticalSpace,
           //kitchen text
@@ -129,14 +158,16 @@ class FoodBillingAlertBody extends StatelessWidget {
             borderRadius: 10.r,
             hintText: 'Add Kitchen Text',
             textEditingController: ktTextCtrl,
-            maxLIne: 2, onChange: (_) {},
+            maxLIne: 2,
+            onChange: (_) {},
           ),
           10.verticalSpace,
-          AppMIniButton(text: 'Add Item', bgColor: AppColors.mainColor,
-              onTap: (){
+          AppMIniButton(
+              text: 'Add Item',
+              bgColor: AppColors.mainColor,
+              onTap: () {
                 addFoodToBill();
-          })
-          ,
+              }),
           5.verticalSpace,
         ],
       ),

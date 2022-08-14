@@ -6,15 +6,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:restowrent_v_two/app_constans/app_colors.dart';
 import 'package:restowrent_v_two/widget/big_text.dart';
 
-class AddCatogeriesTextField extends StatelessWidget {
+class AddCategorysTextField extends StatelessWidget {
   final Function onTapAdd;
   final Function onTapBack;
+  final TextEditingController roomNameController;
 
-
-  const AddCatogeriesTextField({Key? key, required this.onTapAdd, required this.onTapBack}) : super(key: key);
+   AddCategorysTextField({Key? key, required this.onTapAdd, required this.onTapBack, required this.roomNameController}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
     return Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
@@ -43,21 +44,16 @@ class AddCatogeriesTextField extends StatelessWidget {
                 ),
                 Flexible(
                   child: TextField(
-                    controller: TextEditingController(),
+                    controller: roomNameController,
                     maxLines: 1,
                     autofocus: true,
                     decoration: InputDecoration(
                       hintText: 'Name',
+                      border: InputBorder.none,
                       hintStyle:  TextStyle(color: AppColors.textGrey,fontSize:14.sp,),
                       filled: true,
                       isDense: true,
-                      fillColor: AppColors.textHolder,
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.r),
-                          borderSide: BorderSide(color: Colors.white, width: 1.sp)),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.r),
-                          borderSide: BorderSide(color: Colors.white, width: 1.sp)),
+                      fillColor: Colors.white,
                     ),
                   ),
                 ),

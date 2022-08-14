@@ -1,11 +1,12 @@
 import 'package:get/get.dart';
 
-import 'create_table_controller.dart';
+import '../controller/create_table_controller.dart';
 
 class CreateTableBinding implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<CreateTableController>(() => CreateTableController());
+
+  Get.lazyPut<CreateTableController>(() => CreateTableController());
 
   }
 }

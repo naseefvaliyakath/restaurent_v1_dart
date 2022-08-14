@@ -4,10 +4,10 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:restowrent_v_two/app_constans/hive_costants.dart';
 class MyLocalStorage extends GetxController {
 
+  //this hive box for use like shared preferences not like data base
   // to save  details temperly
   Future<void> setData(String key , dynamic data) async {
     try {
-      await Hive.initFlutter();
       var box = await Hive.openBox(HIVE_BOX_NAME);
       box.put(key,data );
       print('Hive added data');
@@ -21,7 +21,6 @@ class MyLocalStorage extends GetxController {
   //to read  data
   Future<dynamic> readData(String key) async {
     try {
-      await Hive.initFlutter();
       var box = await Hive.openBox(HIVE_BOX_NAME);
       var result = box.get(key);
       print('Hive Result : $result');

@@ -41,7 +41,7 @@ class OrderStatusCard extends StatelessWidget {
                 color: Colors.black.withOpacity(0.3),
               )
             ],
-            border: Border.all(color: Colors.redAccent, width: 1.sp)),
+            border: Border.all(color: Colors.redAccent, width: 3.sp)),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -64,7 +64,7 @@ class OrderStatusCard extends StatelessWidget {
                     children: [
                       FittedBox(
                         child: Text(
-                          orderType,
+                          orderType == '' ? 'error' : orderType,
                           softWrap: false,
                           style: TextStyle(
                             fontSize: 21.sp,
@@ -77,7 +77,7 @@ class OrderStatusCard extends StatelessWidget {
                       5.verticalSpace,
                       FittedBox(
                         child: Text(
-                          orderStatus,
+                          orderStatus == '' ? 'error' : orderStatus,
                           softWrap: false,
                           style: TextStyle(
                             fontSize: 18.sp,
@@ -119,7 +119,7 @@ class OrderStatusCard extends StatelessWidget {
                   Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                     FittedBox(
                       child: Text(
-                        name,
+                        name == '' ? 'error' : name,
                         softWrap: false,
                         style: TextStyle(
                           fontSize: 20.sp,
@@ -145,7 +145,7 @@ class OrderStatusCard extends StatelessWidget {
                     5.verticalSpace,
                     FittedBox(
                       child: Text(
-                        dateTime,
+                        dateTime == '' ? 'error' : dateTime,
                         softWrap: false,
                         style: TextStyle(
                           fontSize: 10.sp,
@@ -157,7 +157,8 @@ class OrderStatusCard extends StatelessWidget {
                     ),
                     5.verticalSpace,
                     FittedBox(
-                      child: Text(price,
+                      child: Text(
+                          'Total Rs : $price' ,
                           softWrap: false,
                           style: TextStyle(
                             fontSize: 15.sp,

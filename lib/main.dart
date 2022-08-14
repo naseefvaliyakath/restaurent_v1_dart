@@ -1,18 +1,17 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:restowrent_v_two/hive_database/hive_init.dart';
 import 'package:restowrent_v_two/routes/route_helper.dart';
 import 'package:restowrent_v_two/screens/home_screen/home_screen.dart';
-
 import 'app_constans/app_colors.dart';
 
-Future<void> main() async {
 
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MyHiveInit.initMyHive();
   runApp(const MyApp());
 }
 
