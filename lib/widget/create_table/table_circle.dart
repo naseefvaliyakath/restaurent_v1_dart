@@ -9,28 +9,35 @@ class TableCircle extends StatelessWidget {
   final double height;
   final String text;
 
+  final Function onTap;
+  final Function onLongTap;
+
   const TableCircle(
-      {Key? key, required this.width, required this.height, required this.text})
+      {Key? key, required this.width, required this.height, required this.text, required this.onTap, required this.onLongTap})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(100),
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-            color: Color(0xffe75f10),
-            borderRadius: BorderRadius.circular(5.r),
-            border: Border.all(width: 1.sp, color: AppColors.mainColor)),
-        child: Center(
-            child: RotatedBox(
-                quarterTurns: 3,
-                child: Text(
-                  text,
-                  style: TextStyle(color: Colors.white),
-                ))),
+      child: InkWell(
+        onTap: () async {await onTap();},
+        onLongPress: () async {await onLongTap();},
+        child: Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+              color: Color(0xffe75f10),
+              borderRadius: BorderRadius.circular(5.r),
+              border: Border.all(width: 1.sp, color: AppColors.mainColor)),
+          child: Center(
+              child: RotatedBox(
+                  quarterTurns: 3,
+                  child: Text(
+                    text,
+                    style: TextStyle(color: Colors.white),
+                  ))),
+        ),
       ),
     );
   }

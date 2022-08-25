@@ -44,6 +44,8 @@ class SquareTableChairWidget extends StatelessWidget {
                       //table
                       Center(
                         child: TableRectangle(
+                          onLongTap: (){},
+                          onTap: (){},
                           text: 'TABLE',
                           width: constraints.maxWidth - 100.w,
                           height: constraints.maxHeight - 100.w,

@@ -5,6 +5,7 @@ import 'package:getwidget/getwidget.dart';
 class AppMIniButton extends StatelessWidget {
   final String text;
   final Color bgColor;
+  final double textSize;
   final Function onTap;
 
   const AppMIniButton({
@@ -12,6 +13,7 @@ class AppMIniButton extends StatelessWidget {
     required this.text,
     required this.bgColor,
     required this.onTap,
+    this.textSize = -1,
   }) : super(key: key);
 
   @override
@@ -31,7 +33,7 @@ class AppMIniButton extends StatelessWidget {
           softWrap: false,
           overflow: TextOverflow.clip,
           maxLines: 1,
-          style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 16.sp),
+          style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: textSize == -1 ? 16.sp : textSize),
         ),
 
       ),

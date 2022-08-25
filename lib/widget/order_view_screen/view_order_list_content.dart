@@ -46,6 +46,7 @@ class ViewOrderListContent extends StatelessWidget {
                       qnt: ctrl.kotBillingItems?[kotInt].fdOrder?[index].qnt ?? 0,
                       kitchenNote: ctrl.kotBillingItems?[kotInt].fdOrder?[index].ktNote ?? 'Error',
                       price: ctrl.kotBillingItems?[kotInt].fdOrder?[index].price.toDouble() ?? 0,
+                      ordStatus: ctrl.kotBillingItems?[kotInt].fdOrder?[index].ordStatus ?? 'pending',
                       onLongTap: () {},
                     );
                   },

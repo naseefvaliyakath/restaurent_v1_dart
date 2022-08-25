@@ -10,6 +10,8 @@ import 'package:restowrent_v_two/widget/text_field_widget.dart';
 import 'package:get/get.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import '../app_min_button.dart';
+import '../cash_bill_show_alert_for_billing_page.dart';
+import '../cash_bill_show_alert_for_order_view.dart';
 import '../horezondal_divider.dart';
 import '../progress_button.dart';
 
@@ -222,7 +224,20 @@ class OrderSettileScreen extends StatelessWidget {
                       child: AppMIniButton(
                         bgColor: Color(0xff4caf50),
                         text: 'Print',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pop(context);
+                          cashBillAlertForBillingViewPage(
+                              context: context,
+                              grandTotal:ctrl.grandTotalNew,
+                              discountPercent: ctrl.discountPresent,
+                              discountCash: ctrl.discountCash,
+                              charges: ctrl.charges,
+                              billingItems: ctrl.billingItems,
+                              change: ctrl.balanceChange.value,
+                              netAmount:ctrl.netTotal,
+                              cashReceived:ctrl.cashReceived,
+                              orderType: ctrl.orderType.toString().toUpperCase());
+                        },
                       ),
                     ),
                     3.horizontalSpace,

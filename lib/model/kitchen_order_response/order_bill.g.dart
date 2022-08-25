@@ -12,6 +12,7 @@ OrderBill _$OrderBillFromJson(Map<String, dynamic> json) => OrderBill(
       json['qnt'] as int,
       json['price'] as num,
       json['ktNote'] as String,
+      json['ordStatus'] as String,
     );
 
 Map<String, dynamic> _$OrderBillToJson(OrderBill instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$OrderBillToJson(OrderBill instance) => <String, dynamic>{
       'qnt': instance.qnt,
       'price': instance.price,
       'ktNote': instance.ktNote,
+      'ordStatus': instance.ordStatus,
     };

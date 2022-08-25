@@ -10,6 +10,7 @@ class ViewOrderListItemTile extends StatelessWidget {
   final int qnt;
   final double price;
   final String kitchenNote;
+  final String ordStatus;
   final Function onLongTap;
 
   const ViewOrderListItemTile(
@@ -20,7 +21,8 @@ class ViewOrderListItemTile extends StatelessWidget {
       required this.price,
       required this.kitchenNote,
       required this.onLongTap,
-      this.index = 0})
+      this.index = 0,
+        required this.ordStatus})
       : super(key: key);
 
   @override
@@ -128,7 +130,7 @@ class ViewOrderListItemTile extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    'Pending',
+                    ordStatus,
                     style: TextStyle(fontSize: 13.sp, color: Colors.red),
                   ),
                 ),

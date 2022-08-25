@@ -30,8 +30,10 @@ class TakeAwayBillingScreen extends StatefulWidget {
 }
 
 class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
+
   @override
   Widget build(BuildContext context) {
+
     return WillPopScope(
       onWillPop: () async {
         //if navigated from kotupdate  tab on back press not ask save in hive
@@ -179,7 +181,7 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                           6.verticalSpace,
                           SizedBox(
                             child: ListView.builder(
-                              shrinkWrap:true,
+                              shrinkWrap: true,
                               itemBuilder: (context, index) {
                                 return BillingItemTile(
                                   index: index,
@@ -269,7 +271,7 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                                     child: AppMIniButton(
                                       bgColor: Color(0xffee588f),
                                       text: 'Settle',
-                                      onTap: () {
+                                      onTap: () async {
                                         ctrl.settleBillingCash(context, ctrl);
                                       },
                                     ),
@@ -330,6 +332,3 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
     );
   }
 }
-
-//0.5 fpr headin
-//0.7 for heading

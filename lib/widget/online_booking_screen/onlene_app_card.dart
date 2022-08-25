@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 import 'package:restowrent_v_two/widget/big_text.dart';
 
 class OnlineAppCard extends StatelessWidget {
@@ -34,9 +36,21 @@ class OnlineAppCard extends StatelessWidget {
               Container(
                 padding: EdgeInsets.only(top: 10.h),
                 width: 1.sw * 0.3,
-                child: ClipRRect(
-                  child: Image.asset(img),
-                  borderRadius:  BorderRadius.all(Radius.circular(20.r)),
+                child:  ClipRRect(
+                  borderRadius: BorderRadius.circular(20.r),
+                  child: CachedNetworkImage(
+                    width: 100.sp,
+                    height: 130.sp,
+                    imageUrl: img,
+                    placeholder: (context, url) => Lottie.asset(
+                      'assets/lottie/img_holder.json',
+                      fit: BoxFit.fill,
+                    ),
+                    errorWidget: (context, url, error) => Lottie.asset(
+                      'assets/lottie/error.json',
+                    ),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               10.verticalSpace,

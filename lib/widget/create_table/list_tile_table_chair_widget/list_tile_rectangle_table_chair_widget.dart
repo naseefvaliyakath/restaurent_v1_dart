@@ -8,6 +8,7 @@ import 'package:restowrent_v_two/screens/create_table_screen/controller/create_t
 import 'package:restowrent_v_two/screens/table_manage_screen/controller/table_manage_controller.dart';
 import 'package:restowrent_v_two/widget/create_table/table_rectangle.dart';
 import '../../../model/kitchen_order_response/kitchen_order.dart';
+import '../../app_alerts.dart';
 import '../../snack_bar.dart';
 import '../chair_widget.dart';
 import '../chair_widget_with_onTap.dart';
@@ -66,6 +67,22 @@ class ListTileRectangleTableChairWidget extends StatelessWidget {
                     //table
                     Center(
                       child: TableRectangle(
+                        onLongTap: () {
+                          bool isAnyOrderInTable = false;
+                          for (var element in ctrl.kotTableChairSetList) {
+                            if (element.tableId == tbChr.tableId) {
+                              isAnyOrderInTable = true;
+                              break;
+                            }
+                          }
+
+                          deleteAlert(
+                              context: context,
+                              onTap: () async {
+                                ctrl.deleteTable(tbChr.tableId, isAnyOrderInTable);
+                              });
+                        },
+                        onTap: () {},
                         text: 'TABLE $tableIndex',
                         width: constraints.maxWidth - 100.w,
                         height: constraints.maxHeight - 100.w,
@@ -89,7 +106,7 @@ class ListTileRectangleTableChairWidget extends StatelessWidget {
                             //in kotTbSet contain all kotTableChairSet details ({Kot_id:1,tableId:2,position:L'}) not for one Kot
                             List<KotTableChairSet> kotTbSet = ctrl.kotTableChairSetList;
                             //this contain all kot order
-                            List<KitchenOrder>? _kotBillingItems = ctrl.kotBillingItems ?? [];
+                            List<KitchenOrder>? kotBillingItems = ctrl.kotBillingItems ?? [];
 
                             for (var element in kotTbSet) {
                               //check this tale is in kotTable list
@@ -105,7 +122,7 @@ class ListTileRectangleTableChairWidget extends StatelessWidget {
                                     tbChrIndexInDb = element.tbChrIndexInDb;
 
                                     //ckhecking in this kotId multiple chair is shared
-                                    for (var element in _kotBillingItems) {
+                                    for (var element in kotBillingItems) {
                                       if (element.Kot_id == kotId) {
                                         if (element.kotTableChairSet!.length > 1) {
                                           isMultipleOrderInKOt = true;
@@ -138,7 +155,9 @@ class ListTileRectangleTableChairWidget extends StatelessWidget {
                                   //if its in shifted mode kotChair will gray color
                                   : isChairHasOrder && (ctrl.chairShiftMode || ctrl.linkChairMode)
                                       ? Colors.grey
-                                      : isMultipleOrderInKOt ?  Colors.primaries[colorCodeFromDb] : Colors.deepOrange,
+                                      : isMultipleOrderInKOt
+                                          ? Colors.primaries[colorCodeFromDb]
+                                          : Colors.deepOrange,
                               text: 'C ${index + 1}',
                               onTap: () async {
                                 //check if clicked  in kotChair
@@ -159,27 +178,43 @@ class ListTileRectangleTableChairWidget extends StatelessWidget {
                         width: 40.w,
                         height: constraints.maxHeight - 100.w,
                         child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: List<Widget>.generate(rightChairCount, (index) {
-                              bool isChairHasOrder = false;
-                              int kotId = -1;
-                              List<KotTableChairSet> kotTbSet = ctrl.kotTableChairSetList;
-                              for (var element in kotTbSet) {
-                                //check this tale is in kotTable list
-                                if (element.tableId == tbChr.tableId) {
-                                  //then check this postion is in kotTable list
-                                  if (element.position == 'R') {
-                                    //then check index of chair is index of order
-                                    if (element.chrIndex == index) {
-                                      isChairHasOrder = true;
-                                      //kot id will send to chair widget to orderView
-                                      kotId = element.Kot_id;
-                                      //brake and out from the loop if one chair is fount
-                                      break;
-                                    } else {
-                                      isChairHasOrder = false;
-                                      kotId = -1;
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List<Widget>.generate(leftChairCount, (index) {
+                            bool isChairHasOrder = false;
+                            int kotId = -1;
+                            int tbChrIndexInDb = -1;
+                            bool isMultipleOrderInKOt = false;
+                            int colorCodeFromDb = 111;
+                            //in kotTbSet contain all kotTableChairSet details ({Kot_id:1,tableId:2,position:L'}) not for one Kot
+                            List<KotTableChairSet> kotTbSet = ctrl.kotTableChairSetList;
+                            //this contain all kot order
+                            List<KitchenOrder>? kotBillingItems = ctrl.kotBillingItems ?? [];
+
+                            for (var element in kotTbSet) {
+                              //check this tale is in kotTable list
+                              if (element.tableId == tbChr.tableId) {
+                                //then check this position is in kotTable list
+                                if (element.position == 'R') {
+                                  //then check index of chair is index of order
+                                  if (element.chrIndex == index) {
+                                    isChairHasOrder = true;
+                                    //kot id will send to chair widget to orderView
+                                    kotId = element.Kot_id;
+                                    //this is index of chair in kotOrder
+                                    tbChrIndexInDb = element.tbChrIndexInDb;
+
+                                    //ckhecking in this kotId multiple chair is shared
+                                    for (var element in kotBillingItems) {
+                                      if (element.Kot_id == kotId) {
+                                        if (element.kotTableChairSet!.length > 1) {
+                                          isMultipleOrderInKOt = true;
+                                          colorCodeFromDb = element.orderColor;
+                                        }
+                                      }
                                     }
+
+                                    //brake and out from the loop if one chair is fount
+                                    break;
                                   } else {
                                     isChairHasOrder = false;
                                     kotId = -1;
@@ -188,15 +223,33 @@ class ListTileRectangleTableChairWidget extends StatelessWidget {
                                   isChairHasOrder = false;
                                   kotId = -1;
                                 }
+                              } else {
+                                isChairHasOrder = false;
+                                kotId = -1;
                               }
-                              return ChairWidgetWithOnTap(
-                                color: !isChairHasOrder ? Colors.green : Colors.deepOrange,
-                                text: 'C ${index + 1}',
-                                onTap: () async {
-                                  await onChairTap('R', index, kotId);
-                                },
-                              );
-                            }).toList(growable: true)),
+                            }
+
+                            // print('isMultipleOrderInKOt $isMultipleOrderInKOt color $colorCodeFromDb');
+                            return ChairWidgetWithOnTap(
+                              //check if shifted mode and the chair has kotOrder then it will hide
+                              color: !isChairHasOrder
+                                  ? Colors.green
+                                  //if its in shifted mode kotChair will gray color
+                                  : isChairHasOrder && (ctrl.chairShiftMode || ctrl.linkChairMode)
+                                      ? Colors.grey
+                                      : isMultipleOrderInKOt
+                                          ? Colors.primaries[colorCodeFromDb]
+                                          : Colors.deepOrange,
+                              text: 'C ${index + 1}',
+                              onTap: () async {
+                                //check if clicked  in kotChair
+                                isChairHasOrder && (ctrl.chairShiftMode || ctrl.linkChairMode)
+                                    ? AppSnackBar.errorSnackBar('Chair already in use!', 'Pleas select other Chair !')
+                                    : await onChairTap('R', index, kotId, tbChrIndexInDb);
+                              },
+                            );
+                          }).toList(growable: true),
+                        ),
                       ),
                     ),
                     //top side
@@ -207,27 +260,43 @@ class ListTileRectangleTableChairWidget extends StatelessWidget {
                         width: constraints.maxWidth - 100.w,
                         height: 40.w,
                         child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: List<Widget>.generate(topChairCount, (index) {
-                              bool isChairHasOrder = false;
-                              int kotId = -1;
-                              List<KotTableChairSet> kotTbSet = ctrl.kotTableChairSetList;
-                              for (var element in kotTbSet) {
-                                //check this tale is in kotTable list
-                                if (element.tableId == tbChr.tableId) {
-                                  //then check this postion is in kotTable list
-                                  if (element.position == 'T') {
-                                    //then check index of chair is index of order
-                                    if (element.chrIndex == index) {
-                                      isChairHasOrder = true;
-                                      //kot id will send to chair widget to orderView
-                                      kotId = element.Kot_id;
-                                      //brake and out from the loop if one chair is fount
-                                      break;
-                                    } else {
-                                      isChairHasOrder = false;
-                                      kotId = -1;
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List<Widget>.generate(leftChairCount, (index) {
+                            bool isChairHasOrder = false;
+                            int kotId = -1;
+                            int tbChrIndexInDb = -1;
+                            bool isMultipleOrderInKOt = false;
+                            int colorCodeFromDb = 111;
+                            //in kotTbSet contain all kotTableChairSet details ({Kot_id:1,tableId:2,position:L'}) not for one Kot
+                            List<KotTableChairSet> kotTbSet = ctrl.kotTableChairSetList;
+                            //this contain all kot order
+                            List<KitchenOrder>? kotBillingItems = ctrl.kotBillingItems ?? [];
+
+                            for (var element in kotTbSet) {
+                              //check this tale is in kotTable list
+                              if (element.tableId == tbChr.tableId) {
+                                //then check this position is in kotTable list
+                                if (element.position == 'T') {
+                                  //then check index of chair is index of order
+                                  if (element.chrIndex == index) {
+                                    isChairHasOrder = true;
+                                    //kot id will send to chair widget to orderView
+                                    kotId = element.Kot_id;
+                                    //this is index of chair in kotOrder
+                                    tbChrIndexInDb = element.tbChrIndexInDb;
+
+                                    //ckhecking in this kotId multiple chair is shared
+                                    for (var element in kotBillingItems) {
+                                      if (element.Kot_id == kotId) {
+                                        if (element.kotTableChairSet!.length > 1) {
+                                          isMultipleOrderInKOt = true;
+                                          colorCodeFromDb = element.orderColor;
+                                        }
+                                      }
                                     }
+
+                                    //brake and out from the loop if one chair is fount
+                                    break;
                                   } else {
                                     isChairHasOrder = false;
                                     kotId = -1;
@@ -236,15 +305,33 @@ class ListTileRectangleTableChairWidget extends StatelessWidget {
                                   isChairHasOrder = false;
                                   kotId = -1;
                                 }
+                              } else {
+                                isChairHasOrder = false;
+                                kotId = -1;
                               }
-                              return ChairWidgetWithOnTap(
-                                color: !isChairHasOrder ? Colors.green : Colors.deepOrange,
-                                text: 'C ${index + 1}',
-                                onTap: () async {
-                                  await onChairTap('T', index, kotId);
-                                },
-                              );
-                            }).toList(growable: true)),
+                            }
+
+                            // print('isMultipleOrderInKOt $isMultipleOrderInKOt color $colorCodeFromDb');
+                            return ChairWidgetWithOnTap(
+                              //check if shifted mode and the chair has kotOrder then it will hide
+                              color: !isChairHasOrder
+                                  ? Colors.green
+                                  //if its in shifted mode kotChair will gray color
+                                  : isChairHasOrder && (ctrl.chairShiftMode || ctrl.linkChairMode)
+                                      ? Colors.grey
+                                      : isMultipleOrderInKOt
+                                          ? Colors.primaries[colorCodeFromDb]
+                                          : Colors.deepOrange,
+                              text: 'C ${index + 1}',
+                              onTap: () async {
+                                //check if clicked  in kotChair
+                                isChairHasOrder && (ctrl.chairShiftMode || ctrl.linkChairMode)
+                                    ? AppSnackBar.errorSnackBar('Chair already in use!', 'Pleas select other Chair !')
+                                    : await onChairTap('T', index, kotId, tbChrIndexInDb);
+                              },
+                            );
+                          }).toList(growable: true),
+                        ),
                       ),
                     ),
                     //bottom side
@@ -256,20 +343,40 @@ class ListTileRectangleTableChairWidget extends StatelessWidget {
                         height: 40.w,
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: List<Widget>.generate(bottomChairCount, (index) {
+                            children: List<Widget>.generate(leftChairCount, (index) {
                               bool isChairHasOrder = false;
                               int kotId = -1;
+                              int tbChrIndexInDb = -1;
+                              bool isMultipleOrderInKOt = false;
+                              int colorCodeFromDb = 111;
+                              //in kotTbSet contain all kotTableChairSet details ({Kot_id:1,tableId:2,position:L'}) not for one Kot
                               List<KotTableChairSet> kotTbSet = ctrl.kotTableChairSetList;
+                              //this contain all kot order
+                              List<KitchenOrder>? kotBillingItems = ctrl.kotBillingItems ?? [];
+
                               for (var element in kotTbSet) {
                                 //check this tale is in kotTable list
                                 if (element.tableId == tbChr.tableId) {
-                                  //then check this postion is in kotTable list
+                                  //then check this position is in kotTable list
                                   if (element.position == 'B') {
                                     //then check index of chair is index of order
                                     if (element.chrIndex == index) {
                                       isChairHasOrder = true;
                                       //kot id will send to chair widget to orderView
                                       kotId = element.Kot_id;
+                                      //this is index of chair in kotOrder
+                                      tbChrIndexInDb = element.tbChrIndexInDb;
+
+                                      //ckhecking in this kotId multiple chair is shared
+                                      for (var element in kotBillingItems) {
+                                        if (element.Kot_id == kotId) {
+                                          if (element.kotTableChairSet!.length > 1) {
+                                            isMultipleOrderInKOt = true;
+                                            colorCodeFromDb = element.orderColor;
+                                          }
+                                        }
+                                      }
+
                                       //brake and out from the loop if one chair is fount
                                       break;
                                     } else {
@@ -285,11 +392,24 @@ class ListTileRectangleTableChairWidget extends StatelessWidget {
                                   kotId = -1;
                                 }
                               }
+
+                              // print('isMultipleOrderInKOt $isMultipleOrderInKOt color $colorCodeFromDb');
                               return ChairWidgetWithOnTap(
-                                color: !isChairHasOrder ? Colors.green : Colors.deepOrange,
+                                //check if shifted mode and the chair has kotOrder then it will hide
+                                color: !isChairHasOrder
+                                    ? Colors.green
+                                    //if its in shifted mode kotChair will gray color
+                                    : isChairHasOrder && (ctrl.chairShiftMode || ctrl.linkChairMode)
+                                        ? Colors.grey
+                                        : isMultipleOrderInKOt
+                                            ? Colors.primaries[colorCodeFromDb]
+                                            : Colors.deepOrange,
                                 text: 'C ${index + 1}',
                                 onTap: () async {
-                                  await onChairTap('B', index, kotId);
+                                  //check if clicked  in kotChair
+                                  isChairHasOrder && (ctrl.chairShiftMode || ctrl.linkChairMode)
+                                      ? AppSnackBar.errorSnackBar('Chair already in use!', 'Pleas select other Chair !')
+                                      : await onChairTap('B', index, kotId, tbChrIndexInDb);
                                 },
                               );
                             }).toList(growable: true)),

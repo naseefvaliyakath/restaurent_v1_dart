@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -16,11 +17,16 @@ import '../../../model/kitchen_order_response/kitchen_order.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../../../model/kitchen_order_response/kitchen_order_array.dart';
 import '../../../model/my_response.dart';
+import '../../../model/room_respons/room.dart';
+import '../../../model/room_respons/room_response.dart';
 import '../../../model/settled_order_response/settled_order_array.dart';
+import '../../../model/table_chair_set/table_chair_set.dart';
+import '../../../model/table_chair_set/table_chair_set_response.dart';
 import '../../../repository/foods_repo.dart';
 import '../../../routes/route_helper.dart';
 import '../../../services/service.dart';
 import '../../../widget/app_alerts.dart';
+import '../../../widget/kot_bill_show_alert.dart';
 import '../../../widget/snack_bar.dart';
 
 class OrderViewController extends GetxController {
@@ -40,6 +46,7 @@ class OrderViewController extends GetxController {
   //this value will get when settle button is click in   settleKotBillingCash() is calling
   int indexFromKotOrder = -1;
 
+
   //this value will get when update button is click in   updateSettleBillingCash() is calling
   int indexSettledOrder = -1;
 
@@ -47,6 +54,15 @@ class OrderViewController extends GetxController {
   var isClickedSettle = false.obs;
   final RoundedLoadingButtonController btnControllerSettle = RoundedLoadingButtonController();
   final RoundedLoadingButtonController btnControllerCancellKOtOrder = RoundedLoadingButtonController();
+
+  List<Room>? _room = [];
+
+  List<Room>? get room => _room;
+
+  //all table chair set
+  List<TableChairSet> _tableSetLIst = [];
+
+  List<TableChairSet> get tableSetLIst => _tableSetLIst;
 
   var grandTotal = 0.0.obs;
   var balanceChange = 0.0.obs;
@@ -77,6 +93,15 @@ class OrderViewController extends GetxController {
 
   List<HiveHoldItem>? get holdBillingItems => _holdBillingItems;
 
+  //thi will used to chek navigation to order view scrren or not
+  //if to navigation then socket not dispose
+  //dispose in tablemage screen (socket bug)
+  //else socket is disposed after its connected in table screen
+  bool isToTableManageScreen = false;
+
+  final player = AudioPlayer();
+  final cache = AudioCache();
+
   @override
   void onInit() async {
     _socket.connect();
@@ -86,6 +111,8 @@ class OrderViewController extends GetxController {
     settleChargesCtrl = TextEditingController().obs;
     settleGrandTotelCtrl = TextEditingController().obs;
     settleCashRecivedCtrl = TextEditingController().obs;
+    geTableSet();
+    getRoom();
     getAllHoldOrder();
     setUpKitchenOrderFromDbListner(); //first load kotBill data from db
     setUpKitchenOrderSingleListener(); //for new kot order
@@ -94,17 +121,28 @@ class OrderViewController extends GetxController {
 
   @override
   void onClose() {
-    _socket.close();
-    _socket.dispose();
+    if(!isToTableManageScreen){
+      print('socket disposed');
+      _socket.close();
+      _socket.dispose();
+    }
+    print('socket not disposed');
     super.onClose();
   }
 
   //for single order adding live
   setUpKitchenOrderSingleListener() {
     try {
-      KitchenOrder order =
-          KitchenOrder(fdOrderType: '', totelPrice: 0, fdOrderStatus: '', Kot_id: 0, errorCode: '', totalSize: 0, error: true, orderColor: 111);
-      _socket.on('kitchen_orders_receive', (data) {
+      KitchenOrder order = KitchenOrder(
+          fdOrderType: '',
+          totelPrice: 0,
+          fdOrderStatus: '',
+          Kot_id: 0,
+          errorCode: '',
+          totalSize: 0,
+          error: true,
+          orderColor: 111);
+      _socket.on('kitchen_orders_receive', (data) async {
         print('kotorder single rcv');
         order = KitchenOrder.fromJson(data);
         //no error
@@ -119,7 +157,12 @@ class OrderViewController extends GetxController {
             }
           }
           //add if not exist
-          isExist == false ? _kotBillingItems!.add(order) : _kotBillingItems = _kotBillingItems;
+          if (isExist == false) {
+            _kotBillingItems!.insert(0, order);
+            ringAlert();
+          } else {
+            _kotBillingItems = _kotBillingItems;
+          }
           update();
         } else {
           return;
@@ -157,6 +200,11 @@ class OrderViewController extends GetxController {
   //this emit will recive and emit from server to refresh data
   refreshDatabaseKot() {
     _socket.emit('refresh-database-order');
+  }
+
+  //this emit will recive and emit from server to refresh data
+  ringKot(int kotId) {
+    _socket.emit('for-ring-to-kitchen',kotId);
   }
 
   ////settle bill////
@@ -424,7 +472,7 @@ class OrderViewController extends GetxController {
     }
 
     //delete the hold item from hold item list
-   await _hiveHoldBillController.deleteHoldBill(index: holdItemIndex);
+    await _hiveHoldBillController.deleteHoldBill(index: holdItemIndex);
   }
 
   //edit kot order or update kot order
@@ -432,36 +480,31 @@ class OrderViewController extends GetxController {
     switch (orderType) {
       case "Takeaway":
         {
-          Get.offNamed(RouteHelper.getTakeAwayBillingScreen(),
-              arguments: {'kotItem': kotBillingOrder});
+          Get.offNamed(RouteHelper.getTakeAwayBillingScreen(), arguments: {'kotItem': kotBillingOrder});
         }
         break;
 
       case "Home delivery":
         {
-          Get.offNamed(RouteHelper.getHomeDeliveryScreen(),
-              arguments: {'kotItem': kotBillingOrder});
+          Get.offNamed(RouteHelper.getHomeDeliveryScreen(), arguments: {'kotItem': kotBillingOrder});
         }
         break;
 
       case "Online":
         {
-          Get.offNamed(RouteHelper.getOnlineBookingBillingScreen(),
-              arguments: {'kotItem': kotBillingOrder});
+          Get.offNamed(RouteHelper.getOnlineBookingBillingScreen(), arguments: {'kotItem': kotBillingOrder});
         }
         break;
 
       case "Dining":
         {
-          Get.offNamed(RouteHelper.getDiningBillingScreen(),
-              arguments: {'kotItem': kotBillingOrder});
+          Get.offNamed(RouteHelper.getDiningBillingScreen(), arguments: {'kotItem': kotBillingOrder});
         }
         break;
 
       default:
         {
-          Get.offNamed(RouteHelper.getTakeAwayBillingScreen(),
-              arguments: {'kotItem': kotBillingOrder});
+          Get.offNamed(RouteHelper.getTakeAwayBillingScreen(), arguments: {'kotItem': kotBillingOrder});
         }
         break;
     }
@@ -497,6 +540,99 @@ class OrderViewController extends GetxController {
     }
   }
 
+  //kot printing dialog
+  kotDialogBox(context, billingItems, kotId) {
+    //this for getting tghe table postion and room name to show in alert
+    int tableId = -1;
+    int tableIndex = -1;
+    String chrPos = 'L';
+    int chrIndex = -1;
+    String tableNameForKot = '';
+    String roomName = '';
+
+    //itrating _kotBill
+    for (var kotOrder in _kotBillingItems!) {
+      if (kotOrder.Kot_id == kotId) {
+        if (kotOrder.fdOrderType == 'Dining') {
+          tableId = kotOrder.kotTableChairSet!.first.tableId;
+          chrPos = kotOrder.kotTableChairSet!.first.position;
+          chrIndex = kotOrder.kotTableChairSet!.first.chrIndex;
+          //itarating all table chair set list
+          for (var tableChairSet in _tableSetLIst) {
+            //checking that table id is the current kotTable id
+            if (tableChairSet.tableId == tableId) {
+              tableIndex = _tableSetLIst.indexOf(tableChairSet);
+              for (var rooms in _room!) {
+                if (tableChairSet.room_id == rooms.room_id) {
+                  roomName = rooms.roomName;
+                  tableNameForKot = 'T$tableIndex-${chrPos}C$chrIndex ($roomName)';
+                }
+              }
+            }
+          }
+        } else {
+          tableNameForKot = '';
+        }
+      }
+    }
+
+    print(tableNameForKot);
+    showKotBillAlert(type: 'ORDER_VIEW', billingItems: billingItems, context: context, kotId: kotId, tableName: tableNameForKot);
+  }
+
+  // get rooms for showng table in kot
+  getRoom() async {
+    try {
+      MyResponse response = await _foodsRepo.getRoom();
+
+      if (response.statusCode == 1) {
+        RoomResponse parsedResponse = response.data;
+        if (parsedResponse.data == null) {
+          _room = [];
+        } else {
+          _room = parsedResponse.data;
+          print('rooms $_room');
+        }
+
+        //toast
+
+      } else {
+        print(response.message);
+        // AppSnackBar.errorSnackBar(response.status, response.message);
+        return;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //get all  Table Chair for showng table in kot
+  geTableSet() async {
+    try {
+      MyResponse response = await _foodsRepo.geTableSet(10);
+      if (response.statusCode == 1) {
+        TableChairSetResponse? parsedResponse = response.data;
+        if (parsedResponse == null) {
+          _tableSetLIst = [];
+        } else {
+          _tableSetLIst = parsedResponse.data!;
+        }
+      } else {
+        print('${response.message}');
+        return;
+      }
+    } catch (e) {
+      rethrow;
+    }
+    update();
+  }
+
+  updateIsToTableManageScreen(bool isToTableScreen){
+    isToTableManageScreen = isToTableScreen;
+    update();
+  }
+
+
   updateTappedTabName(String name) {
     print(name);
     tappedTabName = name;
@@ -521,4 +657,13 @@ class OrderViewController extends GetxController {
   hideLoading() {
     isLoading = false;
   }
+
+  Future<void> ringAlert() async {
+    print('ring sound');
+    Uri uri = await cache.load('sounds/ring_two.mp3');
+    String url = uri.path;
+    player.setSourceUrl(url);
+    player.resume();
+  }
+
 }

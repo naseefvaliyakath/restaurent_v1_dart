@@ -8,10 +8,11 @@ class ProgressButton extends StatelessWidget {
   final String text;
   final String btnCtrlName;
   final Color color;
+  final double textSize;
   final ctrl;
 
   const ProgressButton(
-      {Key? key, required this.text, required this.color, required this.ctrl, required this.onTap, required this.btnCtrlName})
+      {Key? key, required this.text, required this.color, required this.ctrl, required this.onTap, required this.btnCtrlName,  this.textSize = -1,})
       : super(key: key);
 
   @override
@@ -37,7 +38,19 @@ class ProgressButton extends StatelessWidget {
                                 ? ctrl.btnControllerCreateTable
                                 : btnCtrlName == 'CancelOrderInTable'
                                     ? ctrl.btnControllerCancelKotOrderInTable
-                                    : ctrl.btnControllerSettle,
+                                    : btnCtrlName == 'submitOnlineApp'
+                                        ? ctrl.btnControllerSubmitOnlineApp
+                                        : btnCtrlName == 'updateFullProgressOrdStatus'
+                                            ? ctrl.btnControllerProgressUpdateFullKotSts
+                                            : btnCtrlName == 'updateFullReadyOrdStatus'
+                                                ? ctrl.btnControllerReadyUpdateFullKotSts
+                                                : btnCtrlName == 'updateFullPendingOrdStatus'
+                                                    ? ctrl.btnControllerPendingUpdateFullKotSts
+                                                    : btnCtrlName == 'updateFullRejectOrdStatus'
+                                                        ? ctrl.btnControllerRejectUpdateFullKotSts
+                                                        : btnCtrlName == 'updateSingleProgressOrdStatus'
+                                                            ? ctrl.btnControllerProgressUpdateSingleKotSts
+                                                            : ctrl.btnControllerSettle,
         onPressed: () async {
           await onTap();
         },
@@ -46,7 +59,7 @@ class ProgressButton extends StatelessWidget {
           softWrap: false,
           overflow: TextOverflow.clip,
           maxLines: 1,
-          style: TextStyle(color: Colors.white, fontSize: 16.sp),
+          style: TextStyle(color: Colors.white, fontSize: textSize == -1 ? 16.sp : textSize),
         ));
   }
 }

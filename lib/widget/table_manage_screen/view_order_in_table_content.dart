@@ -52,6 +52,7 @@ class ViewOrderInTaleContent extends StatelessWidget {
                         qnt: ctrl.singleKitchenOrder.fdOrder?[index].qnt ?? 0,
                         kitchenNote: ctrl.singleKitchenOrder.fdOrder?[index].ktNote ?? 'Error',
                         price: ctrl.singleKitchenOrder.fdOrder?[index].price.toDouble() ?? 0,
+                        ordStatus: ctrl.singleKitchenOrder.fdOrder?[index].ordStatus ?? 'pending',
                         onLongTap: () {},
                       );
                     },

@@ -31,6 +31,9 @@ dependencies:
   rounded_loading_button: 2.1.0
   path_provider: ^2.0.11
   flutter_animated_dialog: 2.0.1
+  audioplayers: ^1.0.1
+  settings_ui: 2.0.2
+  dropdown_button2: 1.7.2
   flutter: 
     sdk: flutter
 
@@ -46,5 +49,6 @@ flutter:
     - assets/image/
     - assets/image/food/
     - assets/lottie/
+    - assets/sounds/
   uses-material-design: true
 

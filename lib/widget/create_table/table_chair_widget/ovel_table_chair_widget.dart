@@ -46,6 +46,8 @@ class OvalTableChairWidget extends StatelessWidget {
                       //table
                       Center(
                         child: TableCircle(
+                          onLongTap: (){},
+                          onTap: (){},
                           text: 'TABLE',
                           width: constraints.maxWidth - 100.w,
                           height: constraints.maxHeight - 100.w,

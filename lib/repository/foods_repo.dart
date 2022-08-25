@@ -9,6 +9,7 @@ import 'package:restowrent_v_two/model/table_chair_set/table_chair_set.dart';
 import '../app_constans/api_link.dart';
 import '../commoen/dio_error.dart';
 import '../model/my_response.dart';
+import '../model/online_app_respons/online_app_response.dart';
 import '../model/table_chair_set/table_chair_set_response.dart';
 import '../services/service.dart';
 import '../widget/snack_bar.dart';
@@ -36,7 +37,6 @@ class FoodsRepo {
       return MyResponse(statusCode: 0, status: 'Error', message: MyDioError.dioError(e));
     }
     catch (e) {
-      rethrow;
       return MyResponse(statusCode: 0, status: 'Error', message: 'Error');
     } finally {
 
@@ -168,6 +168,29 @@ class FoodsRepo {
       return MyResponse(statusCode: 0, status: 'Error', message: MyDioError.dioError(e));
     }
     catch (e) {
+      return MyResponse(statusCode: 0, status: 'Error', message: 'Error');
+    } finally {
+
+    }
+  }
+
+  Future<MyResponse> getOnlineApp() async {
+    // TODO: implement getNewsHeadline
+
+    try {
+      final response = await _httpService.getRequestWithBody(GET_ONLINE_APP, {'fdShopId': 10});
+      OnlineAppResponse parsedResponse = OnlineAppResponse.fromJson(response.data);
+      return MyResponse(
+          statusCode: 1,
+          status: 'Success',
+          data: parsedResponse,
+          message: response.statusMessage.toString());
+    } on DioError catch (e) {
+      rethrow;
+      return MyResponse(statusCode: 0, status: 'Error', message: MyDioError.dioError(e));
+    }
+    catch (e) {
+      rethrow;
       return MyResponse(statusCode: 0, status: 'Error', message: 'Error');
     } finally {
 

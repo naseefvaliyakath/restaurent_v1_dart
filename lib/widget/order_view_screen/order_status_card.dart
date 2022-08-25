@@ -10,20 +10,24 @@ class OrderStatusCard extends StatelessWidget {
   final int totelItem;
   final String dateTime;
   final String orderType;
+  final Color borderColor;
+  final Color cardColor;
 
   final Function onTap;
 
-  const OrderStatusCard(
-      {Key? key,
-      required this.name,
-      required this.price,
-      required this.onTap,
-      required this.orderStatus,
-      required this.orderId,
-      required this.totelItem,
-      required this.dateTime,
-      required this.orderType})
-      : super(key: key);
+  const OrderStatusCard({
+    Key? key,
+    required this.name,
+    required this.price,
+    required this.onTap,
+    required this.orderStatus,
+    required this.orderId,
+    required this.totelItem,
+    required this.dateTime,
+    required this.borderColor,
+    this.cardColor = Colors.white,
+    required this.orderType,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +45,7 @@ class OrderStatusCard extends StatelessWidget {
                 color: Colors.black.withOpacity(0.3),
               )
             ],
-            border: Border.all(color: Colors.redAccent, width: 3.sp)),
+            border: Border.all(color:  borderColor, width: 3.sp)),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -49,7 +53,7 @@ class OrderStatusCard extends StatelessWidget {
           ),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color:cardColor,
               borderRadius: BorderRadius.circular(20.r),
             ),
             child: Padding(
@@ -157,8 +161,7 @@ class OrderStatusCard extends StatelessWidget {
                     ),
                     5.verticalSpace,
                     FittedBox(
-                      child: Text(
-                          'Total Rs : $price' ,
+                      child: Text('Total Rs : $price',
                           softWrap: false,
                           style: TextStyle(
                             fontSize: 15.sp,

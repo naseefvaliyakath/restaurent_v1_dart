@@ -12,3 +12,6 @@ final String HIVE_DINING_BILL = 'HIVE_DINING_BILL';
 final  String HIVE_DATABASE_BILLING_ITEMS = "HOLD_BILLING_ITEMS";
 
 final  String HIVE_DATABASE_DELIVERY_ADDRESS_ITEMS = "DELIVERY_ITEMS";
+
+//application mode number 1 is cashir , 2 is waiter , 3 is kitchhen
+final String HIVE_APP_MODE_NUMBER = 'HIVE_APP_MODE_NUMBER';

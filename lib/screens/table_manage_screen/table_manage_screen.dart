@@ -5,10 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:restowrent_v_two/routes/route_helper.dart';
-import 'package:restowrent_v_two/screens/create_table_screen/controller/create_table_controller.dart';
 import 'package:restowrent_v_two/screens/table_manage_screen/controller/table_manage_controller.dart';
-import 'package:restowrent_v_two/widget/order_view_screen/order_category.dart';
-
 import '../../app_constans/app_colors.dart';
 import '../../widget/add_food_screen/add_catogories.dart';
 import '../../widget/add_food_screen/add_catogories_text_field.dart';
@@ -94,9 +91,9 @@ class TableManageScreen extends StatelessWidget {
                           ),
                         ],
                         bottom: PreferredSize(
-                          //if shift mode then incrase the height of prfeerd size
+                          //if shift mode or link chair modethen incrase the height of prfeerd size
                           //so one heading also come
-                          preferredSize: ctrl.chairShiftMode ? Size.fromHeight(100.h) : Size.fromHeight(60.h),
+                          preferredSize: (ctrl.chairShiftMode || ctrl.linkChairMode) ? Size.fromHeight(110.h) : Size.fromHeight(60.h),
                           child: Padding(
                             padding: EdgeInsets.only(left: 10.0.w, right: 10.w),
                             child: Column(
@@ -160,7 +157,7 @@ class TableManageScreen extends StatelessWidget {
                                 ),
                                 // check its in shifted mode
                                 // if in shifted mode show heading
-                                ctrl.chairShiftMode
+                                (ctrl.chairShiftMode || ctrl.linkChairMode)
                                     ? SizedBox(
                                         child: Card(
                                             elevation: 10.sp,
@@ -222,11 +219,11 @@ class TableManageScreen extends StatelessWidget {
                                                 bottomChairCount: element.bottomChairCount,
                                                 ctrl: ctrl,
                                                 tbChr: element,
-                                                onChairTap: (String position, int chrIndex, int kotId) async {
+                                                onChairTap: (String position, int chrIndex, int kotId,int tbChrIndexInDb) async {
                                                   await ctrl.getClickedTableChairId(
                                                     context: context,
                                                     tableIndex: i,
-                                                    tbChrIndexInDb: 0,
+                                                    tbChrIndexInDb:tbChrIndexInDb,
                                                     tableId: element.tableId,
                                                     position: position,
                                                     chrIndex: chrIndex,
@@ -243,11 +240,11 @@ class TableManageScreen extends StatelessWidget {
                                                     bottomChairCount: element.bottomChairCount,
                                                     ctrl: ctrl,
                                                     tbChr: element,
-                                                    onChairTap: (String position, int chrIndex, int kotId) async {
+                                                    onChairTap: (String position, int chrIndex, int kotId,int tbChrIndexInDb) async {
                                                       await ctrl.getClickedTableChairId(
                                                         context: context,
                                                         tableIndex: i,
-                                                        tbChrIndexInDb: 0,
+                                                        tbChrIndexInDb: tbChrIndexInDb,
                                                         tableId: element.tableId,
                                                         position: position,
                                                         chrIndex: chrIndex,
@@ -263,11 +260,11 @@ class TableManageScreen extends StatelessWidget {
                                                         bottomChairCount: element.bottomChairCount,
                                                         ctrl: ctrl,
                                                         tbChr: element,
-                                                        onChairTap: (String position, int chrIndex, int kotId) async {
+                                                        onChairTap: (String position, int chrIndex, int kotId,int tbChrIndexInDb) async {
                                                           await ctrl.getClickedTableChairId(
                                                             context: context,
                                                             tableIndex: i,
-                                                            tbChrIndexInDb: 0,
+                                                            tbChrIndexInDb: tbChrIndexInDb,
                                                             tableId: element.tableId,
                                                             position: position,
                                                             chrIndex: chrIndex,
@@ -282,11 +279,11 @@ class TableManageScreen extends StatelessWidget {
                                                         bottomChairCount: element.bottomChairCount,
                                                         ctrl: ctrl,
                                                         tbChr: element,
-                                                        onChairTap: (String position, int chrIndex, int kotId) async {
+                                                        onChairTap: (String position, int chrIndex, int kotId,int tbChrIndexInDb) async {
                                                           await ctrl.getClickedTableChairId(
                                                             context: context,
                                                             tableIndex: i,
-                                                            tbChrIndexInDb: 0,
+                                                            tbChrIndexInDb: tbChrIndexInDb,
                                                             tableId: element.tableId,
                                                             position: position,
                                                             chrIndex: chrIndex,

@@ -1,6 +1,6 @@
 // // GENERATED CODE - DO NOT MODIFY BY HAND
 //
-// part of 'room_response.dart';
+// part of 'online_app_response.dart';
 //
 // // **************************************************************************
 // // JsonSerializableGenerator

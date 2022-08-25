@@ -16,6 +16,8 @@ final String DELETE_KOT_ORDER = 'orders/deleteKitcheOrder/';
 final String UPDATE_KOT_ORDER = 'orders/updateKitcheOrder/';
 final String DELETE_SETTLED_ORDER = 'orders/deleteSettledOrder/';
 final String UPDATE_SETTLED_ORDER = 'orders/updateSettledOrder/';
+final String UPDATE_FULL_ORDER_STATUS = 'orders/updateKotFullStatus/';
+final String UPDATE_SINGLE_ORDER_STATUS = 'orders/updateKotSingleStatus/';
 
 final String GET_ALL_ROOMS = 'room/allRoom/';
 final String INSERT_ROOMS = 'room/addRoom/';
@@ -24,3 +26,9 @@ final String INSERT_TABLE = 'table_manage/addTable/';
 final String GET_TABLE_SET = 'table_manage/getTableSet/';
 final String SHIFT_TABLE_CHR = 'table_manage/shiftTable/';
 final String LINK_TABLE_CHR = 'table_manage/linkChair/';
+final String ADD_CHR_TO_KOT = 'table_manage/addedChairToKot/';
+final String DELETE_TABLE = 'table_manage/deleteTable/';
+
+final String GET_ONLINE_APP = 'online_apps/allOnlineApp/';
+final String DELETE_ONLINE_APP = 'online_apps/deleteOnlineApp/';
+

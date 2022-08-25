@@ -6,9 +6,8 @@ import 'package:restowrent_v_two/app_constans/app_colors.dart';
 import 'package:restowrent_v_two/screens/dashbord_screen.dart';
 import 'package:restowrent_v_two/screens/today_food_screen/controller/today_food_controller.dart';
 import 'package:restowrent_v_two/screens/today_food_screen/today_food_screen.dart';
-
-import '../../widget/app_alerts.dart';
 import '../../widget/snack_bar.dart';
+import '../settings_page_screen/settings_page_screen.dart';
 
 
 
@@ -23,10 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int pageIndex = 0;
   List<Widget> pages = [
 
-     const DashBordScreen(),
+    const DashBordScreen(),
     const Center(child: Text('fourth screen')),
     const TodayFoodScreen(),
-    const Center(child: Text('fourth screen')),
+    const SettingsPageScreen(),
     const Center(child: Text('fivth screen')),
   ];
 

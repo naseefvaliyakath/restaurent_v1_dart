@@ -8,11 +8,8 @@ import 'package:get/get.dart';
 import 'package:getwidget/components/button/gf_button.dart';
 import 'package:getwidget/shape/gf_button_shape.dart';
 import 'package:restowrent_v_two/screens/dining_screen/controller/dining_billing_controller.dart';
-import 'package:restowrent_v_two/screens/order_view_screen/order_view%20_screen.dart';
-import 'package:restowrent_v_two/screens/table_manage_screen/table_manage_screen.dart';
 import '../../app_constans/app_colors.dart';
 import '../../routes/route_helper.dart';
-import '../../widget/app_alerts.dart';
 import '../../widget/app_min_button.dart';
 import '../../widget/big_text.dart';
 import '../../widget/billing_food_card.dart';
@@ -20,7 +17,6 @@ import '../../widget/billing_food_err_card.dart';
 import '../../widget/dining_screen/dining_billing_alerts.dart';
 import '../../widget/heading_rich_text.dart';
 import '../../widget/notification_icon.dart';
-import '../../widget/progress_btn_controle.dart';
 import '../../widget/progress_button.dart';
 import '../../widget/search_bar_in_billing_screen.dart';
 import '../../widget/billing_item_tile.dart';
@@ -28,10 +24,9 @@ import '../../widget/snack_bar.dart';
 import '../../widget/take_away_screen/billing_table_heading.dart';
 import '../../widget/take_away_screen/category_drop_down.dart';
 import '../../widget/take_away_screen/clear_all_bill_widget.dart';
-import '../../widget/take_away_screen/take_away_billing_alerts.dart';
 import '../../widget/totel_price_txt.dart';
 import '../../widget/white_button_with_icon.dart';
-import '../create_table_screen/binding/create_table_binding.dart';
+
 
 class DiningBillingScreen extends StatefulWidget {
   const DiningBillingScreen({Key? key}) : super(key: key);
@@ -223,7 +218,7 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                       ),
                     ),
                     Container(
-                      child: TotelPriceTxt(price: ctrl.totelPrice),
+                      child: TotelPriceTxt(price: ctrl.totalPrice),
                     ),
                     // controlle buttons
                     ctrl.isNavigateFromKotUpdate
@@ -288,17 +283,7 @@ class _DiningBillingScreenState extends State<DiningBillingScreen> {
                                             ctrl.btnControllerKot.reset();
                                           });
                                         } else {
-                                          //check table is selected
-                                          if (ctrl.tableId == -1) {
-                                            AppSnackBar.errorSnackBar('Select Table', 'Pleas select a table');
-                                            ctrl.btnControllerKot.error();
-                                            await Future.delayed(const Duration(milliseconds: 500), () {
-                                              ctrl.btnControllerKot.reset();
-                                            });
-                                          } else {
-                                            await ctrl.sendKotOrder();
-
-                                          }
+                                          await ctrl.sendKotOrder();
                                         }
                                       },
                                     ),

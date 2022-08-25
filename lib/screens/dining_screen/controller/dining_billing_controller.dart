@@ -19,6 +19,8 @@ import '../../../model/foods_respons/food_response.dart';
 import '../../../model/foods_respons/foods.dart';
 import '../../../model/kitchen_order_response/kitchen_order.dart';
 import '../../../model/kitchen_order_response/order_bill.dart';
+import '../../../model/room_respons/room.dart';
+import '../../../model/room_respons/room_response.dart';
 import '../../../routes/route_helper.dart';
 import '../../../services/service.dart';
 import '../../../socket/socket_controller.dart';
@@ -32,6 +34,14 @@ class DiningBillingController extends GetxController {
   final MyLocalStorage _myLocalStorage = Get.find<MyLocalStorage>();
   final HttpService _httpService = Get.find<HttpService>();
   final HiveHoldBillController _hiveHoldBillController = Get.find<HiveHoldBillController>();
+
+  String orderType = 'Dining';
+
+  //to show room name in kot
+  String roomName = '';
+
+//this will get from get args on routing from table manage screen
+  int roomId = -1;
 
   String selectedTableName = 'Select Table';
   int tableIndex = -1;
@@ -104,8 +114,6 @@ class DiningBillingController extends GetxController {
     super.onInit();
   }
 
-
-
   bool isLoading = false;
   List<Foods>? _foods = [];
 
@@ -129,9 +137,9 @@ class DiningBillingController extends GetxController {
   bool isVisibleEditBillItem = false;
 
   // totel price in bill
-  double _totelPrice = 0;
+  double _totalPrice = 0;
 
-  double get totelPrice => _totelPrice;
+  double get totalPrice => _totalPrice;
 
   ////socket io////
 
@@ -145,8 +153,8 @@ class DiningBillingController extends GetxController {
         Map<String, dynamic> kotOrder = {
           'fdShopId': 10,
           'fdOrder': _billingItems,
-          'fdOrderStatus': 'Settled',
-          'fdOrderType': 'Dining',
+          'fdOrderStatus': 'pending',
+          'fdOrderType': orderType,
           'kotTableChairSet': kotTableChairSet,
           'orderColor': randomColor
         };
@@ -163,6 +171,7 @@ class DiningBillingController extends GetxController {
           tableId = -1;
           selectedTableName = 'Select Table';
           btnControllerKot.success();
+          _totalPrice = 0;
           AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
           update();
         }
@@ -188,8 +197,6 @@ class DiningBillingController extends GetxController {
     }
   }
 
-
-
   ///socket io ////
 
   /// edit or update kot billing item  to receive data for orderView screen and process ////
@@ -200,10 +207,10 @@ class DiningBillingController extends GetxController {
       KitchenOrder emptyKotOrder = KitchenOrder(
           Kot_id: -1,
           error: true,
-          errorCode: 'SomthingWrong',
+          errorCode: 'Something Wrong',
           totalSize: 0,
           fdOrderStatus: 'Pending',
-          fdOrderType: 'Takeaway',
+          fdOrderType: orderType,
           fdOrder: [],
           totelPrice: 0,
           orderColor: 111);
@@ -232,7 +239,8 @@ class DiningBillingController extends GetxController {
               'name': element.name,
               'qnt': element.qnt,
               'price': element.price.toDouble(),
-              'ktNote': element.ktNote
+              'ktNote': element.ktNote,
+              'ordStatus': element.ordStatus
             });
           }
           find_totelPrice();
@@ -303,12 +311,13 @@ class DiningBillingController extends GetxController {
         errorCode: 'SomthingWrong',
         totalSize: 0,
         fdOrderStatus: 'Pending',
-        fdOrderType: 'Takeaway',
+        fdOrderType: orderType,
         fdOrder: [],
         totelPrice: 0,
         orderColor: 111); //just [] will throw error
     Map<String, dynamic> emptySelectedTable = {'tableIndex': -1, 'tableId': -1, 'position': 'L', 'chrIndex': -1};
     var args = Get.arguments ?? {'holdItem': [], 'kotItem': emptyKotOrder, 'selectedTable': emptySelectedTable};
+    print('args recive $args');
     KitchenOrder? kotOrder = args['kotItem'] ?? emptyKotOrder;
     List<OrderBill>? kotItem = kotOrder?.fdOrder;
     List<dynamic>? holdItem = args['holdItem'] ?? [];
@@ -327,6 +336,33 @@ class DiningBillingController extends GetxController {
   //kot printing dialog
   kotDialogBox(context) {
     showKotBillAlert(type: 'DINING', billingItems: _billingItems, context: context);
+  }
+
+  //to get roomTypeFrom table id
+  getRoomNameFromRoomID(int tbId) async {
+    try {
+      List<Room>? room = [];
+      MyResponse response = await _foodsRepo.getRoom();
+      if (response.statusCode == 1) {
+        RoomResponse parsedResponse = response.data;
+        if (parsedResponse.data == null) {
+          room = [];
+        } else {
+          room = parsedResponse.data;
+        }
+        for (var element in room!) {
+          if (element.room_id == tbId) {
+            roomName = element.roomName;
+            print('roomNameGet $roomName');
+          }
+        }
+      } else {
+        roomName = '';
+      }
+      update();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   ///settle bill ////
@@ -362,7 +398,7 @@ class DiningBillingController extends GetxController {
   //settile billing cash alert
   settleBillingCash(context, ctrl) {
     try {
-      settleNetTotalCtrl.value.text = _totelPrice.toString();
+      settleNetTotalCtrl.value.text = _totalPrice.toString();
       settleDiscountCashCtrl.value.text = '0';
       settleDiscountPersentCtrl.value.text = '0';
       settleChargesCtrl.value.text = '0';
@@ -391,7 +427,7 @@ class DiningBillingController extends GetxController {
           'fdOrder': _billingItems,
           'fdOrderKot': '-1',
           'fdOrderStatus': 'pending',
-          'fdOrderType': 'Dining',
+          'fdOrderType': orderType,
           'netAmount': netTotal,
           'discountPersent': discountPresent,
           'discountCash': discountCash,
@@ -521,7 +557,7 @@ class DiningBillingController extends GetxController {
         int newQnt = currentQnt + qnt;
         updateFodToBill(index, newQnt, price, ktNote);
       } else {
-        _billingItems.add({'fdId': fdId, 'name': name, 'qnt': qnt, 'price': price, 'ktNote': ktNote});
+        _billingItems.add({'fdId': fdId, 'name': name, 'qnt': qnt, 'price': price, 'ktNote': ktNote,'ordStatus':'pending'});
       }
       find_totelPrice();
     } catch (e) {
@@ -577,7 +613,7 @@ class DiningBillingController extends GetxController {
         double result = item["price"] * item["qnt"];
         totalScores += result;
       });
-      _totelPrice = totalScores;
+      _totalPrice = totalScores;
       update();
     } catch (e) {
       rethrow;
@@ -640,7 +676,7 @@ class DiningBillingController extends GetxController {
         String time = DateFormat('kk:mm:ss').format(now);
         int timeStamp = DateTime.now().millisecondsSinceEpoch;
         HiveHoldItem holdBillingItem =
-            HiveHoldItem(holdItem: _billingItems, date: date, time: time, id: timeStamp, totel: _totelPrice, orderType: 'Dining');
+            HiveHoldItem(holdItem: _billingItems, date: date, time: time, id: timeStamp, totel: _totalPrice, orderType: orderType);
         await _hiveHoldBillController.createHoldBill(holdBillingItem: holdBillingItem);
         _hiveHoldBillController.getHoldBill();
         //_billingItems.clear();
@@ -702,8 +738,9 @@ class DiningBillingController extends GetxController {
   receiveSelectedTableFromArgs() {
     try {
       Map<String, dynamic> emptySelectedTable = {'tableIndex': -1, 'tableId': -1, 'position': 'L', 'chrIndex': -1};
-      var args = Get.arguments ?? {'selectedTable': emptySelectedTable};
+      var args = Get.arguments ?? {'selectedTable': emptySelectedTable, 'roomId': -1};
       Map<String, dynamic>? selectedTable = args['selectedTable'] ?? emptySelectedTable;
+      int? roomIdGet = args['roomId'] ?? -1;
       if (selectedTable == null) {
         _billingItems.clear();
       } else {
@@ -718,6 +755,9 @@ class DiningBillingController extends GetxController {
           chrIndex = selectedTable['chrIndex'];
           //+1 for make first table 1 and first chair 1
           selectedTableName = 'T${selectedTable['tableIndex'] + 1} - ${position}C${chrIndex + 1}';
+
+          //this will give room name , can use in kot
+          getRoomNameFromRoomID(roomIdGet!);
           //kotiD and tbChrIndexInDb is just -1 , so its not insert to database,
           // its taken only when retreve data (its generate from db)
           KotTableChairSet mainSelectedKotTableChairSet = KotTableChairSet(-1, tableId, position, chrIndex, -1);

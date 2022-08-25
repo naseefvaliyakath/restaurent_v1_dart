@@ -15,6 +15,7 @@ import '../../app_constans/app_colors.dart';
 import '../../model/kitchen_order_response/kitchen_order.dart';
 import '../../widget/app_alerts.dart';
 import '../../widget/app_min_button.dart';
+import '../../widget/cash_bill_show_alert_for_order_view.dart';
 import '../../widget/date_range_picker.dart';
 import '../../widget/myDialogBody.dart';
 import '../../widget/order_view_screen/errOrder_status_card.dart';
@@ -26,7 +27,7 @@ import '../../widget/progress_button.dart';
 class OrderViewScreen extends StatelessWidget {
   OrderViewScreen({Key? key}) : super(key: key);
 
-  List categoryCard = [
+  final List categoryCard = [
     {'text': "KOT", 'circleColor': Colors.redAccent},
     {'text': "SETTLED", 'circleColor': Colors.green},
     {'text': "HOLD", 'circleColor': Colors.blueAccent},
@@ -132,7 +133,7 @@ class OrderViewScreen extends StatelessWidget {
                               child: Container(
                                   padding: EdgeInsets.all(8.sp),
                                   decoration: BoxDecoration(
-                                    color: Color(0xFFF7F7F7),
+                                    color: const Color(0xFFF7F7F7),
                                     borderRadius: BorderRadius.circular(50),
                                     boxShadow: [
                                       BoxShadow(
@@ -165,7 +166,7 @@ class OrderViewScreen extends StatelessWidget {
                                   //for show different orders
                                   ctrl.updateTappedTabName(categoryCard[index]['text']);
                                   if (ctrl.tappedTabName == 'KOT') {
-                                   ctrl.refreshDatabaseKot();
+                                    ctrl.refreshDatabaseKot();
                                   }
                                   if (ctrl.tappedTabName == 'SETTLED') {
                                     ctrl.getAllSettledOrder();
@@ -207,8 +208,22 @@ class OrderViewScreen extends StatelessWidget {
                               : ctrl.kotBillingItems?[index].fdOrder?[0].name ?? "",
                           price: (ctrl.kotBillingItems?[index].totelPrice ?? 0).toString(),
                           onTap: () {
-                          kotOrderManageAlert(context: context, ctrl: ctrl, index: index);
+                            kotOrderManageAlert(context: context, ctrl: ctrl, index: index);
                           },
+                          borderColor: ctrl.kotBillingItems?[index].fdOrderStatus == 'pending'
+                              ? Colors.orange
+                              : ctrl.kotBillingItems?[index].fdOrderStatus == 'progress'
+                                  ? Colors.pink
+                                  : ctrl.kotBillingItems?[index].fdOrderStatus == 'ready'
+                                      ? Colors.green
+                                      : ctrl.kotBillingItems?[index].fdOrderStatus == 'reject'
+                                          ? Colors.red
+                                          : Colors.orange,
+                          cardColor: ctrl.kotBillingItems![index].fdOrderStatus == 'reject'
+                              ? Colors.red.withOpacity(0.1)
+                              : ctrl.kotBillingItems![index].fdOrderStatus == 'ready'
+                                  ? Colors.green.withOpacity(0.1)
+                                  : Colors.white,
                           orderId: ctrl.kotBillingItems?[index].Kot_id ?? 0,
                           orderStatus: ctrl.kotBillingItems![index].fdOrderStatus,
                           orderType: ctrl.kotBillingItems![index].fdOrderType,
@@ -222,7 +237,7 @@ class OrderViewScreen extends StatelessWidget {
                               ? "no item"
                               : (ctrl.settledBillingItems?[index].fdOrder?[0].name ?? ""),
                           price: '${ctrl.settledBillingItems?[index].grandTotal ?? 0}',
-                          onTap: () {
+                          onLongTap: () {
                             MyDialogBody.myConfirmDialogBody(
                                 title: 'update this order ?',
                                 context: context,
@@ -231,7 +246,6 @@ class OrderViewScreen extends StatelessWidget {
                                 btnOkText: 'Edit',
                                 onTapOK: () {
                                   ctrl.updateSettleBillingCash(context, ctrl, index);
-
                                 },
                                 onTapCancel: () async {
                                   //delete the settled item from list
@@ -239,8 +253,29 @@ class OrderViewScreen extends StatelessWidget {
                                   Navigator.pop(context);
                                   //to refresh after update
                                   ctrl.getAllSettledOrder();
-
                                 });
+                          },
+                          onTap: () {
+                            // billing list
+                            final List<OrderBill> fdOrder = [];
+                            final List<dynamic> billingItems = [];
+                            fdOrder.addAll(ctrl.settledBillingItems![index].fdOrder!.toList());
+                            print(fdOrder.length);
+                            billingItems.clear();
+                            for (var element in fdOrder) {
+                              billingItems.add({
+                                'fdId': element.fdId,
+                                'name': element.name,
+                                'qnt': element.qnt,
+                                'price': element.price.toDouble(),
+                                'ktNote': element.ktNote
+                              });
+                            }
+                            cashBillAlertForOrderViewPage(
+                              singleOrder: ctrl.settledBillingItems![index],
+                              billingItems: billingItems,
+                              context: context,
+                            );
                           },
                           settledId: ctrl.settledBillingItems?[index].settled_id ?? 0,
                           orderStatus: ctrl.settledBillingItems?[index].fdOrderStatus ?? 'error',
@@ -279,7 +314,7 @@ class OrderViewScreen extends StatelessWidget {
                                   //to refresh after delete
                                   ctrl.getAllHoldOrder();
                                   //to dismiss popup
-                                //  Get.off(OrderViewScreen());
+                                  //  Get.off(OrderViewScreen());
                                 });
                           },
                           orderId: index + 1,
@@ -307,4 +342,3 @@ class OrderViewScreen extends StatelessWidget {
     );
   }
 }
-

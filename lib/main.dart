@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:restowrent_v_two/hive_database/hive_init.dart';
 import 'package:restowrent_v_two/routes/route_helper.dart';
+import 'package:restowrent_v_two/screens/home_screen/binding/home_screen_binding.dart';
 import 'package:restowrent_v_two/screens/home_screen/home_screen.dart';
 import 'app_constans/app_colors.dart';
 
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.amber,
           ),
           initialRoute: RouteHelper.getInitial(),
+          initialBinding: HomeBinding(),
           unknownRoute: GetPage(name: '/notFount', page: () => HomeScreen()),
           defaultTransition: Transition.fade,
           getPages: RouteHelper.routes,

@@ -8,26 +8,34 @@ import 'package:get/get.dart';
 import 'package:restowrent_v_two/app_constans/app_colors.dart';
 import 'package:restowrent_v_two/screens/home_delivery_screen/controller/home_delivery_controller.dart';
 import 'package:restowrent_v_two/screens/order_view_screen/controller/order_view_controller.dart';
+import 'package:restowrent_v_two/screens/select_online_app_screen/controller/select_online_app_controller.dart';
 import 'package:restowrent_v_two/screens/take_away_billing%20screen/controller/take_away_controller.dart';
 import 'package:restowrent_v_two/widget/big_text.dart';
 import 'package:restowrent_v_two/widget/home_delivery/delivery_boy_select_screen.dart';
 import 'package:restowrent_v_two/widget/mid_text.dart';
 import 'package:restowrent_v_two/widget/progress_button.dart';
+import 'package:restowrent_v_two/widget/settings_page_screen/change_mode_of-app_alert_body.dart';
 import 'package:restowrent_v_two/widget/small_text.dart';
+import 'package:restowrent_v_two/widget/snack_bar.dart';
 import 'package:restowrent_v_two/widget/table_manage_screen/view_order_in_table_content.dart';
 import 'package:restowrent_v_two/widget/text_field_widget.dart';
-
+import 'dart:io';
 import '../hive_database/controller/hive_delivery_address_controller.dart';
 import '../model/kitchen_order_response/kitchen_order.dart';
 import '../model/kitchen_order_response/order_bill.dart';
+import '../routes/route_helper.dart';
 import 'app_min_button.dart';
 import 'app_round_mini_btn.dart';
 import 'dialog_button.dart';
 import 'home_delivery/address_text_input_screen.dart';
+import 'kitchen_mode_main_screen/kitcheOrderPopupAlertBody.dart';
+import 'kitchen_mode_main_screen/kitchen_kot_view_alert_content.dart';
 import 'myDialogBody.dart';
+import 'online_booking_screen/addNewOnlineAppAlertBody.dart';
 import 'order_settile_screen/order_update_settil_screen.dart';
 import 'order_settile_screen/order_settil_screen.dart';
 import 'order_view_screen/order_alert_bill_id_circle.dart';
+import 'order_view_screen/order_status_card.dart';
 import 'order_view_screen/view_order_list_content.dart';
 import 'take_away_screen/billing_alert_food.dart';
 
@@ -52,7 +60,7 @@ kotOrderManageAlert({required BuildContext context, required OrderViewController
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 20.h),
                     width: 0.8.sw,
-                    height: 270.h,
+                    height: 340.h,
                     child: Stack(
                       alignment: AlignmentDirectional.topCenter,
                       children: [
@@ -69,7 +77,8 @@ kotOrderManageAlert({required BuildContext context, required OrderViewController
                               children: [
                                 20.verticalSpace,
                                 Text(
-                                  '${ctrl.kotBillingItems![index].fdOrder!.first.name} and other ${ctrl.kotBillingItems![index].fdOrder!.length - 1} items',
+                                  '${ctrl.kotBillingItems![index].fdOrder!.first.name} and other ${ctrl.kotBillingItems![index]
+                                      .fdOrder!.length - 1} items',
                                   style: TextStyle(fontSize: 20.sp, color: AppColors.titleColor, fontWeight: FontWeight.w600),
                                   textAlign: TextAlign.center,
                                 ),
@@ -97,8 +106,10 @@ kotOrderManageAlert({required BuildContext context, required OrderViewController
                                         Expanded(
                                           child: AppMIniButton(
                                             bgColor: AppColors.mainColor,
-                                            text: 'RIng',
-                                            onTap: () {},
+                                            text: 'Ring',
+                                            onTap: () {
+                                              ctrl.ringKot(ctrl.kotBillingItems![index].Kot_id);
+                                            },
                                           ),
                                         ),
                                         3.horizontalSpace,
@@ -129,8 +140,26 @@ kotOrderManageAlert({required BuildContext context, required OrderViewController
                                         Expanded(
                                           child: AppMIniButton(
                                             bgColor: Color(0xff62c5ce),
-                                            text: 'Bill',
-                                            onTap: () {},
+                                            text: 'KOT',
+                                            onTap: () {
+                                              // billing list
+                                              final List<OrderBill> fdOrder = [];
+                                              final List<dynamic> billingItems = [];
+                                              fdOrder.addAll(ctrl.kotBillingItems![index].fdOrder!.toList());
+                                              print(fdOrder.length);
+                                              billingItems.clear();
+                                              for (var element in fdOrder) {
+                                                billingItems.add({
+                                                  'fdId': element.fdId,
+                                                  'name': element.name,
+                                                  'qnt': element.qnt,
+                                                  'price': element.price.toDouble(),
+                                                  'ktNote': element.ktNote
+                                                });
+                                              }
+                                              Navigator.pop(context);
+                                              ctrl.kotDialogBox(context, billingItems, ctrl.kotBillingItems?[index].Kot_id ?? -1);
+                                            },
                                           ),
                                         ),
                                         3.horizontalSpace,
@@ -172,6 +201,73 @@ kotOrderManageAlert({required BuildContext context, required OrderViewController
                                               Future.delayed(const Duration(seconds: 1), () {
                                                 Navigator.pop(context);
                                               });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                10.verticalSpace,
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 5.w),
+                                  height: 45.h,
+                                  child: IntrinsicHeight(
+                                    //for make all button same height
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [
+                                        3.horizontalSpace,
+                                        Expanded(
+                                          child: AppMIniButton(
+                                            bgColor: Color(0xff62c5ce),
+                                            text: 'Add Chair',
+                                            onTap: () {
+                                              if (ctrl.kotBillingItems![index].kotTableChairSet!.isEmpty) {
+                                                ctrl.updateIsToTableManageScreen(true);
+                                                Navigator.pop(context);
+                                                Get.offNamed(RouteHelper.getTableManageScreen(),
+                                                    arguments: {'kotId': ctrl.kotBillingItems?[index].Kot_id ?? -1});
+                                              } else {
+                                                AppSnackBar.errorSnackBar(
+                                                    'Order already added', 'this order already added to dining chair');
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                        3.horizontalSpace,
+                                        Expanded(
+                                          child: AppMIniButton(
+                                            bgColor: Colors.pinkAccent,
+                                            text: 'Edit',
+                                            onTap: () {
+                                              Navigator.pop(context); //this not add then page note kill
+                                              //otherwaiys will throw error
+                                              KitchenOrder emptyKotOrder = KitchenOrder(
+                                                  Kot_id: -1,
+                                                  error: true,
+                                                  errorCode: 'Something Wrong',
+                                                  totalSize: 0,
+                                                  fdOrderStatus: 'Pending',
+                                                  fdOrderType: 'Takeaway',
+                                                  fdOrder: [],
+                                                  totelPrice: 0,
+                                                  orderColor: 111);
+                                              ctrl.updateKotOrder(
+                                                // sending full kot order , so need kot id also
+                                                kotBillingOrder: ctrl.kotBillingItems?[index] ?? emptyKotOrder,
+                                                orderType: ctrl.kotBillingItems?[index].fdOrderType ?? 'Takeaway',
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        3.horizontalSpace,
+                                        Expanded(
+                                          child: AppMIniButton(
+                                            text: 'Close',
+                                            bgColor: Colors.orangeAccent,
+                                            onTap: () {
+                                              Navigator.pop(context);
                                             },
                                           ),
                                         ),
@@ -256,15 +352,15 @@ void deliveryAddressAlert({required BuildContext context, required HomeDeliveryC
         return AlertDialog(
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
           insetPadding: const EdgeInsets.all(0),
-          titlePadding:  EdgeInsets.all(10.sp),
-          contentPadding:  EdgeInsets.all(10.sp),
+          titlePadding: EdgeInsets.all(10.sp),
+          contentPadding: EdgeInsets.all(10.sp),
           actionsAlignment: MainAxisAlignment.center,
           actions: [
             AppRoundMiniBtn(
               text: 'Submit',
               color: Colors.green,
               onTap: () {
-                ctrl.addDeliveryAddressItem(context:context);
+                ctrl.addDeliveryAddressItem(context: context);
               },
             ),
             AppRoundMiniBtn(
@@ -275,7 +371,7 @@ void deliveryAddressAlert({required BuildContext context, required HomeDeliveryC
                 })
           ],
           title: Center(child: BigText(text: 'Enter Address')),
-          content:  SingleChildScrollView(child: AddressTextInputScreen(ctrl: ctrl)),
+          content: SingleChildScrollView(child: AddressTextInputScreen(ctrl: ctrl)),
         );
       },
       animationType: DialogTransitionType.scale,
@@ -285,38 +381,44 @@ void deliveryAddressAlert({required BuildContext context, required HomeDeliveryC
   } catch (e) {
     rethrow;
   }
+}
 
-/*  showDialog<String>(
-    context: context,
-    builder: (BuildContext context) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
-      title: Center(child: BigText(text: 'Enter Address')),
-      content: SingleChildScrollView(child: const AddressTextInputScreen()),
-    ),
-  );*/
+//in home deliver page
+void addNewOnlineAppAlert({required BuildContext context}) {
+  try {
+    showAnimatedDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          insetPadding: const EdgeInsets.all(0),
+          titlePadding: EdgeInsets.all(10.sp),
+          contentPadding: EdgeInsets.all(10.sp),
+          actionsAlignment: MainAxisAlignment.center,
+          title: Center(child: BigText(text: 'Enter App details')),
+          content: const SingleChildScrollView(child: AddNewOnlineAppAlertBody()),
+        );
+      },
+      animationType: DialogTransitionType.scale,
+      curve: Curves.fastOutSlowIn,
+      duration: const Duration(milliseconds: 900),
+    );
+  } catch (e) {
+    rethrow;
+  }
 }
 
 //in home deliver page
 void deliveryboySelectAlert(context) {
   showDialog<String>(
     context: context,
-    builder: (BuildContext context) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
-      title: Center(child: BigText(text: 'Select Delivery Boy')),
-      content: SingleChildScrollView(child: const DeliveryBoySelectScreen()),
-    ),
-  );
-}
-
-//in onlinebooking page
-void addNewonlineAppAlert(context) {
-  showDialog<String>(
-    context: context,
-    builder: (BuildContext context) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
-      title: Center(child: BigText(text: 'Select Delivery Boy')),
-      content: SingleChildScrollView(child: const DeliveryBoySelectScreen()),
-    ),
+    builder: (BuildContext context) =>
+        AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          title: Center(child: BigText(text: 'Select Delivery Boy')),
+          content: SingleChildScrollView(child: const DeliveryBoySelectScreen()),
+        ),
   );
 }
 
@@ -333,7 +435,10 @@ void addOrderIdAlert(context) {
         children: <Widget>[
           Text(
             'Order ID',
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme
+                .of(context)
+                .textTheme
+                .headline6,
           ),
           10.verticalSpace,
           TextFieldWidget(
@@ -352,7 +457,8 @@ void addOrderIdAlert(context) {
         ],
       ),
     ),
-  )..show();
+  )
+    ..show();
 }
 
 void successAlert(context) {
@@ -375,22 +481,21 @@ void appCLoseConfirm(context) {
     btnCancelText: 'No',
     btnOkText: 'Yes',
     onTapOK: () async {
+      Navigator.pop(context);
       SystemNavigator.pop();
     },
     onTapCancel: () async {
       Get.back();
     },
   );
-
-
 }
 
 //can be used as cpommen deleted
 void deleteAlert({context, onTap}) {
   MyDialogBody.myConfirmDialogBody(
     context: context,
-    title: 'Delete this food?',
-    desc: 'Do you Want to delete food ?',
+    title: 'Delete this item?',
+    desc: 'Do you want to delete this item ?',
     btnCancelText: 'No',
     btnOkText: 'Yes',
     onTapOK: () async {
@@ -403,9 +508,8 @@ void deleteAlert({context, onTap}) {
   );
 }
 
-
 //can be used as cpommen deleted
-void generalConfirmAlert({required context,required onTap,required onTapCancel, required title,required desc}) {
+void generalConfirmAlert({required context, required onTap, required onTapCancel, required title, required desc}) {
   MyDialogBody.myConfirmDialogBody(
     context: context,
     title: title,
@@ -423,9 +527,8 @@ void generalConfirmAlert({required context,required onTap,required onTapCancel, 
   );
 }
 
-
 //view order list alert(Showing orderd item and its staus) i orderView
-void viewOrderListAlert({required context, required ctrl,required int kotIndex}) {
+void viewOrderListAlert({required context, required ctrl, required int kotIndex}) {
   showAnimatedDialog(
     context: context,
     barrierDismissible: true,
@@ -433,12 +536,15 @@ void viewOrderListAlert({required context, required ctrl,required int kotIndex})
       return AlertDialog(
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
           insetPadding: EdgeInsets.symmetric(horizontal: 5.sp),
-          titlePadding: EdgeInsets.symmetric(horizontal: 5.sp,vertical: 10.sp),
+          titlePadding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 10.sp),
           contentPadding: EdgeInsets.symmetric(horizontal: 5.sp),
           actionsAlignment: MainAxisAlignment.center,
           title: Center(child: BigText(text: 'View Orders')),
-          content:  SingleChildScrollView(
-            child: ViewOrderListContent(kotInt: kotIndex, ctrl: ctrl,),
+          content: SingleChildScrollView(
+            child: ViewOrderListContent(
+              kotInt: kotIndex,
+              ctrl: ctrl,
+            ),
           ));
     },
     animationType: DialogTransitionType.scale,
@@ -447,10 +553,8 @@ void viewOrderListAlert({required context, required ctrl,required int kotIndex})
   );
 }
 
-
-
 //view order list alert(Showing orderd item and its staus) in taleMAage scree when clo]ick on chair
-void viewOrderInTableAlert({required context,required int kotId,required int tbChrIndexInDb}) {
+void viewOrderInTableAlert({required context, required int kotId, required int tbChrIndexInDb}) {
   showAnimatedDialog(
     context: context,
     barrierDismissible: true,
@@ -458,16 +562,80 @@ void viewOrderInTableAlert({required context,required int kotId,required int tbC
       return AlertDialog(
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
           insetPadding: EdgeInsets.symmetric(horizontal: 5.sp),
-          titlePadding: EdgeInsets.only(left: 5.sp,right:5.sp,top: 10.sp),
+          titlePadding: EdgeInsets.only(left: 5.sp, right: 5.sp, top: 10.sp),
           contentPadding: EdgeInsets.symmetric(horizontal: 5.sp),
           actionsAlignment: MainAxisAlignment.center,
           title: Center(child: BigText(text: 'View Orders')),
-          content:  SingleChildScrollView(
-            child: ViewOrderInTaleContent(kotId: kotId, tbChrIndexInDb: tbChrIndexInDb,),
+          content: SingleChildScrollView(
+            child: ViewOrderInTaleContent(
+              kotId: kotId,
+              tbChrIndexInDb: tbChrIndexInDb,
+            ),
           ));
     },
     animationType: DialogTransitionType.scale,
     curve: Curves.fastOutSlowIn,
     duration: const Duration(milliseconds: 900),
   );
+}
+
+//change mode of app alert
+void changeModeOfAppAlert({required BuildContext context}) {
+  try {
+    showAnimatedDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          insetPadding: const EdgeInsets.all(0),
+          titlePadding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 10),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 15),
+          actionsAlignment: MainAxisAlignment.center,
+          title: Center(child: BigText(text: 'Select app mode')),
+          content: SingleChildScrollView(child: const ChangeModeOfAppAlertBody()),
+        );
+      },
+      animationType: DialogTransitionType.scale,
+      curve: Curves.fastOutSlowIn,
+      duration: const Duration(milliseconds: 900),
+    );
+  } catch (e) {
+    rethrow;
+  }
+}
+
+//view order list alert(Showing orderd item and its staus) in taleMAage scree when clo]ick on chair
+void viewKitchenKotAlert({required context, required KitchenOrder kotItem, required int tbChrIndexInDb}) {
+  showAnimatedDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return AlertDialog(
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          insetPadding: EdgeInsets.symmetric(horizontal: 5.sp),
+          titlePadding: EdgeInsets.only(left: 5.sp, right: 5.sp, top: 10.sp),
+          contentPadding: EdgeInsets.symmetric(horizontal: 5.sp),
+          actionsAlignment: MainAxisAlignment.center,
+          title: Center(child: BigText(text: 'View Orders')),
+          content: SingleChildScrollView(
+            child: KitchenKotViewAlertContent(
+              kotItem: kotItem,
+              tbChrIndexInDb: tbChrIndexInDb,
+            ),
+          ));
+    },
+    animationType: DialogTransitionType.scale,
+    curve: Curves.fastOutSlowIn,
+    duration: const Duration(milliseconds: 900),
+  );
+}
+
+//view order list alert(Showing orderd item and its staus) in taleMAage scree when clo]ick on chair
+void kitchenRingPopupAlert(KitchenOrder kitchenOrder) {
+  Get.defaultDialog(
+    title: '',
+    backgroundColor: Colors.transparent,
+    content: KitchenOrderPopupAlert( kitchenOrder: kitchenOrder)
+   );
 }

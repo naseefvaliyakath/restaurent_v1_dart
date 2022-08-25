@@ -38,6 +38,8 @@ class HomeDeliveryController extends GetxController {
   //delivery address
   HiveDeliveryAddress deliveryAddressItem = HiveDeliveryAddress(id: -1, name: '', number: 0, address: '');
 
+ String orderType = 'Home delivery';
+
   //for search field text
   late TextEditingController searchTD;
 
@@ -143,8 +145,8 @@ class HomeDeliveryController extends GetxController {
         Map<String, dynamic> kotOrder = {
           'fdShopId': 10,
           'fdOrder': _billingItems,
-          'fdOrderStatus': 'Settled',
-          'fdOrderType': 'Home delivery',
+          'fdOrderStatus': 'pending',
+          'fdOrderType':orderType,
         };
 
         final response = await _httpService.insertWithBody(ADD_KOT_ORDER, kotOrder);
@@ -158,6 +160,7 @@ class HomeDeliveryController extends GetxController {
           _billingItems.clear();
           clearBillInHive();
           btnControllerKot.success();
+          _totelPrice = 0;
           AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
           update();
         }
@@ -196,7 +199,7 @@ class HomeDeliveryController extends GetxController {
           errorCode: 'SomthingWrong',
           totalSize: 0,
           fdOrderStatus: 'Pending',
-          fdOrderType: 'Takeaway',
+          fdOrderType: orderType,
           fdOrder: [],
           totelPrice: 0,
           orderColor: 111);
@@ -222,7 +225,8 @@ class HomeDeliveryController extends GetxController {
               'name': element.name,
               'qnt': element.qnt,
               'price': element.price.toDouble(),
-              'ktNote': element.ktNote
+              'ktNote': element.ktNote,
+              'ordStatus': element.ordStatus
             });
           }
           find_totelPrice();
@@ -288,7 +292,7 @@ class HomeDeliveryController extends GetxController {
         errorCode: 'SomthingWrong',
         totalSize: 0,
         fdOrderStatus: 'Pending',
-        fdOrderType: 'Takeaway',
+        fdOrderType: orderType,
         fdOrder: [],
         totelPrice: 0,
         orderColor: 111); //just [] will throw error
@@ -372,7 +376,7 @@ class HomeDeliveryController extends GetxController {
           'fdOrder': _billingItems,
           'fdOrderKot': '-1',
           'fdOrderStatus': 'pending',
-          'fdOrderType': 'Home delivery',
+          'fdOrderType':orderType,
           'netAmount': netTotal,
           'discountPersent': discountPresent,
           'discountCash': discountCash,
@@ -502,7 +506,7 @@ class HomeDeliveryController extends GetxController {
         int newQnt = currentQnt + qnt;
         updateFodToBill(index, newQnt, price, ktNote);
       } else {
-        _billingItems.add({'fdId': fdId, 'name': name, 'qnt': qnt, 'price': price, 'ktNote': ktNote});
+        _billingItems.add({'fdId': fdId, 'name': name, 'qnt': qnt, 'price': price, 'ktNote': ktNote,'ordStatus':'pending'});
       }
       find_totelPrice();
     } catch (e) {
@@ -621,7 +625,7 @@ class HomeDeliveryController extends GetxController {
         String time = DateFormat('kk:mm:ss').format(now);
         int timeStamp = DateTime.now().millisecondsSinceEpoch;
         HiveHoldItem holdBillingItem = HiveHoldItem(
-            holdItem: _billingItems, date: date, time: time, id: timeStamp, totel: _totelPrice, orderType: 'Home delivery');
+            holdItem: _billingItems, date: date, time: time, id: timeStamp, totel: _totelPrice, orderType:orderType);
         await _hiveHoldBillController.createHoldBill(holdBillingItem: holdBillingItem);
         _hiveHoldBillController.getHoldBill();
         //_billingItems.clear();

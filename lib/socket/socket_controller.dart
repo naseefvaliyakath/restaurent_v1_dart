@@ -18,6 +18,14 @@ class SocketController extends GetxController {
     socket.on("connect_error", (data) {
       print(data);
     });
+
+    socket.on("connect", (data) {
+      print('socket connected');
+    });
+
+    socket.on("disconnect", (data) {
+      print('socket disconnect');
+    });
     super.onInit();
   }
 
@@ -32,30 +40,7 @@ class SocketController extends GetxController {
             .build());
   }
 
-  //emit data
-  sendDataAck(data) {
-    try {
-      //check interet coectio then only coect else it try to coect again ad again
-      socket.connect();
-      socket.emitWithAck('kitchen_orders', data, ack: (dataAck) {
-        if (dataAck == 'success') {
-          print('suceess');
-          return false;
-        } else {
-          if (dataAck == 'error') {
-            AppSnackBar.errorSnackBar('Error', 'Something wnt to wrong !');
-            return true;
-          } else {
-            AppSnackBar.errorSnackBar('Error', 'Something wnt to wrong !');
-            return true;
-          }
-        }
-      });
-    }catch (e) {
-      return true;
-      rethrow;
-    }
-  }
+
 
 
 }

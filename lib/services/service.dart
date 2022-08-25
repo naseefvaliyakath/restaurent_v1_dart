@@ -216,6 +216,48 @@ class HttpService {
     return response;
   }
 
+//insert online app
+  Future<Response> insertOnlineApp({
+    required File? file,
+    required fdShopId,
+    required appName,
+
+  }) async {
+    FormData formData;
+    print(file);
+
+    if (file != null) {
+      print('file has');
+      String fileName = file.path.split('/').last;
+      formData = FormData.fromMap({
+        "myFile": await MultipartFile.fromFile(file.path, filename: fileName),
+        "fdShopId": fdShopId,
+        "appName": appName
+      });
+    } else {
+      print('file not');
+      formData = FormData.fromMap({
+        "myFile": null,
+        "fdShopId": fdShopId,
+        "appName": appName
+      });
+    }
+
+    Response response;
+    try {
+      response = await _dio.post('online_apps/addOnlineApp', data: formData);
+    } on DioError catch (e) {
+      // AppSnackBar.errorSnackBar('Error', MyDioError.dioError(e));
+      throw Exception(e.message);
+    } catch (e) {
+      rethrow;
+    } finally {
+
+    }
+
+    return response;
+  }
+
   initializeInterceptors() {
     _dio.interceptors.add(InterceptorsWrapper(onRequest: (request, handler) {
       // Do something before request is sent

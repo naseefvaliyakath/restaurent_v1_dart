@@ -23,6 +23,8 @@ class OrderBill{
   @JsonKey(name : "ktNote")
   String ktNote;
 
+  @JsonKey(name : "ordStatus")
+  String ordStatus;
 
 
 
@@ -31,7 +33,9 @@ class OrderBill{
       this.name,
       this.qnt,
       this.price,
-      this.ktNote,); // DateTime get getPublishedAtDate => DateTime.tryParse(publishedAt);
+      this.ktNote,
+      this.ordStatus,
+      ); // DateTime get getPublishedAtDate => DateTime.tryParse(publishedAt);
 
   factory OrderBill.fromJson(Map<String, dynamic> json) => _$OrderBillFromJson(json);
   Map<String, dynamic> toJson() => _$OrderBillToJson(this);

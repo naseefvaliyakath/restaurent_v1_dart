@@ -17,9 +17,8 @@ import '../../../model/my_response.dart';
 import '../../../model/table_chair_set/table_chair_set_response.dart';
 import '../../../repository/foods_repo.dart';
 import '../../../services/service.dart';
-import '../../../socket/socket_controller.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-
+import '../../../socket/socket_controller.dart';
 import '../../../widget/app_alerts.dart';
 
 class TableManageController extends GetxController {
@@ -31,12 +30,15 @@ class TableManageController extends GetxController {
   bool addCategoryToggle = false; // to show add category or room card and text field
   bool addCategoryLoading = false; // to show progress while adding new category or room
 
+
+ int kotIdFromOrderManageAlertGb =-1;
+
   List<Room>? _room = [];
 
   List<Room>? get room => _room;
 
   //to get order details for showing uin chair
-    List<KitchenOrder> _kotBillingItems = [];
+  List<KitchenOrder> _kotBillingItems = [];
 
   List<KitchenOrder>? get kotBillingItems => _kotBillingItems;
 
@@ -102,6 +104,8 @@ class TableManageController extends GetxController {
 
   @override
   void onInit() async {
+    getxArgumetsReciveHadler();
+    _socket.dispose();
     _socket.connect();
     roomNameTD = TextEditingController();
     setUpKitchenOrderFromDbListner();
@@ -113,6 +117,7 @@ class TableManageController extends GetxController {
 
   @override
   void onClose() {
+    _socket.close();
     _socket.dispose();
     roomNameTD.dispose();
   }
@@ -156,6 +161,8 @@ class TableManageController extends GetxController {
       update();
     }
   }
+
+
 
   // to update room list after add new room , in this no show loading function
   getRoomNoScreenRefresh() async {
@@ -220,7 +227,7 @@ class TableManageController extends GetxController {
     }
   }
 
-  // to get room id from select diffrent rooms
+  // to get room id from select different rooms
   getRoomId(int index) {
     try {
       //if rooms is empty
@@ -244,6 +251,39 @@ class TableManageController extends GetxController {
 
       hideLoading();
       update();
+
+      if (response.statusCode == 1) {
+        TableChairSetResponse? parsedResponse = response.data;
+        if (parsedResponse == null) {
+          _tableSetLIst = [];
+          _selecedTableSetLIst = [];
+        } else {
+          _tableSetLIst = parsedResponse.data!;
+          //on page loading show first room tables
+          updateTableChairSetWithRoomId(0);
+          print('table set $_tableSetLIst');
+        }
+
+        //toast
+
+      } else {
+        print('${response.message}');
+        // AppSnackBar.errorSnackBar(response.status, response.message);
+        return;
+      }
+    } catch (e) {
+      // AppSnackBar.errorSnackBar('error', 'Soothing went to Wrong');
+      rethrow;
+    }
+    update();
+  }
+
+
+  //get all  Table Chair no refresh
+  geTableSetNoRefresh() async {
+    try {
+
+      MyResponse response = await _foodsRepo.geTableSet(10);
 
       if (response.statusCode == 1) {
         TableChairSetResponse? parsedResponse = response.data;
@@ -303,12 +343,18 @@ class TableManageController extends GetxController {
     }
   }
 
-
   //for single order adding live
   setUpKitchenOrderSingleListener() {
     try {
-      KitchenOrder order =
-      KitchenOrder(fdOrderType: '', totelPrice: 0, fdOrderStatus: '', Kot_id: 0, errorCode: '', totalSize: 0, error: true, orderColor: 111);
+      KitchenOrder order = KitchenOrder(
+          fdOrderType: '',
+          totelPrice: 0,
+          fdOrderStatus: '',
+          Kot_id: 0,
+          errorCode: '',
+          totalSize: 0,
+          error: true,
+          orderColor: 111);
       _socket.on('kitchen_orders_receive', (data) {
         print('kotorder single rcv');
         order = KitchenOrder.fromJson(data);
@@ -324,14 +370,13 @@ class TableManageController extends GetxController {
             }
           }
           //add if not exist
-          if(isExist == false){
-            _kotBillingItems.add(order);
+          if (isExist == false) {
+            _kotBillingItems.insert(0, order);
             //then from kitchen order take table details
             for (var elementTableChairSet in order.kotTableChairSet!) {
               _kotTableChairSetList.add(elementTableChairSet);
             }
-          }
-          else{
+          } else {
             _kotBillingItems = _kotBillingItems;
           }
           update();
@@ -446,6 +491,22 @@ class TableManageController extends GetxController {
 
   /// update shifting table to server///
 
+
+  //to handle Get.argemrt fro diffrent pages like fro hold item or kot update .. etc
+  getxArgumetsReciveHadler() {
+    var args = Get.arguments ?? {'kotId': -1};
+
+    int kotIdFromOrderManageAlert = args['kotId'] ??-1;
+    if (kotIdFromOrderManageAlert != -1) {
+      receiveKotIdForAddNewChairToKotOrder(kotIdFromOrderManageAlert);
+    }
+  }
+
+  receiveKotIdForAddNewChairToKotOrder(kotIdFromOrderManageAlert){
+    print('kot id from order alert$kotIdFromOrderManageAlert');
+    kotIdFromOrderManageAlertGb = kotIdFromOrderManageAlert;
+  }
+
   Future updateShiftedChair({
     required int newTableId,
     required String newPosition,
@@ -525,11 +586,19 @@ class TableManageController extends GetxController {
         kotId: kotId,
       );
     } else if (linkChairMode == true) {
-      linkChairAlert(context: context, tableId: tableId, chrIndex: chrIndex, position: position);
+      linkChairAlert(context: context, tableId: tableId, chrIndex: chrIndex, position: position, kotId: singleKitchenOrder.Kot_id);
     } else {
       //no order in that chair
       if (kotId == -1) {
-        Get.offNamed(RouteHelper.getDiningBillingScreen(), arguments: {'selectedTable': selectedTable});
+        //if navigation from order view screen for adding  chair in kot
+        if(kotIdFromOrderManageAlertGb != -1){
+          addChairToKotAlert(context: context, tableId: tableId, chrIndex: chrIndex, position: position, kotId: kotIdFromOrderManageAlertGb);
+
+        }
+        else{
+          Get.offNamed(RouteHelper.getDiningBillingScreen(), arguments: {'selectedTable': selectedTable, 'roomId': _roomId});
+        }
+
       } else {
         //to get order of chair in this kot
         getKotOrderListFromKotId(kotId);
@@ -547,6 +616,7 @@ class TableManageController extends GetxController {
 
   linkChairAlert({
     required BuildContext context,
+    required int kotId,
     required int tableId,
     required int chrIndex,
     required String position,
@@ -556,7 +626,7 @@ class TableManageController extends GetxController {
       title: 'Link this chair ?',
       desc: 'do you want to link the this chair ?',
       onTap: () {
-        addLinkChair(newChrIndex: chrIndex, newPosition: position, newTableId: tableId);
+        addLinkChair(newChrIndex: chrIndex, newPosition: position, newTableId: tableId, kotId: kotId, fdShopId: 10);
       },
       onTapCancel: () {},
     );
@@ -567,12 +637,15 @@ class TableManageController extends GetxController {
     required int newTableId,
     required String newPosition,
     required int newChrIndex,
+    required int kotId,
+    required int fdShopId,
   }) async {
     try {
-      if (singleKitchenOrder.Kot_id != -1) {
+      print('kotId $kotId');
+      if (kotId != -1) {
         Map<String, dynamic> linkChairData = {
-          'fdShopId': 10,
-          'Kot_id': singleKitchenOrder.Kot_id,
+          'fdShopId': fdShopId,
+          'Kot_id': kotId,
           'newTableId': newTableId,
           'newPosition': newPosition,
           'newChrIndex': newChrIndex,
@@ -584,6 +657,9 @@ class TableManageController extends GetxController {
           AppSnackBar.errorSnackBar('Error', parsedResponse.errorCode);
         } else {
           AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
+          //to make this -1 after add chair in koot from kot manage alert
+          //else again it add  to chair
+          kotIdFromOrderManageAlertGb = -1;
           refreshDatabaseKot();
           updateLinkChairMode(false);
           update();
@@ -603,6 +679,102 @@ class TableManageController extends GetxController {
   }
 
   //link order to chair//
+
+//add chair to existing kot
+  addChairToKotAlert({
+    required BuildContext context,
+    required int kotId,
+    required int tableId,
+    required int chrIndex,
+    required String position,
+  }) {
+    generalConfirmAlert(
+      context: context,
+      title: 'Link this chair ?',
+      desc: 'do you want to link the this chair ?',
+      onTap: () {
+        addChairToKot(newChrIndex: chrIndex, newPosition: position, newTableId: tableId, kotId: kotId, fdShopId: 10);
+      },
+      onTapCancel: () {},
+    );
+  }
+
+
+  Future addChairToKot({
+    required int newTableId,
+    required String newPosition,
+    required int newChrIndex,
+    required int kotId,
+    required int fdShopId,
+  }) async {
+    try {
+      print('kotId $kotId');
+      if (kotId != -1) {
+        Map<String, dynamic> linkChairData = {
+          'fdShopId': fdShopId,
+          'Kot_id': kotId,
+          'newTableId': newTableId,
+          'newPosition': newPosition,
+          'newChrIndex': newChrIndex,
+        };
+        final response = await _httpService.updateData(ADD_CHR_TO_KOT, linkChairData);
+
+        FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
+        if (parsedResponse.error) {
+          AppSnackBar.errorSnackBar('Error', parsedResponse.errorCode);
+        } else {
+          AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
+          //to make this -1 after add chair in koot from kot manage alert
+          //else again it add  to chair
+          kotIdFromOrderManageAlertGb = -1;
+          refreshDatabaseKot();
+          updateLinkChairMode(false);
+          update();
+        }
+      } else {
+        AppSnackBar.errorSnackBar('Error', 'Something wrong !!');
+      }
+    } on DioError catch (e) {
+      AppSnackBar.errorSnackBar('Error', MyDioError.dioError(e));
+    } catch (e) {
+      rethrow;
+    } finally {
+      update();
+      print('finally');
+      Future.delayed(const Duration(seconds: 1), () {});
+    }
+  }
+
+
+  deleteTable(int id, bool isAnyOrderInTable) async {
+    try {
+      //in table some order is there
+      if (isAnyOrderInTable) {
+        AppSnackBar.errorSnackBar('Orders live in table cannot delete ! ', 'First Delete orders from this table !');
+      } else {
+        Map<String, dynamic> tableData = {
+          'table_id': id,
+          'fdShopId': 10,
+        };
+        final response = await _httpService.delete(DELETE_TABLE, tableData);
+        FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
+        if (parsedResponse.error) {
+          AppSnackBar.errorSnackBar('Error', parsedResponse.errorCode);
+        } else {
+          geTableSetNoRefresh();
+          AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
+        }
+      }
+    } on DioError catch (e) {
+      AppSnackBar.errorSnackBar('Error', MyDioError.dioError(e));
+    } catch (e) {
+      AppSnackBar.errorSnackBar('Error', 'Something wet to wrong');
+    } finally {
+      update();
+    }
+
+    update();
+  }
 
   //to add category widget show and hide
   setAddcategoryToggle(bool val) {

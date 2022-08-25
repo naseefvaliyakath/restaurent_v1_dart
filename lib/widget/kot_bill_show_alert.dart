@@ -6,7 +6,15 @@ import 'app_round_mini_btn.dart';
 import 'big_text.dart';
 import 'kot_bill_widget.dart';
 
-void showKotBillAlert({required String type, required List<dynamic> billingItems,required context}) {
+void showKotBillAlert({
+  required String type,
+  required List<dynamic> billingItems,
+  required context,
+  //this kot only get from order view
+  //from billing page its -1 so kot not send to server in billing page
+  int kotId = -1,
+  String tableName = '',
+}) {
   try {
     showAnimatedDialog(
       context: context,
@@ -35,8 +43,10 @@ void showKotBillAlert({required String type, required List<dynamic> billingItems
             mainAxisSize: MainAxisSize.min,
             children: [
               KotBillWidget(
+                tableName: tableName,
                 type: type,
                 billingItems: billingItems,
+                kotId: kotId,
               ),
             ],
           ),
@@ -49,5 +59,4 @@ void showKotBillAlert({required String type, required List<dynamic> billingItems
   } catch (e) {
     rethrow;
   }
-
 }

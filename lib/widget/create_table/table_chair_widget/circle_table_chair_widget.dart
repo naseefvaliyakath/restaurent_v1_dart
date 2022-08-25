@@ -48,6 +48,8 @@ class CircleTableChairWidget extends StatelessWidget {
                           text: 'TABLE',
                           width: constraints.maxWidth - 100.w,
                           height: constraints.maxHeight - 100.w,
+                          onLongTap: (){},
+                          onTap: (){},
                         ),
                       ),
 

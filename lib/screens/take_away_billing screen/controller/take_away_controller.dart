@@ -41,6 +41,8 @@ class TakeAwayController extends GetxController {
   final RoundedLoadingButtonController btnControllerHold = RoundedLoadingButtonController();
   final RoundedLoadingButtonController btnControllerUpdateKot = RoundedLoadingButtonController();
 
+  String orderType = 'Takeaway';
+
   bool isLoading = false;
   List<Foods>? _foods = [];
 
@@ -132,7 +134,7 @@ class TakeAwayController extends GetxController {
           'fdShopId': 10,
           'fdOrder': _billingItems,
           'fdOrderStatus': 'pending',
-          'fdOrderType': 'Takeaway',
+          'fdOrderType': orderType,
         };
 
         final response = await _httpService.insertWithBody(ADD_KOT_ORDER, kotOrder);
@@ -146,6 +148,7 @@ class TakeAwayController extends GetxController {
           _billingItems.clear();
           clearBillInHive();
           btnControllerKot.success();
+          _totelPrice = 0;
           AppSnackBar.successSnackBar('Success', parsedResponse.errorCode);
           update();
         }
@@ -184,7 +187,7 @@ class TakeAwayController extends GetxController {
           errorCode: 'SomthingWrong',
           totalSize: 0,
           fdOrderStatus: 'Pending',
-          fdOrderType: 'Takeaway',
+          fdOrderType: orderType,
           fdOrder: [],
           totelPrice: 0,
           orderColor: 111);
@@ -210,9 +213,11 @@ class TakeAwayController extends GetxController {
               'name': element.name,
               'qnt': element.qnt,
               'price': element.price.toDouble(),
-              'ktNote': element.ktNote
+              'ktNote': element.ktNote,
+              'ordStatus': element.ordStatus
             });
           }
+
           find_totelPrice();
           update();
         }
@@ -276,7 +281,7 @@ class TakeAwayController extends GetxController {
         errorCode: 'SomthingWrong',
         totalSize: 0,
         fdOrderStatus: 'Pending',
-        fdOrderType: 'Takeaway',
+        fdOrderType: orderType,
         fdOrder: [],
         totelPrice: 0,
         orderColor: 111); //just [] will throw error
@@ -359,7 +364,7 @@ class TakeAwayController extends GetxController {
           'fdOrder': billingItems,
           'fdOrderKot': '-1',
           'fdOrderStatus': 'pending',
-          'fdOrderType': 'Takeaway',
+          'fdOrderType': orderType,
           'netAmount': netTotal,
           'discountPersent': discountPresent,
           'discountCash': discountCash,
@@ -489,8 +494,9 @@ class TakeAwayController extends GetxController {
         int newQnt = currentQnt + qnt;
         updateFodToBill(index, newQnt, price, ktNote);
       } else {
-        _billingItems.add({'fdId': fdId, 'name': name, 'qnt': qnt, 'price': price, 'ktNote': ktNote});
+        _billingItems.add({'fdId': fdId, 'name': name, 'qnt': qnt, 'price': price, 'ktNote': ktNote,'ordStatus':'pending'});
       }
+      print('ffff'+_billingItems.last['ordStatus']);
       find_totelPrice();
     } catch (e) {
       rethrow;
@@ -608,7 +614,7 @@ class TakeAwayController extends GetxController {
         String time = DateFormat('kk:mm:ss').format(now);
         int timeStamp = DateTime.now().millisecondsSinceEpoch;
         HiveHoldItem holdBillingItem = HiveHoldItem(
-            holdItem: _billingItems, date: date, time: time, id: timeStamp, totel: _totelPrice, orderType: 'Takeaway');
+            holdItem: _billingItems, date: date, time: time, id: timeStamp, totel: _totelPrice, orderType: orderType);
         await _hiveHoldBillController.createHoldBill(holdBillingItem: holdBillingItem);
         _hiveHoldBillController.getHoldBill();
         //_billingItems.clear();

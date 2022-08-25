@@ -14,19 +14,21 @@ class OrderSettledCard extends StatelessWidget {
   final String orderType;
 
   final Function onTap;
+  final Function onLongTap;
 
   const OrderSettledCard(
       {Key? key,
       required this.name,
       required this.price,
       required this.onTap,
+        required this.onLongTap,
       required this.orderStatus,
       required this.settledId,
       required this.totelItem,
       required this.dateTime,
       required this.orderType,
       required this.payType,
-      required this.kotId})
+      required this.kotId, })
       : super(key: key);
 
   @override
@@ -34,6 +36,9 @@ class OrderSettledCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         onTap();
+      },
+      onLongPress: (){
+        onLongTap();
       },
       child: Container(
         decoration: BoxDecoration(

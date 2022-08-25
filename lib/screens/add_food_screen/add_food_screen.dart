@@ -170,7 +170,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                         b1Function: _getFromGallary,
                                         b2Function: _getFromcammara);
                                   },
-                                  child: const ChooseImage()),
+                                  child: const ChooseImage(),
+                                ),
                           20.verticalSpace,
                           // name textfield
                           BigText(
