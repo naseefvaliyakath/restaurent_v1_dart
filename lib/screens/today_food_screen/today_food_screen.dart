@@ -7,15 +7,13 @@ import 'package:restowrent_v_two/routes/route_helper.dart';
 import 'package:restowrent_v_two/screens/today_food_screen/controller/today_food_controller.dart';
 import 'package:restowrent_v_two/widget/loading_page.dart';
 import 'package:restowrent_v_two/widget/two_button-bottom_sheet.dart';
-
-import '../../app_constans/app_colors.dart';
 import '../../widget/err_food_card.dart';
 import '../../widget/food_card.dart';
 import '../../widget/food_search_bar.dart';
 import '../../widget/food_sort_round_icon.dart';
 import '../../widget/heading_rich_text.dart';
 import '../../widget/round_border_icon_button.dart';
-import '../all_food_screen/controller/all_food_controller.dart';
+
 
 class TodayFoodScreen extends StatelessWidget {
   const TodayFoodScreen({Key? key}) : super(key: key);
@@ -77,7 +75,7 @@ class TodayFoodScreen extends StatelessWidget {
                                     ctrl.reciveSearchValue(value);
                                   },
                                 ),
-                                FoodSortRoundIcon()
+                                const FoodSortRoundIcon()
                               ],
                             ),
                           ),
@@ -96,7 +94,7 @@ class TodayFoodScreen extends StatelessWidget {
                                 ),
                                 delegate: SliverChildBuilderDelegate(
                                   (BuildContext context, int index) {
-                                    return ErrFoodCard();
+                                    return const ErrFoodCard();
                                   },
                                   childCount: 6,
                                 ),

@@ -14,6 +14,8 @@ import '../settings_page_screen/settings_page_screen.dart';
 
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }

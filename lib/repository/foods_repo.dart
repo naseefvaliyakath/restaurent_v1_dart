@@ -12,7 +12,7 @@ import '../model/my_response.dart';
 import '../model/online_app_respons/online_app_response.dart';
 import '../model/table_chair_set/table_chair_set_response.dart';
 import '../services/service.dart';
-import '../widget/snack_bar.dart';
+
 
 class FoodsRepo {
   HttpService _httpService = HttpService();
@@ -25,7 +25,7 @@ class FoodsRepo {
     // TODO: implement getNewsHeadline
 
     try {
-      final response = await _httpService.getRequest(TODAY_FOOD_URL);
+      final response = await _httpService.getRequestWithBody(TODAY_FOOD_URL,{'fdShopId': 10});
       FoodResponse parsedResponse = FoodResponse.
       fromJson(response.data);
       return MyResponse(
@@ -47,7 +47,7 @@ class FoodsRepo {
     // TODO: implement getNewsHeadline
 
     try {
-      final response = await _httpService.getRequest(ALL_FOOD_URL);
+      final response = await _httpService.getRequestWithBody(ALL_FOOD_URL,{'fdShopId': 10});
       FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
       return MyResponse(
           statusCode: 1,
@@ -124,6 +124,7 @@ class FoodsRepo {
       return MyResponse(statusCode: 0, status: 'Error', message: MyDioError.dioError(e));
     }
     catch (e) {
+      rethrow;
       return MyResponse(statusCode: 0, status: 'Error', message: 'Error');
     } finally {
 

@@ -181,7 +181,6 @@ class AddFoodController extends GetxController {
       update();
       MyResponse response = await _foodsRepo.getCategory();
 
-
       if (response.statusCode == 1) {
         hideLoadingCategory();
         update();
@@ -204,12 +203,10 @@ class AddFoodController extends GetxController {
       showLoadingCategory();
       update();
       rethrow;
-    }
-    finally{
+    } finally {
       hideLoading();
       update();
     }
-
   }
 
   //to add category widget show and hide

@@ -11,5 +11,4 @@ class AppColors{
   static const textHolder = Color(0xFFedf0f8);
   static const textGrey = Color(0xFFafb1b5);
 
-
 }

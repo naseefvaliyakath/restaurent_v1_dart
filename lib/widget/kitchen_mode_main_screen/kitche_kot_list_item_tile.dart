@@ -43,7 +43,6 @@ class _KitchenKotItemTileState extends State<KitchenKotItemTile> {
   RoundedLoadingButtonController btnControllerReadyUpdateSingleKotSts = RoundedLoadingButtonController();
   RoundedLoadingButtonController btnControllerPendingUpdateSingleKotSts = RoundedLoadingButtonController();
 
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<KitchenModeMainController>(builder: (ctrl) {
@@ -139,7 +138,15 @@ class _KitchenKotItemTileState extends State<KitchenKotItemTile> {
                         fit: BoxFit.scaleDown,
                         child: Text(
                           widget.ordStatus,
-                          style: TextStyle(fontSize: 23.sp, color: Colors.red, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 23.sp,
+                              color: widget.ordStatus == 'ready'
+                                  ? Colors.green
+                                  : widget.ordStatus == 'pending'
+                                      ? AppColors.mainColor_2 : widget.ordStatus == 'progress'
+                                  ? Colors.indigo
+                                      : Colors.red,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     )
