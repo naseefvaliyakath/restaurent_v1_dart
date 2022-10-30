@@ -4,8 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:restowrent_v_two/model/settled_order_response/settled_order.dart';
 import 'package:restowrent_v_two/widget/small_text.dart';
 import 'package:ticket_widget/ticket_widget.dart';
-import 'package:get/get.dart';
-import '../screens/dining_screen/controller/dining_billing_controller.dart';
 import 'big_text.dart';
 import 'horezondal_divider.dart';
 import 'kot_bill_item_heding.dart';

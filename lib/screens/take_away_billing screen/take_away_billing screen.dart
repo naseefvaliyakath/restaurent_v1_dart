@@ -62,6 +62,7 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                 width: double.maxFinite,
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     10.verticalSpace,
@@ -121,6 +122,7 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                         padding: EdgeInsets.all(5.sp),
                         //height: 250,
                         child: ListView.builder(
+                          shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return ctrl.isLoading
@@ -173,14 +175,15 @@ class _TakeAwayBillingScreenState extends State<TakeAwayBillingScreen> {
                           BoxDecoration(border: Border.all(color: AppColors.mainColor), borderRadius: BorderRadius.circular(5.r)),
                       padding: EdgeInsets.all(3.sp),
                       width: double.maxFinite,
-                      height: 0.52.sh,
                       child: Column(
                         children: [
                           // table hedings
                           BillingTableHeading(),
                           6.verticalSpace,
                           SizedBox(
+                            height: 0.52.sh,
                             child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
                                 return BillingItemTile(

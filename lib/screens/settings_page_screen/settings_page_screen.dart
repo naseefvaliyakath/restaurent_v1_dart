@@ -14,6 +14,7 @@ class SettingsPageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.symmetric(vertical: 20.h),
         child: Column(
           children: [

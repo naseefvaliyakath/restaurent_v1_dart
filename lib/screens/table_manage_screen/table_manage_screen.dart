@@ -104,6 +104,7 @@ class TableManageScreen extends StatelessWidget {
                                   child: ctrl.isLoadingRoom == true
                                       ? const SizedBox()
                                       : ListView.builder(
+                                    physics: const BouncingScrollPhysics(),
                                           scrollDirection: Axis.horizontal,
                                           itemCount: ctrl.room!.isEmpty ? 0 : ctrl.room!.length + 1,
                                           itemBuilder: (BuildContext ctx, index) {

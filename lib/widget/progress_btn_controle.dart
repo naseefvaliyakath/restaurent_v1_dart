@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:getwidget/components/button/gf_button.dart';
 import 'package:getwidget/shape/gf_button_shape.dart';
-import 'package:restowrent_v_two/screens/take_away_billing%20screen/controller/take_away_controller.dart';
 import 'package:get/get.dart';
 
 enum ButtonState { init, loading, done }
@@ -11,10 +10,9 @@ enum ButtonState { init, loading, done }
 class ProgressBtnController extends StatefulWidget {
   final Function function;
   final String text;
-  var ctrl;
+  final  ctrl;
 
-
-  ProgressBtnController({Key? key, required this.function, required this.text, required this.ctrl }) : super(key: key);
+  const ProgressBtnController({Key? key, required this.function, required this.text, required this.ctrl }) : super(key: key);
 
   @override
   State<ProgressBtnController> createState() => _ProgressBtnControllerState();
@@ -26,17 +24,17 @@ class _ProgressBtnControllerState extends State<ProgressBtnController> {
 
   @override
   Widget build(BuildContext context) {
-    final isStreched = isAnimating || state == ButtonState.init;
+    final isStretched = isAnimating || state == ButtonState.init;
     final isDone = state == ButtonState.done;
 
     return AnimatedContainer(
         width: state == ButtonState.init ? 150.w : 45.w,
         //width: 150.w,
-        height: 40,
+        height: 40.sp,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeIn,
         onEnd: () => setState(() => isAnimating = !isAnimating),
-        child: isStreched
+        child: isStretched
             ? GFButton(
           onPressed: () async {
             setState(() => state = ButtonState.loading);
@@ -55,7 +53,7 @@ class _ProgressBtnControllerState extends State<ProgressBtnController> {
               softWrap: false,
               overflow: TextOverflow.clip,
               maxLines: 1,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         )
@@ -76,7 +74,7 @@ class _ProgressBtnControllerState extends State<ProgressBtnController> {
                     padding: EdgeInsets.all(3.sp),
                     width: 30.sp,
                     height: 30.sp,
-                    child: CircularProgressIndicator(
+                    child: const CircularProgressIndicator(
                       color: Colors.white,
                     ))),
           );

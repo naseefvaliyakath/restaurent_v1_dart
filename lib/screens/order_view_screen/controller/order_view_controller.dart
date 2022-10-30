@@ -35,7 +35,7 @@ class OrderViewController extends GetxController {
   final HiveHoldBillController _hiveHoldBillController = Get.find<HiveHoldBillController>();
   final HttpService _httpService = Get.find<HttpService>();
   bool isLoading = false;
-  bool isloading2 = false;
+
 
   //tochane tapped coloer of ordr status tab
   int tappedIndex = -1;
@@ -341,6 +341,7 @@ class OrderViewController extends GetxController {
   deleteSettledOrder(int settled_id) async {
     try {
       Map<String, dynamic> data = {
+        'fdShopId':10,
         'settled_id': settled_id,
       };
       final response = await _httpService.delete(DELETE_SETTLED_ORDER, data);
@@ -383,6 +384,7 @@ class OrderViewController extends GetxController {
   updateSettledBill(context) async {
     try {
       Map<String, dynamic> updatedSettledBill = {
+        'fdShopId': 10,
         'settled_id': _settledBillingItems?[indexSettledOrder].settled_id ?? -1,
         'netAmount': netTotal,
         'discountPersent': discountPresent,
@@ -514,6 +516,7 @@ class OrderViewController extends GetxController {
   deleteKotOrder(int KotId) async {
     try {
       Map<String, dynamic> data = {
+        'fdShopId':10,
         'Kot_id': KotId,
       };
       final response = await _httpService.delete(DELETE_KOT_ORDER, data);
@@ -540,7 +543,8 @@ class OrderViewController extends GetxController {
     }
   }
 
-  //kot printing dialog
+  //? kot printing dialog
+
   kotDialogBox(context, billingItems, kotId) {
     //this for getting tghe table postion and room name to show in alert
     int tableId = -1;
@@ -644,7 +648,7 @@ class OrderViewController extends GetxController {
     print('object');
   }
 
-//to change tapped category
+//?to change tapped card color
   setStatusTappedIndex(int val) {
     tappedIndex = val;
     update();

@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:restowrent_v_two/model/my_response.dart';
 import 'package:restowrent_v_two/repository/foods_repo.dart';
-
 import '../../../app_constans/api_link.dart';
 import '../../../commoen/dio_error.dart';
 import '../../../model/foods_respons/food_response.dart';
@@ -150,6 +149,7 @@ class AllFoodController extends GetxController {
 
       Map<String,dynamic>foodData={
         'fdId':id,
+        'fdShopId':10,
       };
       final response = await _httpService.delete(DELETE_FOOD,foodData);
       isloading2 = false;

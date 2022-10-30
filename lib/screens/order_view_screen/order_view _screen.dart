@@ -41,6 +41,7 @@ class OrderViewScreen extends StatelessWidget {
       body: GetBuilder<OrderViewController>(builder: (ctrl) {
         return SafeArea(
           child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
             primary: false,
             slivers: <Widget>[
               SliverAppBar(

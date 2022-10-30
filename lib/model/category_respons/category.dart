@@ -5,7 +5,7 @@ part 'category.g.dart';
 @JsonSerializable()
 class Category{
 
-  @JsonKey(name : "catId")
+  @JsonKey(name : "CatId")
   int Catid;
 
   @JsonKey(name : "catName")

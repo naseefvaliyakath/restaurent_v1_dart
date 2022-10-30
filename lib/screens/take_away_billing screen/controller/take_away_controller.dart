@@ -235,7 +235,7 @@ class TakeAwayController extends GetxController {
   Future updateKotOrder() async {
     try {
       if (_billingItems.isNotEmpty) {
-        Map<String, dynamic> kotOrderUpdate = {'fdOrder': _billingItems, 'Kot_id': kotIdReciveFromKotUpdate};
+        Map<String, dynamic> kotOrderUpdate = {'fdShopId':10,'fdOrder': _billingItems, 'Kot_id': kotIdReciveFromKotUpdate};
         final response = await _httpService.updateData(UPDATE_KOT_ORDER, kotOrderUpdate);
 
         FoodResponse parsedResponse = FoodResponse.fromJson(response.data);
@@ -547,16 +547,17 @@ class TakeAwayController extends GetxController {
   find_totelPrice() {
     try {
       double totalScores = 0;
-      _billingItems.forEach((item) {
+      for (var item in _billingItems) {
         double result = item["price"] * item["qnt"];
         totalScores += result;
-      });
+      }
       _totelPrice = totalScores;
       update();
     } catch (e) {
       rethrow;
     }
   }
+
 
   saveBillInHive() {
     try {
@@ -676,7 +677,7 @@ class TakeAwayController extends GetxController {
     update();
   }
 
-  //set visibilty of edit btn fales on first time
+  //set visibility of edit btn fales on first time
   setIsVisibleEditBillItemFales() {
     isVisibleEditBillItem = false;
     update();

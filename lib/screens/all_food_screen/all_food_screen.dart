@@ -37,6 +37,7 @@ class AllFoodScreen extends StatelessWidget {
                 ? const MyLoading()
                 : SafeArea(
                     child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
                       primary: false,
                       slivers: <Widget>[
                         SliverAppBar(

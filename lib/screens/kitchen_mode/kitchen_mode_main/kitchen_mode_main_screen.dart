@@ -41,6 +41,7 @@ class KitchenModeMainScreen extends StatelessWidget {
         body: GetBuilder<KitchenModeMainController>(builder: (ctrl) {
           return SafeArea(
             child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
               primary: false,
               slivers: <Widget>[
                 SliverAppBar(

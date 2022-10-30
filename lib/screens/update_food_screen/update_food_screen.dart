@@ -138,6 +138,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
                             SizedBox(
                               height: 60.h,
                               child: !ctrl.isError ? ListView.builder(
+                                physics: const BouncingScrollPhysics(),
                                 scrollDirection: Axis.horizontal,
                                 itemCount: ctrl.category!.length,
                                 itemBuilder: (BuildContext ctx, index) {

@@ -101,6 +101,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                             child: ctrl.isLoadingCategory == true
                                 ? const SizedBox()
                                 : ListView.builder(
+                              physics: const BouncingScrollPhysics(),
                                     scrollDirection: Axis.horizontal,
                                     itemCount: ctrl.category!.length + 1,
                                     itemBuilder: (BuildContext ctx, index) {

@@ -43,13 +43,13 @@ class AddFoodController extends GetxController {
 
   @override
   Future<void> onInit() async {
-    await getCategory();
     fdNameTD = TextEditingController();
     fdPriceTD = TextEditingController();
     fdFullPriceTD = TextEditingController();
     fdThreeBiTwoPrsTD = TextEditingController();
     fdHalfPriceTD = TextEditingController();
     fdQtrPriceTD = TextEditingController();
+     getCategory();
     super.onInit();
   }
 

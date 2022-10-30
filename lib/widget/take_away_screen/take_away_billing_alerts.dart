@@ -3,17 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
-import '../../app_constans/app_colors.dart';
 import '../../screens/take_away_billing screen/controller/take_away_controller.dart';
-import '../app_min_button.dart';
-import '../big_text.dart';
 import '../delete_biiling_alert_edit_food_dody.dart';
 import '../dialog_button.dart';
 import '../food_billing_alert_body.dart';
 import '../mid_text.dart';
 import '../myDialogBody.dart';
-import '../text_field_widget.dart';
 import 'billing_alert_food.dart';
 
 class TakeAwayBillingAlert {
