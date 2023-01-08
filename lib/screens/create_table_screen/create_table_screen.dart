@@ -2,14 +2,11 @@ import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:get/get.dart';
 import 'package:restowrent_v_two/routes/route_helper.dart';
 import 'package:restowrent_v_two/screens/create_table_screen/controller/create_table_controller.dart';
-
 import 'package:restowrent_v_two/widget/big_text.dart';
 import 'package:restowrent_v_two/widget/white_button_with_icon.dart';
-
 import '../../app_constans/app_colors.dart';
 import '../../widget/create_table/table_chair_widget/circle_table_chair_widget.dart';
 import '../../widget/create_table/table_chair_widget/ovel_table_chair_widget.dart';
